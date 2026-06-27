@@ -24,13 +24,13 @@ export default function KitchenSuccessModal({ table, onClose }) {
           <p className="text-sm text-gray-400 mb-6">{table?.name}</p>
 
           <div className="flex gap-3 w-full">
-            <div className="flex-1 bg-amber-50 border border-amber-100 rounded-xl p-4 flex flex-col items-center gap-2">
+            <div className="flex-1 bg-amber-50 rounded-xl p-4 flex flex-col items-center gap-2">
               <ChefHat className="w-6 h-6 text-amber-600" />
               <span className="text-xs font-semibold text-amber-700 text-center">
                 Plats envoyés en Cuisine!
               </span>
             </div>
-            <div className="flex-1 bg-cyan-50 border border-cyan-100 rounded-xl p-4 flex flex-col items-center gap-2">
+            <div className="flex-1 bg-cyan-50 rounded-xl p-4 flex flex-col items-center gap-2">
               <Wine className="w-6 h-6 text-cyan-600" />
               <span className="text-xs font-semibold text-cyan-700 text-center">
                 Boissons envoyées au Bar!
@@ -38,7 +38,13 @@ export default function KitchenSuccessModal({ table, onClose }) {
             </div>
           </div>
 
-          <p className="text-xs text-gray-400 mt-5">Fermeture automatique…</p>
+          <button
+            onClick={onClose}
+            className="w-full h-12 mt-6 rounded-2xl font-semibold text-white transition-all active:scale-95"
+            style={{ backgroundColor: "#0096D6" }}
+          >
+            D'accord
+          </button>
         </div>
       </div>
     </div>

@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo, useEffect } from "react";
+import React, { useState, useCallback, useMemo } from "react";
 import { getInitialTables } from "@/lib/menuData";
 import StatusHeader from "@/components/pos/StatusHeader";
 import FloorPlan from "@/components/pos/FloorPlan";
@@ -104,16 +104,7 @@ export default function Dashboard() {
     setActiveTableId(null);
   }, []);
 
-  // Auto-dismiss kitchen modal after 2s and return to floor plan
-  // Strictly dependent only on showKitchenModal — never fires when cashier modal is open
-  useEffect(() => {
-    if (!showKitchenModal || showCashierModal) return;
-    const timer = setTimeout(() => {
-      setShowKitchenModal(false);
-      setActiveTableId(null);
-    }, 2000);
-    return () => clearTimeout(timer);
-  }, [showKitchenModal, showCashierModal]);
+
 
   const handleCashOut = useCallback(() => {
     if (!activeTableId) return;
