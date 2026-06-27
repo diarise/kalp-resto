@@ -6,7 +6,7 @@ export default function TicketSidebar({
   activeTable,
   onUpdateQty,
   onRemoveItem,
-  onSetComment,
+  onSetModifier,
   onSendKitchen,
   onCashOut,
 }) {
@@ -20,9 +20,16 @@ export default function TicketSidebar({
   const [expandedItemId, setExpandedItemId] = useState(null);
   const [showPrintModal, setShowPrintModal] = useState(false);
 
-  const getModifierOptions = (category) => {
-    if (category === "boissons") return ["Glace", "Sans glace"];
-    return ["Sans piment", "Peu pimenté", "Bien cuit"];
+  const PIMENT_OPTIONS = ["Sans piment", "Peu pimenté", "Bien pimenté"];
+  const CUISSON_OPTIONS = ["À point", "Bien cuit"];
+  const BOISSON_OPTIONS = ["Glace", "Sans glace"];
+
+  const getItemModifiers = (item) => {
+    const parts = [];
+    if (item.piment) parts.push(item.piment);
+    if (item.cuisson) parts.push(item.cuisson);
+    if (item.boisson) parts.push(item.boisson);
+    return parts.join(", ");
   };
 
   const handleRowClick = (itemId) => {
@@ -61,7 +68,8 @@ export default function TicketSidebar({
 
         {activeTable && activeTable.currentTicket.map((item) => {
           const isExpanded = expandedItemId === item.id;
-          const modifiers = getModifierOptions(item.category);
+          const isBoisson = item.category === "boissons";
+          const modifierText = getItemModifiers(item);
 
           return (
             <div key={item.id} className="py-3 border-b border-gray-50 last:border-0">
@@ -71,8 +79,8 @@ export default function TicketSidebar({
                     <p className="text-sm font-medium text-gray-800 truncate">{item.name}</p>
                     <ChevronDown className={`w-3 h-3 text-gray-400 shrink-0 transition-transform ${isExpanded ? "rotate-180" : ""}`} />
                   </div>
-                  {item.comment ? (
-                    <p className="text-xs italic text-gray-400 mt-0.5">→ {item.comment}</p>
+                  {modifierText ? (
+                    <p className="text-xs italic text-gray-400 mt-0.5">→ {modifierText}</p>
                   ) : (
                     <p className="text-xs text-gray-400 mt-0.5">{formatPrice(item.price)} / unité</p>
                   )}
@@ -107,23 +115,69 @@ export default function TicketSidebar({
 
               {/* Modifier tray */}
               {isExpanded && (
-                <div className="mt-2.5 flex flex-wrap gap-1.5 pl-1">
-                  {modifiers.map((opt) => {
-                    const isActive = item.comment === opt;
-                    return (
-                      <button
-                        key={opt}
-                        onClick={() => onSetComment(item.id, isActive ? "" : opt)}
-                        className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-all active:scale-95 ${
-                          isActive
-                            ? "bg-gray-800 text-white"
-                            : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                        }`}
-                      >
-                        {opt}
-                      </button>
-                    );
-                  })}
+                <div className="mt-2.5 pl-1 space-y-2">
+                  {isBoisson ? (
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      <span className="text-[10px] font-semibold uppercase tracking-wider text-gray-400 mr-1">Boisson:</span>
+                      {BOISSON_OPTIONS.map((opt) => {
+                        const isActive = item.boisson === opt;
+                        return (
+                          <button
+                            key={opt}
+                            onClick={() => onSetModifier(item.id, "boisson", isActive ? "" : opt)}
+                            className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-all active:scale-95 ${
+                              isActive
+                                ? "bg-gray-800 text-white"
+                                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                            }`}
+                          >
+                            {opt}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <>
+                      <div className="flex flex-wrap items-center gap-1.5">
+                        <span className="text-[10px] font-semibold uppercase tracking-wider text-gray-400 mr-1">Piment:</span>
+                        {PIMENT_OPTIONS.map((opt) => {
+                          const isActive = item.piment === opt;
+                          return (
+                            <button
+                              key={opt}
+                              onClick={() => onSetModifier(item.id, "piment", isActive ? "" : opt)}
+                              className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-all active:scale-95 ${
+                                isActive
+                                  ? "bg-gray-800 text-white"
+                                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                              }`}
+                            >
+                              {opt}
+                            </button>
+                          );
+                        })}
+                      </div>
+                      <div className="flex flex-wrap items-center gap-1.5">
+                        <span className="text-[10px] font-semibold uppercase tracking-wider text-gray-400 mr-1">Cuisson:</span>
+                        {CUISSON_OPTIONS.map((opt) => {
+                          const isActive = item.cuisson === opt;
+                          return (
+                            <button
+                              key={opt}
+                              onClick={() => onSetModifier(item.id, "cuisson", isActive ? "" : opt)}
+                              className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-all active:scale-95 ${
+                                isActive
+                                  ? "bg-gray-800 text-white"
+                                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                              }`}
+                            >
+                              {opt}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </>
+                  )}
                 </div>
               )}
             </div>

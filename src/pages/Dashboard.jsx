@@ -88,8 +88,8 @@ export default function Dashboard() {
     [activeTableId]
   );
 
-  const handleSetComment = useCallback(
-    (itemId, comment) => {
+  const handleSetModifier = useCallback(
+    (itemId, field, value) => {
       if (!activeTableId) return;
       setTables((prev) =>
         prev.map((table) => {
@@ -97,7 +97,7 @@ export default function Dashboard() {
           return {
             ...table,
             currentTicket: table.currentTicket.map((i) =>
-              i.id === itemId ? { ...i, comment: comment || undefined } : i
+              i.id === itemId ? { ...i, [field]: value || undefined } : i
             ),
           };
         })
@@ -169,7 +169,7 @@ export default function Dashboard() {
             activeTable={activeTable}
             onUpdateQty={handleUpdateQty}
             onRemoveItem={handleRemoveItem}
-            onSetComment={handleSetComment}
+            onSetModifier={handleSetModifier}
             onSendKitchen={handleSendKitchen}
             onCashOut={handleCashOut}
           />

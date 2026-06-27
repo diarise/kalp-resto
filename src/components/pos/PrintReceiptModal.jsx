@@ -112,9 +112,15 @@ export default function PrintReceiptModal({ table, onClose }) {
                   <span className="col-span-2">{item.qty}x</span>
                   <div className="col-span-6">
                     <div>{item.name}</div>
-                    {item.comment && (
-                      <div className="italic text-gray-400 text-[10px]">→ {item.comment}</div>
-                    )}
+                    {(() => {
+                      const mods = [item.piment, item.cuisson, item.boisson].filter(Boolean);
+                      if (mods.length > 0) {
+                        return (
+                          <div className="italic text-gray-400 text-[10px]">→ {mods.join(", ")}</div>
+                        );
+                      }
+                      return null;
+                    })()}
                   </div>
                   <span className="col-span-4 text-right">
                     {formatCFA(item.qty * item.price)}
