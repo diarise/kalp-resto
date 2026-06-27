@@ -1,6 +1,12 @@
-import React from "react";
+import React, { useState, useMemo } from "react";
 import { Users, Clock, CheckCircle, Bookmark, Wrench } from "lucide-react";
 import TableStatusMenu from "@/components/pos/TableStatusMenu";
+
+const ZONES = [
+  { id: "salle", label: "Rez-de-chaussée", emoji: "🛋️" },
+  { id: "etage", label: "1er Étage", emoji: "🏢" },
+  { id: "terrasse", label: "Terrasse", emoji: "🌿" },
+];
 
 const STATUS_CONFIG = {
   libre: {
@@ -56,16 +62,64 @@ const STATUS_CONFIG = {
 };
 
 export default function FloorPlan({ tables, onSelectTable, onUpdateTableStatus }) {
+  const [activeZone, setActiveZone] = useState("salle");
+
+  const zoneTables = useMemo(
+    () => tables.filter((t) => t.zone === activeZone),
+    [tables, activeZone]
+  );
+
+  const zoneCounts = useMemo(
+    () =>
+      ZONES.reduce((acc, z) => {
+        acc[z.id] = tables.filter((t) => t.zone === z.id).length;
+        return acc;
+      }, {}),
+    [tables]
+  );
+
+  // Dense grid for 30-table zones; standard for 15-table zone
+  const gridCols =
+    activeZone === "salle"
+      ? "grid-cols-2 md:grid-cols-5"
+      : "grid-cols-3 md:grid-cols-6";
+
   return (
-    <div className="h-full flex flex-col p-6">
-      <div className="mb-6">
+    <div className="h-full flex flex-col p-6 overflow-hidden">
+      <div className="mb-4">
         <h2 className="text-lg font-semibold text-gray-800">Plan de Salle</h2>
         <p className="text-sm text-gray-400 mt-0.5">Sélectionnez une table pour prendre commande</p>
       </div>
 
-      <div className="flex flex-wrap gap-4 mb-6">
+      {/* Zone Switcher */}
+      <div className="flex items-center gap-1.5 bg-gray-100 rounded-xl p-1 mb-4 w-fit">
+        {ZONES.map((zone) => {
+          const isActive = activeZone === zone.id;
+          return (
+            <button
+              key={zone.id}
+              onClick={() => setActiveZone(zone.id)}
+              className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-medium transition-all ${
+                isActive
+                  ? "bg-white text-gray-800 shadow-sm"
+                  : "text-gray-500 hover:text-gray-700"
+              }`}
+            >
+              <span className="text-sm">{zone.emoji}</span>
+              <span>{zone.label}</span>
+              <span className={`ml-0.5 text-[10px] px-1.5 py-0.5 rounded-full font-bold ${
+                isActive ? "bg-gray-800 text-white" : "bg-gray-200 text-gray-500"
+              }`}>
+                {zoneCounts[zone.id]}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+
+      <div className="flex flex-wrap gap-4 mb-4">
         {Object.entries(STATUS_CONFIG).map(([key, cfg]) => {
-          const count = tables.filter((t) => t.status === key).length;
+          const count = zoneTables.filter((t) => t.status === key).length;
           return (
             <div key={key} className="flex items-center gap-2 text-xs text-gray-500">
               <div className={`w-2.5 h-2.5 rounded-full ${cfg.dot}`} />
@@ -75,8 +129,8 @@ export default function FloorPlan({ tables, onSelectTable, onUpdateTableStatus }
         })}
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 flex-1 content-start">
-        {tables.map((table) => {
+      <div className={`grid ${gridCols} gap-3 flex-1 content-start overflow-y-auto`}>
+        {zoneTables.map((table) => {
           const cfg = STATUS_CONFIG[table.status];
           const Icon = cfg.icon;
           const itemCount = table.currentTicket.length;
@@ -87,7 +141,9 @@ export default function FloorPlan({ tables, onSelectTable, onUpdateTableStatus }
               table.status === "reservee" ||
               table.status === "horsService");
 
-          const cardClasses = `${cfg.bg} ${cfg.border} border-2 rounded-2xl h-32 flex flex-col items-center justify-center gap-2 transition-all duration-200`;
+          const cardClasses = `${cfg.bg} ${cfg.border} border-2 rounded-2xl flex flex-col items-center justify-center gap-2 transition-all duration-200 ${
+            activeZone === "salle" ? "h-32" : "h-24"
+          }`;
 
           return (
             <div key={table.id} className="relative">
