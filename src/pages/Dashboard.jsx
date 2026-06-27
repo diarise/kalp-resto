@@ -105,14 +105,15 @@ export default function Dashboard() {
   }, []);
 
   // Auto-dismiss kitchen modal after 2s and return to floor plan
+  // Strictly dependent only on showKitchenModal — never fires when cashier modal is open
   useEffect(() => {
-    if (!showKitchenModal) return;
+    if (!showKitchenModal || showCashierModal) return;
     const timer = setTimeout(() => {
       setShowKitchenModal(false);
       setActiveTableId(null);
     }, 2000);
     return () => clearTimeout(timer);
-  }, [showKitchenModal]);
+  }, [showKitchenModal, showCashierModal]);
 
   const handleCashOut = useCallback(() => {
     if (!activeTableId) return;
