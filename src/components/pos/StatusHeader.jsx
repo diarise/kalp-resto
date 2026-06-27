@@ -1,10 +1,11 @@
 import React from "react";
-import { UtensilsCrossed, User, ChefHat, Wine, LayoutGrid } from "lucide-react";
+import { UtensilsCrossed, User, ChefHat, Wine, LayoutGrid, BarChart3 } from "lucide-react";
 
 const VIEWS = [
   { id: "server", label: "Vue Serveur", icon: LayoutGrid },
   { id: "kitchen", label: "Écran Cuisine", icon: ChefHat },
   { id: "bar", label: "Écran Bar", icon: Wine },
+  { id: "report", label: "Rapport d'activité", icon: BarChart3 },
 ];
 
 export default function StatusHeader({ currentView, onViewChange }) {

@@ -81,46 +81,47 @@ export default function FloorPlan({ tables, onSelectTable, onUpdateTableStatus }
           const Icon = cfg.icon;
           const itemCount = table.currentTicket.length;
 
-          if (cfg.disabled) {
-            return (
-              <div
-                key={table.id}
-                className={`${cfg.bg} ${cfg.border} border-2 rounded-2xl h-32 flex flex-col items-center justify-center gap-2 opacity-60 cursor-not-allowed`}
-              >
-                <Icon className={`w-5 h-5 ${cfg.text}`} />
-                <span className={`text-sm font-semibold ${cfg.text}`}>{table.name}</span>
-                <span className={`text-xs px-2.5 py-0.5 rounded-full font-medium ${cfg.badge}`}>
-                  {cfg.label}
-                </span>
-              </div>
-            );
-          }
-
           const showMenu =
             onUpdateTableStatus &&
-            (table.status === "libre" || table.status === "reservee");
+            (table.status === "libre" ||
+              table.status === "reservee" ||
+              table.status === "horsService");
+
+          const cardClasses = `${cfg.bg} ${cfg.border} border-2 rounded-2xl h-32 flex flex-col items-center justify-center gap-2 transition-all duration-200`;
 
           return (
             <div key={table.id} className="relative">
               {showMenu && (
                 <TableStatusMenu table={table} onUpdateStatus={onUpdateTableStatus} />
               )}
-              <button
-                onClick={() => onSelectTable(table.id)}
-                className={`w-full ${cfg.bg} ${cfg.border} border-2 rounded-2xl h-32 flex flex-col items-center justify-center gap-2 transition-all duration-200 active:scale-95 hover:shadow-md`}
-                style={{ boxShadow: "0 4px 6px -1px rgba(0,0,0,0.05)" }}
-              >
-                <Icon className={`w-5 h-5 ${cfg.text}`} />
-                <span className={`text-sm font-semibold ${cfg.text}`}>{table.name}</span>
-                <span className={`text-xs px-2.5 py-0.5 rounded-full font-medium ${cfg.badge}`}>
-                  {cfg.label}
-                </span>
-                {itemCount > 0 && (
-                  <span className="text-xs text-gray-400">
-                    {itemCount} article{itemCount > 1 ? "s" : ""}
+              {cfg.disabled ? (
+                <div
+                  className={`${cardClasses} opacity-60 cursor-not-allowed`}
+                >
+                  <Icon className={`w-5 h-5 ${cfg.text}`} />
+                  <span className={`text-sm font-semibold ${cfg.text}`}>{table.name}</span>
+                  <span className={`text-xs px-2.5 py-0.5 rounded-full font-medium ${cfg.badge}`}>
+                    {cfg.label}
                   </span>
-                )}
-              </button>
+                </div>
+              ) : (
+                <button
+                  onClick={() => onSelectTable(table.id)}
+                  className={`w-full ${cardClasses} active:scale-95 hover:shadow-md`}
+                  style={{ boxShadow: "0 4px 6px -1px rgba(0,0,0,0.05)" }}
+                >
+                  <Icon className={`w-5 h-5 ${cfg.text}`} />
+                  <span className={`text-sm font-semibold ${cfg.text}`}>{table.name}</span>
+                  <span className={`text-xs px-2.5 py-0.5 rounded-full font-medium ${cfg.badge}`}>
+                    {cfg.label}
+                  </span>
+                  {itemCount > 0 && (
+                    <span className="text-xs text-gray-400">
+                      {itemCount} article{itemCount > 1 ? "s" : ""}
+                    </span>
+                  )}
+                </button>
+              )}
             </div>
           );
         })}

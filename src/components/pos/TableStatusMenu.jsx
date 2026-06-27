@@ -21,13 +21,20 @@ export default function TableStatusMenu({ table, onUpdateStatus }) {
     setOpen(false);
   };
 
+  const restoreOption = {
+    label: "Remettre en service / Rendre Libre",
+    icon: CheckCircle,
+    status: "libre",
+    color: "text-emerald-600",
+  };
+
   const options =
-    table.status === "reservee"
-      ? [{ label: "Libérer la table", icon: CheckCircle, status: "libre", color: "text-emerald-600" }]
-      : [
+    table.status === "libre"
+      ? [
           { label: "Réserver", icon: Bookmark, status: "reservee", color: "text-purple-600" },
           { label: "Hors service", icon: Wrench, status: "horsService", color: "text-gray-600" },
-        ];
+        ]
+      : [restoreOption];
 
   return (
     <div className="absolute top-1.5 right-1.5" ref={menuRef}>

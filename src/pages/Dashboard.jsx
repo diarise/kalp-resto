@@ -8,6 +8,7 @@ import KitchenSuccessModal from "@/components/pos/KitchenSuccessModal";
 import CashierModal from "@/components/pos/CashierModal";
 import KitchenView from "@/components/pos/KitchenView";
 import BarView from "@/components/pos/BarView";
+import ActivityReport from "@/components/pos/ActivityReport";
 
 export default function Dashboard() {
   const [tables, setTables] = useState(() => getInitialTables());
@@ -217,6 +218,8 @@ export default function Dashboard() {
         <KitchenView orders={kitchenOrders} onMarkReady={handleMarkKitchenReady} />
       ) : currentView === "bar" ? (
         <BarView orders={barOrders} onMarkReady={handleMarkBarReady} />
+      ) : currentView === "report" ? (
+        <ActivityReport />
       ) : (
         <div className="flex-1 flex min-h-0">
           <div className="flex-1" style={{ flexBasis: "65%" }}>
