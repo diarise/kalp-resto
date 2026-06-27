@@ -6,12 +6,17 @@ import MenuGrid from "@/components/pos/MenuGrid";
 import TicketSidebar from "@/components/pos/TicketSidebar";
 import KitchenSuccessModal from "@/components/pos/KitchenSuccessModal";
 import CashierModal from "@/components/pos/CashierModal";
+import KitchenView from "@/components/pos/KitchenView";
+import BarView from "@/components/pos/BarView";
 
 export default function Dashboard() {
   const [tables, setTables] = useState(() => getInitialTables());
   const [activeTableId, setActiveTableId] = useState(null);
   const [showKitchenModal, setShowKitchenModal] = useState(false);
   const [showCashierModal, setShowCashierModal] = useState(false);
+  const [currentView, setCurrentView] = useState("server");
+  const [kitchenOrders, setKitchenOrders] = useState([]);
+  const [barOrders, setBarOrders] = useState([]);
 
   const activeTable = useMemo(
     () => tables.find((t) => t.id === activeTableId) || null,
@@ -108,14 +113,49 @@ export default function Dashboard() {
 
   const handleSendKitchen = useCallback(() => {
     if (!activeTableId) return;
+    const table = tables.find((t) => t.id === activeTableId);
+    if (!table) return;
+
+    const now = Date.now();
+    const tableName = table.name;
+
+    // Split items by category
+    const cuisineItems = table.currentTicket.filter(
+      (i) => i.category === "plats" || i.category === "grills"
+    );
+    const barItems = table.currentTicket.filter((i) => i.category === "boissons");
+
+    if (cuisineItems.length > 0) {
+      setKitchenOrders((prev) => [
+        ...prev,
+        {
+          id: `k-${now}`,
+          tableName,
+          timestamp: now,
+          items: cuisineItems,
+        },
+      ]);
+    }
+    if (barItems.length > 0) {
+      setBarOrders((prev) => [
+        ...prev,
+        {
+          id: `b-${now}`,
+          tableName,
+          timestamp: now,
+          items: barItems,
+        },
+      ]);
+    }
+
     setTables((prev) =>
-      prev.map((table) => {
-        if (table.id !== activeTableId) return table;
-        return { ...table, status: "occupee" };
+      prev.map((t) => {
+        if (t.id !== activeTableId) return t;
+        return { ...t, status: "occupee" };
       })
     );
     setShowKitchenModal(true);
-  }, [activeTableId]);
+  }, [activeTableId, tables]);
 
   const handleCloseKitchenModal = useCallback(() => {
     setShowKitchenModal(false);
@@ -145,36 +185,48 @@ export default function Dashboard() {
     setShowCashierModal(false);
   }, []);
 
+  const handleMarkKitchenReady = useCallback((orderId) => {
+    setKitchenOrders((prev) => prev.filter((o) => o.id !== orderId));
+  }, []);
+
+  const handleMarkBarReady = useCallback((orderId) => {
+    setBarOrders((prev) => prev.filter((o) => o.id !== orderId));
+  }, []);
+
   return (
     <div className="h-screen flex flex-col overflow-hidden" style={{ backgroundColor: "#F8FAFC" }}>
-      <StatusHeader />
+      <StatusHeader currentView={currentView} onViewChange={setCurrentView} />
 
-      <div className="flex-1 flex min-h-0">
-        {/* ZONE A: Left workspace — 65% */}
-        <div className="flex-1" style={{ flexBasis: "65%" }}>
-          {activeTable ? (
-            <MenuGrid
+      {currentView === "kitchen" ? (
+        <KitchenView orders={kitchenOrders} onMarkReady={handleMarkKitchenReady} />
+      ) : currentView === "bar" ? (
+        <BarView orders={barOrders} onMarkReady={handleMarkBarReady} />
+      ) : (
+        <div className="flex-1 flex min-h-0">
+          <div className="flex-1" style={{ flexBasis: "65%" }}>
+            {activeTable ? (
+              <MenuGrid
+                activeTable={activeTable}
+                onBack={handleBackToFloor}
+                onAddItem={handleAddItem}
+              />
+            ) : (
+              <FloorPlan tables={tables} onSelectTable={handleSelectTable} />
+            )}
+          </div>
+
+          <div className="shrink-0" style={{ flexBasis: "35%", maxWidth: "35%" }}>
+            <TicketSidebar
               activeTable={activeTable}
-              onBack={handleBackToFloor}
-              onAddItem={handleAddItem}
+              onUpdateQty={handleUpdateQty}
+              onRemoveItem={handleRemoveItem}
+              onSetModifier={handleSetModifier}
+              onSendKitchen={handleSendKitchen}
+              onCashOut={handleCashOut}
             />
-          ) : (
-            <FloorPlan tables={tables} onSelectTable={handleSelectTable} />
-          )}
+          </div>
         </div>
-
-        {/* ZONE B: Right sidebar — 35% */}
-        <div className="shrink-0" style={{ flexBasis: "35%", maxWidth: "35%" }}>
-          <TicketSidebar
-            activeTable={activeTable}
-            onUpdateQty={handleUpdateQty}
-            onRemoveItem={handleRemoveItem}
-            onSetModifier={handleSetModifier}
-            onSendKitchen={handleSendKitchen}
-            onCashOut={handleCashOut}
-          />
-        </div>
-      </div>
+      )}
 
       {showKitchenModal && (
         <KitchenSuccessModal table={activeTable} onClose={handleCloseKitchenModal} />

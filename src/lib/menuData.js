@@ -98,7 +98,7 @@ export function getInitialTables() {
       ],
     },
     { id: 3, name: "Table 3", status: "libre", currentTicket: [] },
-    { id: 4, name: "Table 4", status: "libre", currentTicket: [] },
+    { id: 4, name: "Table 4", status: "reservee", currentTicket: [] },
     {
       id: 5,
       name: "Table 5",
@@ -109,7 +109,7 @@ export function getInitialTables() {
         { id: "b3", name: "Gazelle", qty: 2, price: 1200, category: "boissons" },
       ],
     },
-    { id: 6, name: "Table 6", status: "libre", currentTicket: [] },
+    { id: 6, name: "Table 6", status: "horsService", currentTicket: [] },
     {
       id: 7,
       name: "Table 7",
