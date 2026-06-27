@@ -88,6 +88,24 @@ export default function Dashboard() {
     [activeTableId]
   );
 
+  const handleSetComment = useCallback(
+    (itemId, comment) => {
+      if (!activeTableId) return;
+      setTables((prev) =>
+        prev.map((table) => {
+          if (table.id !== activeTableId) return table;
+          return {
+            ...table,
+            currentTicket: table.currentTicket.map((i) =>
+              i.id === itemId ? { ...i, comment: comment || undefined } : i
+            ),
+          };
+        })
+      );
+    },
+    [activeTableId]
+  );
+
   const handleSendKitchen = useCallback(() => {
     if (!activeTableId) return;
     setTables((prev) =>
@@ -151,6 +169,7 @@ export default function Dashboard() {
             activeTable={activeTable}
             onUpdateQty={handleUpdateQty}
             onRemoveItem={handleRemoveItem}
+            onSetComment={handleSetComment}
             onSendKitchen={handleSendKitchen}
             onCashOut={handleCashOut}
           />
