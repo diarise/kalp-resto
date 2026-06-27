@@ -37,7 +37,7 @@ export default function TableStatusMenu({ table, onUpdateStatus }) {
       : [restoreOption];
 
   return (
-    <div className="absolute top-1.5 right-1.5" ref={menuRef}>
+    <div className="absolute top-1.5 right-1.5 z-20 pointer-events-auto" ref={menuRef}>
       <button
         onClick={(e) => {
           e.stopPropagation();

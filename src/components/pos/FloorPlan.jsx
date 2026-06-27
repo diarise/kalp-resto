@@ -96,7 +96,7 @@ export default function FloorPlan({ tables, onSelectTable, onUpdateTableStatus }
               )}
               {cfg.disabled ? (
                 <div
-                  className={`${cardClasses} opacity-60 cursor-not-allowed`}
+                  className={`${cardClasses} opacity-60 cursor-not-allowed pointer-events-none`}
                 >
                   <Icon className={`w-5 h-5 ${cfg.text}`} />
                   <span className={`text-sm font-semibold ${cfg.text}`}>{table.name}</span>
