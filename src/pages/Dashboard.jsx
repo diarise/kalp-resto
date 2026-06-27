@@ -169,6 +169,22 @@ export default function Dashboard() {
     setShowCashierModal(true);
   }, [activeTableId]);
 
+  const handlePrintReceipt = useCallback(() => {
+    if (!activeTableId) return;
+    setTables((prev) =>
+      prev.map((t) => {
+        if (t.id !== activeTableId) return t;
+        return { ...t, status: "attente" };
+      })
+    );
+  }, [activeTableId]);
+
+  const handleUpdateTableStatus = useCallback((tableId, status) => {
+    setTables((prev) =>
+      prev.map((t) => (t.id === tableId ? { ...t, status } : t))
+    );
+  }, []);
+
   const handleCashierValidate = useCallback(() => {
     if (!activeTableId) return;
     setTables((prev) =>
@@ -211,7 +227,11 @@ export default function Dashboard() {
                 onAddItem={handleAddItem}
               />
             ) : (
-              <FloorPlan tables={tables} onSelectTable={handleSelectTable} />
+              <FloorPlan
+                tables={tables}
+                onSelectTable={handleSelectTable}
+                onUpdateTableStatus={handleUpdateTableStatus}
+              />
             )}
           </div>
 
@@ -223,6 +243,7 @@ export default function Dashboard() {
               onSetModifier={handleSetModifier}
               onSendKitchen={handleSendKitchen}
               onCashOut={handleCashOut}
+              onPrintReceipt={handlePrintReceipt}
             />
           </div>
         </div>

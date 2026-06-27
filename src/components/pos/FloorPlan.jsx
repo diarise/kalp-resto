@@ -1,5 +1,6 @@
 import React from "react";
 import { Users, Clock, CheckCircle, Bookmark, Wrench } from "lucide-react";
+import TableStatusMenu from "@/components/pos/TableStatusMenu";
 
 const STATUS_CONFIG = {
   libre: {
@@ -54,7 +55,7 @@ const STATUS_CONFIG = {
   },
 };
 
-export default function FloorPlan({ tables, onSelectTable }) {
+export default function FloorPlan({ tables, onSelectTable, onUpdateTableStatus }) {
   return (
     <div className="h-full flex flex-col p-6">
       <div className="mb-6">
@@ -95,24 +96,32 @@ export default function FloorPlan({ tables, onSelectTable }) {
             );
           }
 
+          const showMenu =
+            onUpdateTableStatus &&
+            (table.status === "libre" || table.status === "reservee");
+
           return (
-            <button
-              key={table.id}
-              onClick={() => onSelectTable(table.id)}
-              className={`${cfg.bg} ${cfg.border} border-2 rounded-2xl h-32 flex flex-col items-center justify-center gap-2 transition-all duration-200 active:scale-95 hover:shadow-md`}
-              style={{ boxShadow: "0 4px 6px -1px rgba(0,0,0,0.05)" }}
-            >
-              <Icon className={`w-5 h-5 ${cfg.text}`} />
-              <span className={`text-sm font-semibold ${cfg.text}`}>{table.name}</span>
-              <span className={`text-xs px-2.5 py-0.5 rounded-full font-medium ${cfg.badge}`}>
-                {cfg.label}
-              </span>
-              {itemCount > 0 && (
-                <span className="text-xs text-gray-400">
-                  {itemCount} article{itemCount > 1 ? "s" : ""}
-                </span>
+            <div key={table.id} className="relative">
+              {showMenu && (
+                <TableStatusMenu table={table} onUpdateStatus={onUpdateTableStatus} />
               )}
-            </button>
+              <button
+                onClick={() => onSelectTable(table.id)}
+                className={`w-full ${cfg.bg} ${cfg.border} border-2 rounded-2xl h-32 flex flex-col items-center justify-center gap-2 transition-all duration-200 active:scale-95 hover:shadow-md`}
+                style={{ boxShadow: "0 4px 6px -1px rgba(0,0,0,0.05)" }}
+              >
+                <Icon className={`w-5 h-5 ${cfg.text}`} />
+                <span className={`text-sm font-semibold ${cfg.text}`}>{table.name}</span>
+                <span className={`text-xs px-2.5 py-0.5 rounded-full font-medium ${cfg.badge}`}>
+                  {cfg.label}
+                </span>
+                {itemCount > 0 && (
+                  <span className="text-xs text-gray-400">
+                    {itemCount} article{itemCount > 1 ? "s" : ""}
+                  </span>
+                )}
+              </button>
+            </div>
           );
         })}
       </div>

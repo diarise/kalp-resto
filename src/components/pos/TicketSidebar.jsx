@@ -9,6 +9,7 @@ export default function TicketSidebar({
   onSetModifier,
   onSendKitchen,
   onCashOut,
+  onPrintReceipt,
 }) {
   const total = useMemo(() => {
     if (!activeTable) return 0;
@@ -197,7 +198,10 @@ export default function TicketSidebar({
             {/* Print Receipt button */}
             <div className="px-5 pb-3">
               <button
-                onClick={() => setShowPrintModal(true)}
+                onClick={() => {
+                  setShowPrintModal(true);
+                  if (onPrintReceipt) onPrintReceipt();
+                }}
                 className="w-full h-11 rounded-xl font-medium text-white flex items-center justify-center gap-2 transition-all active:scale-95"
                 style={{ backgroundColor: "#0096D6" }}
               >
