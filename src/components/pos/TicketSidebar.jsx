@@ -1,6 +1,5 @@
 import React, { useMemo } from "react";
 import { Minus, Plus, ShoppingBag, Trash2, Send, CreditCard } from "lucide-react";
-import { useToast } from "@/components/ui/use-toast";
 
 export default function TicketSidebar({
   activeTable,
@@ -9,43 +8,12 @@ export default function TicketSidebar({
   onSendKitchen,
   onCashOut,
 }) {
-  const { toast } = useToast();
-
   const total = useMemo(() => {
     if (!activeTable) return 0;
     return activeTable.currentTicket.reduce((sum, item) => sum + item.qty * item.price, 0);
   }, [activeTable]);
 
   const formatPrice = (price) => price.toLocaleString("fr-FR") + " CFA";
-
-  const handleSendKitchen = () => {
-    if (!activeTable || activeTable.currentTicket.length === 0) return;
-
-    const hasPlats = activeTable.currentTicket.some((i) => i.category === "plats" || i.category === "grills");
-    const hasBoissons = activeTable.currentTicket.some((i) => i.category === "boissons");
-
-    const parts = [];
-    if (hasPlats) parts.push("Plats envoyés en Cuisine!");
-    if (hasBoissons) parts.push("Boissons envoyées au Bar!");
-
-    toast({
-      title: "✅ Commande envoyée",
-      description: parts.join(" ") || "Commande transmise!",
-    });
-
-    onSendKitchen();
-  };
-
-  const handleCashOut = () => {
-    if (!activeTable || activeTable.currentTicket.length === 0) return;
-
-    toast({
-      title: "💰 Encaissement réussi",
-      description: `${activeTable.name} — Total: ${formatPrice(total)}. Table libérée.`,
-    });
-
-    onCashOut();
-  };
 
   return (
     <div className="w-full h-full flex flex-col bg-white border-l border-gray-100">
@@ -124,7 +92,7 @@ export default function TicketSidebar({
 
             <div className="px-5 pb-5 flex gap-3">
               <button
-                onClick={handleSendKitchen}
+                onClick={onSendKitchen}
                 disabled={activeTable.currentTicket.length === 0}
                 className="flex-1 h-14 rounded-2xl font-semibold text-white flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
                 style={{ backgroundColor: "#0096D6" }}
@@ -133,7 +101,7 @@ export default function TicketSidebar({
                 ENVOYER CUISINE
               </button>
               <button
-                onClick={handleCashOut}
+                onClick={onCashOut}
                 disabled={activeTable.currentTicket.length === 0}
                 className="flex-1 h-14 rounded-2xl font-semibold text-white flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
                 style={{ backgroundColor: "#00A859" }}

@@ -1,13 +1,17 @@
-import React, { useState, useCallback, useMemo } from "react";
+import React, { useState, useCallback, useMemo, useEffect } from "react";
 import { getInitialTables } from "@/lib/menuData";
 import StatusHeader from "@/components/pos/StatusHeader";
 import FloorPlan from "@/components/pos/FloorPlan";
 import MenuGrid from "@/components/pos/MenuGrid";
 import TicketSidebar from "@/components/pos/TicketSidebar";
+import KitchenSuccessModal from "@/components/pos/KitchenSuccessModal";
+import CashierModal from "@/components/pos/CashierModal";
 
 export default function Dashboard() {
   const [tables, setTables] = useState(() => getInitialTables());
   const [activeTableId, setActiveTableId] = useState(null);
+  const [showKitchenModal, setShowKitchenModal] = useState(false);
+  const [showCashierModal, setShowCashierModal] = useState(false);
 
   const activeTable = useMemo(
     () => tables.find((t) => t.id === activeTableId) || null,
@@ -92,9 +96,30 @@ export default function Dashboard() {
         return { ...table, status: "occupee" };
       })
     );
+    setShowKitchenModal(true);
   }, [activeTableId]);
 
+  const handleCloseKitchenModal = useCallback(() => {
+    setShowKitchenModal(false);
+    setActiveTableId(null);
+  }, []);
+
+  // Auto-dismiss kitchen modal after 2s and return to floor plan
+  useEffect(() => {
+    if (!showKitchenModal) return;
+    const timer = setTimeout(() => {
+      setShowKitchenModal(false);
+      setActiveTableId(null);
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, [showKitchenModal]);
+
   const handleCashOut = useCallback(() => {
+    if (!activeTableId) return;
+    setShowCashierModal(true);
+  }, [activeTableId]);
+
+  const handleCashierValidate = useCallback(() => {
     if (!activeTableId) return;
     setTables((prev) =>
       prev.map((table) => {
@@ -102,8 +127,13 @@ export default function Dashboard() {
         return { ...table, status: "libre", currentTicket: [] };
       })
     );
+    setShowCashierModal(false);
     setActiveTableId(null);
   }, [activeTableId]);
+
+  const handleCloseCashierModal = useCallback(() => {
+    setShowCashierModal(false);
+  }, []);
 
   return (
     <div className="h-screen flex flex-col overflow-hidden" style={{ backgroundColor: "#F8FAFC" }}>
@@ -134,6 +164,18 @@ export default function Dashboard() {
           />
         </div>
       </div>
+
+      {showKitchenModal && (
+        <KitchenSuccessModal table={activeTable} onClose={handleCloseKitchenModal} />
+      )}
+      {showCashierModal && (
+        <CashierModal
+          table={activeTable}
+          total={activeTable?.currentTicket.reduce((sum, i) => sum + i.qty * i.price, 0) || 0}
+          onClose={handleCloseCashierModal}
+          onValidate={handleCashierValidate}
+        />
+      )}
     </div>
   );
 }
