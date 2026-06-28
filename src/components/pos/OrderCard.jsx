@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Clock, CheckCircle } from "lucide-react";
+import { Clock } from "lucide-react";
 
 function getModifierText(item) {
   const mods = [item.piment, item.cuisson, item.boisson].filter(Boolean);
@@ -15,7 +15,7 @@ function getRelativeTime(timestamp) {
   return `Reçu il y a ${hrs}h ${mins % 60}min`;
 }
 
-export default function OrderCard({ order, onMarkReady }) {
+export default function OrderCard({ order, onAdvance }) {
   const [, setTick] = useState(0);
 
   useEffect(() => {
@@ -58,16 +58,33 @@ export default function OrderCard({ order, onMarkReady }) {
         })}
       </div>
 
-      {/* Action */}
+      {/* Action — 3-stage state machine */}
       <div className="px-5 pb-5">
-        <button
-          onClick={() => onMarkReady(order.id)}
-          className="w-full h-16 rounded-xl font-bold text-white text-lg flex items-center justify-center gap-2.5 transition-all active:scale-95"
-          style={{ backgroundColor: "#00A859" }}
-        >
-          <CheckCircle className="w-6 h-6" />
-          ✓ Prêt à servir
-        </button>
+        {order.status === "preparing" ? (
+          <button
+            onClick={() => onAdvance(order.id)}
+            className="w-full h-16 rounded-xl font-bold text-white text-lg flex items-center justify-center gap-2.5 transition-all active:scale-95"
+            style={{ backgroundColor: "#F59E0B" }}
+          >
+            ⏳ En cours... Marquer comme Prêt
+          </button>
+        ) : order.status === "ready" ? (
+          <button
+            onClick={() => onAdvance(order.id)}
+            className="w-full h-16 rounded-xl font-bold text-white text-lg flex items-center justify-center gap-2.5 transition-all active:scale-95"
+            style={{ backgroundColor: "#00A859" }}
+          >
+            🍽️ Confirmer la Livraison (Servi)
+          </button>
+        ) : (
+          <button
+            onClick={() => onAdvance(order.id)}
+            className="w-full h-16 rounded-xl font-bold text-white text-lg flex items-center justify-center gap-2.5 transition-all active:scale-95"
+            style={{ backgroundColor: "#0096D6" }}
+          >
+            👨‍🍳 Commencer la préparation
+          </button>
+        )}
       </div>
     </div>
   );

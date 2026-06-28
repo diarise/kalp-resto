@@ -71,7 +71,7 @@ const STATUS_CONFIG = {
   },
 };
 
-export default function FloorPlan({ tables, onSelectTable, onUpdateTableStatus }) {
+export default function FloorPlan({ tables, onSelectTable, onUpdateTableStatus, onMarkServed }) {
   const [activeZone, setActiveZone] = useState("salle");
 
   const zoneTables = useMemo(
@@ -186,6 +186,17 @@ export default function FloorPlan({ tables, onSelectTable, onUpdateTableStatus }
                       {itemCount} article{itemCount > 1 ? "s" : ""}
                     </span>
                   )}
+                </button>
+              )}
+              {table.status === "pret" && onMarkServed && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onMarkServed(table.id);
+                  }}
+                  className="absolute bottom-2 left-1/2 -translate-x-1/2 px-3 py-1 rounded-lg text-xs font-bold text-white bg-teal-600 hover:bg-teal-700 active:scale-95 transition-all shadow-md z-10"
+                >
+                  ✓ Servi
                 </button>
               )}
             </div>

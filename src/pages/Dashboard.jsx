@@ -171,6 +171,7 @@ export default function Dashboard() {
           tableName,
           timestamp: now,
           items: cuisineItems,
+          status: "pending",
         },
       ]);
     }
@@ -241,19 +242,75 @@ export default function Dashboard() {
     setShowCashierModal(false);
   }, []);
 
-  const handleMarkKitchenReady = useCallback((orderId) => {
+  // 3-stage state machine: pending -> preparing -> ready -> served
+  const handleAdvanceOrder = useCallback((orderId) => {
     setKitchenOrders((prev) => {
       const order = prev.find((o) => o.id === orderId);
-      if (order) {
-        const tableName = order.tableName;
+      if (!order) return prev;
+      const tableName = order.tableName;
+      const currentStatus = order.status || "pending";
+      const nextStatus =
+        currentStatus === "pending"
+          ? "preparing"
+          : currentStatus === "preparing"
+          ? "ready"
+          : currentStatus === "ready"
+          ? "served"
+          : currentStatus;
+
+      if (nextStatus === "preparing") {
+        setTables((tables) =>
+          tables.map((t) =>
+            t.name === tableName ? { ...t, status: "attente" } : t
+          )
+        );
+        return prev.map((o) =>
+          o.id === orderId ? { ...o, status: "preparing" } : o
+        );
+      }
+
+      if (nextStatus === "ready") {
         setTables((tables) =>
           tables.map((t) =>
             t.name === tableName ? { ...t, status: "pret" } : t
           )
         );
+        return prev.map((o) =>
+          o.id === orderId ? { ...o, status: "ready" } : o
+        );
       }
+
+      // served — remove from kitchen grid, mark table occupied or libre
+      setTables((tables) =>
+        tables.map((t) => {
+          if (t.name !== tableName) return t;
+          return t.currentTicket.length === 0
+            ? { ...t, status: "libre" }
+            : { ...t, status: "occupee" };
+        })
+      );
       return prev.filter((o) => o.id !== orderId);
     });
+  }, []);
+
+  // Waiter quick-action from floor plan: mark a "pret" table as served
+  const handleMarkTableServed = useCallback((tableId) => {
+    const table = tablesRef.current.find((t) => t.id === tableId);
+    if (!table) return;
+    const tableName = table.name;
+    setKitchenOrders((prev) =>
+      prev.filter(
+        (o) => !(o.tableName === tableName && (o.status || "pending") === "ready")
+      )
+    );
+    setTables((prev) =>
+      prev.map((t) => {
+        if (t.id !== tableId) return t;
+        return t.currentTicket.length === 0
+          ? { ...t, status: "libre" }
+          : { ...t, status: "occupee" };
+      })
+    );
   }, []);
 
   const handleMarkBarReady = useCallback((orderId) => {
@@ -265,7 +322,7 @@ export default function Dashboard() {
       <StatusHeader currentView={currentView} onViewChange={setCurrentView} onOpenMenuConfig={() => setShowMenuConfig(true)} />
 
       {currentView === "kitchen" ? (
-        <KitchenView orders={kitchenOrders} onMarkReady={handleMarkKitchenReady} />
+        <KitchenView orders={kitchenOrders} onAdvance={handleAdvanceOrder} />
       ) : currentView === "bar" ? (
         <BarView orders={barOrders} onMarkReady={handleMarkBarReady} />
       ) : currentView === "report" ? (
@@ -285,6 +342,7 @@ export default function Dashboard() {
                 tables={tables}
                 onSelectTable={handleSelectTable}
                 onUpdateTableStatus={handleUpdateTableStatus}
+                onMarkServed={handleMarkTableServed}
               />
             )}
           </div>
