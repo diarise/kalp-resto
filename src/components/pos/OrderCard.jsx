@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Clock } from "lucide-react";
+import OrderStepper from "@/components/pos/OrderStepper";
 
 function getModifierText(item) {
   const mods = [item.piment, item.cuisson, item.boisson].filter(Boolean);
@@ -38,6 +39,11 @@ export default function OrderCard({ order, onAdvance }) {
         </div>
       </div>
 
+      {/* Progress Timeline */}
+      <div className="px-5 pt-4 pb-2 bg-gray-50/50 border-b border-gray-100">
+        <OrderStepper status={order.status || "pending"} />
+      </div>
+
       {/* Items */}
       <div className="flex-1 px-5 py-4 space-y-3">
         {order.items.map((item, idx) => {
@@ -59,27 +65,27 @@ export default function OrderCard({ order, onAdvance }) {
       </div>
 
       {/* Action — 3-stage state machine */}
-      <div className="px-5 pb-5">
+      <div className="px-5 pb-4">
         {order.status === "preparing" ? (
           <button
             onClick={() => onAdvance(order.id)}
-            className="w-full h-16 rounded-xl font-bold text-white text-lg flex items-center justify-center gap-2.5 transition-all active:scale-95"
+            className="w-full h-14 rounded-xl font-bold text-white text-base flex items-center justify-center gap-2 transition-all active:scale-[0.98] hover:opacity-90"
             style={{ backgroundColor: "#F59E0B" }}
           >
-            ⏳ En cours... Marquer comme Prêt
+            ⏳ Marquer comme Prêt
           </button>
         ) : order.status === "ready" ? (
           <button
             onClick={() => onAdvance(order.id)}
-            className="w-full h-16 rounded-xl font-bold text-white text-lg flex items-center justify-center gap-2.5 transition-all active:scale-95"
+            className="w-full h-14 rounded-xl font-bold text-white text-base flex items-center justify-center gap-2 transition-all active:scale-[0.98] hover:opacity-90"
             style={{ backgroundColor: "#00A859" }}
           >
-            🍽️ Confirmer la Livraison (Servi)
+            🍽️ Confirmer la Livraison
           </button>
         ) : (
           <button
             onClick={() => onAdvance(order.id)}
-            className="w-full h-16 rounded-xl font-bold text-white text-lg flex items-center justify-center gap-2.5 transition-all active:scale-95"
+            className="w-full h-14 rounded-xl font-bold text-white text-base flex items-center justify-center gap-2 transition-all active:scale-[0.98] hover:opacity-90"
             style={{ backgroundColor: "#0096D6" }}
           >
             👨‍🍳 Commencer la préparation

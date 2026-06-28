@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { Minus, Plus, ShoppingBag, Trash2, Send, CreditCard, Printer, ChevronDown } from "lucide-react";
 import PrintReceiptModal from "@/components/pos/PrintReceiptModal";
+import OrderStepper from "@/components/pos/OrderStepper";
 
 export default function TicketSidebar({
   activeTable,
@@ -10,6 +11,7 @@ export default function TicketSidebar({
   onSendKitchen,
   onCashOut,
   onPrintReceipt,
+  orderStatus,
 }) {
   const total = useMemo(() => {
     if (!activeTable) return 0;
@@ -45,6 +47,11 @@ export default function TicketSidebar({
           <div>
             <p className="text-xs text-gray-400 uppercase tracking-wider font-medium">Ticket Global</p>
             <p className="text-lg font-bold text-gray-800 mt-0.5">{activeTable.name}</p>
+            {orderStatus && orderStatus !== "served" && (
+              <div className="mt-3">
+                <OrderStepper status={orderStatus} />
+              </div>
+            )}
           </div>
         ) : (
           <div className="text-center py-2">

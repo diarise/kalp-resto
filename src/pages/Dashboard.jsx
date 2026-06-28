@@ -356,6 +356,13 @@ export default function Dashboard() {
               onSendKitchen={handleSendKitchen}
               onCashOut={handleCashOut}
               onPrintReceipt={handlePrintReceipt}
+              orderStatus={
+                activeTable
+                  ? (kitchenOrders.find(
+                      (o) => o.tableName === activeTable.name
+                    )?.status || null)
+                  : null
+              }
             />
           </div>
         </div>
