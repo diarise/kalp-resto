@@ -1,0 +1,208 @@
+import React, { useState, useMemo } from "react";
+import { X, Search, Plus, Trash2 } from "lucide-react";
+import { MENU_CATEGORIES } from "@/lib/menuData";
+
+export default function MenuManagement({ items, onChange, onClose }) {
+  const [search, setSearch] = useState("");
+  const [newItem, setNewItem] = useState({ name: "", price: "", category: "plats", image: "" });
+
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    if (!q) return items;
+    return items.filter(
+      (i) =>
+        i.name.toLowerCase().includes(q) ||
+        (i.category || "").toLowerCase().includes(q)
+    );
+  }, [items, search]);
+
+  const updateField = (id, field, value) => {
+    onChange(items.map((i) => (i.id === id ? { ...i, [field]: value } : i)));
+  };
+
+  const handleAdd = () => {
+    if (!newItem.name.trim()) return;
+    const price = parseInt(newItem.price, 10);
+    if (isNaN(price)) return;
+    const created = {
+      id: `custom-${Date.now()}`,
+      name: newItem.name.trim().toUpperCase(),
+      price,
+      category: newItem.category,
+      image: newItem.image.trim() || undefined,
+    };
+    onChange([...items, created]);
+    setNewItem({ name: "", price: "", category: "plats", image: "" });
+  };
+
+  const handleDelete = (id) => {
+    onChange(items.filter((i) => i.id !== id));
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+      <div className="bg-white rounded-2xl w-full max-w-5xl mx-4 h-[85vh] flex flex-col overflow-hidden"
+           style={{ boxShadow: "0 20px 25px -5px rgba(0,0,0,0.15)" }}>
+        {/* Header */}
+        <div className="shrink-0 px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+          <div>
+            <h2 className="text-lg font-bold text-gray-800">Gestion du Menu Kalpé Resto</h2>
+            <p className="text-xs text-gray-400 mt-0.5">{items.length} articles · modifications en temps réel</p>
+          </div>
+          <button
+            onClick={onClose}
+            className="w-9 h-9 rounded-lg hover:bg-gray-100 flex items-center justify-center transition-colors"
+          >
+            <X className="w-4 h-4 text-gray-500" />
+          </button>
+        </div>
+
+        {/* Create form */}
+        <div className="shrink-0 px-6 py-4 bg-gray-50 border-b border-gray-100">
+          <p className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2">Créer un Article</p>
+          <div className="flex flex-wrap items-center gap-2">
+            <input
+              type="text"
+              placeholder="Nom de l'article"
+              value={newItem.name}
+              onChange={(e) => setNewItem({ ...newItem, name: e.target.value })}
+              className="flex-1 min-w-[180px] h-10 px-3 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-gray-800 focus:border-transparent"
+            />
+            <input
+              type="number"
+              placeholder="Prix (FCFA)"
+              value={newItem.price}
+              onChange={(e) => setNewItem({ ...newItem, price: e.target.value })}
+              className="w-36 h-10 px-3 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-gray-800 focus:border-transparent"
+            />
+            <select
+              value={newItem.category}
+              onChange={(e) => setNewItem({ ...newItem, category: e.target.value })}
+              className="h-10 px-3 rounded-lg border border-gray-200 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-gray-800 focus:border-transparent"
+            >
+              {MENU_CATEGORIES.map((c) => (
+                <option key={c.id} value={c.id}>{c.label}</option>
+              ))}
+            </select>
+            <input
+              type="text"
+              placeholder="Image URL (optionnel)"
+              value={newItem.image}
+              onChange={(e) => setNewItem({ ...newItem, image: e.target.value })}
+              className="flex-1 min-w-[160px] h-10 px-3 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-gray-800 focus:border-transparent"
+            />
+            <button
+              onClick={handleAdd}
+              className="h-10 px-5 rounded-lg font-semibold text-white flex items-center gap-1.5 transition-all active:scale-95"
+              style={{ backgroundColor: "#00A859" }}
+            >
+              <Plus className="w-4 h-4" />
+              Ajouter
+            </button>
+          </div>
+        </div>
+
+        {/* Search */}
+        <div className="shrink-0 px-6 py-3 border-b border-gray-100">
+          <div className="relative">
+            <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+            <input
+              type="text"
+              placeholder="Rechercher un article..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full h-10 pl-9 pr-3 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-gray-800 focus:border-transparent"
+            />
+          </div>
+        </div>
+
+        {/* Items table */}
+        <div className="flex-1 overflow-y-auto">
+          <table className="w-full text-sm">
+            <thead className="sticky top-0 bg-white border-b border-gray-100">
+              <tr className="text-left text-xs uppercase tracking-wider text-gray-400">
+                <th className="px-6 py-3 font-semibold">Nom</th>
+                <th className="px-3 py-3 font-semibold w-32">Prix (FCFA)</th>
+                <th className="px-3 py-3 font-semibold w-44">Catégorie</th>
+                <th className="px-3 py-3 font-semibold">Image URL</th>
+                <th className="px-3 py-3 w-12"></th>
+              </tr>
+            </thead>
+            <tbody>
+              {filtered.map((item) => {
+                const cat = MENU_CATEGORIES.find((c) => c.id === item.category);
+                return (
+                  <tr key={item.id} className="border-b border-gray-50 hover:bg-gray-50/50">
+                    <td className="px-6 py-2">
+                      <input
+                        type="text"
+                        value={item.name}
+                        onChange={(e) => updateField(item.id, "name", e.target.value)}
+                        className="w-full h-9 px-2 rounded-lg border border-transparent hover:border-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-800 focus:border-transparent text-sm font-medium text-gray-800"
+                      />
+                    </td>
+                    <td className="px-3 py-2">
+                      <input
+                        type="number"
+                        value={item.price}
+                        onChange={(e) => updateField(item.id, "price", parseInt(e.target.value, 10) || 0)}
+                        className="w-full h-9 px-2 rounded-lg border border-transparent hover:border-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-800 focus:border-transparent text-sm text-gray-800"
+                      />
+                    </td>
+                    <td className="px-3 py-2">
+                      <select
+                        value={item.category}
+                        onChange={(e) => updateField(item.id, "category", e.target.value)}
+                        className="w-full h-9 px-2 rounded-lg border border-gray-200 bg-white text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-800 focus:border-transparent"
+                      >
+                        {MENU_CATEGORIES.map((c) => (
+                          <option key={c.id} value={c.id}>{c.label}</option>
+                        ))}
+                      </select>
+                    </td>
+                    <td className="px-3 py-2">
+                      <input
+                        type="text"
+                        placeholder="Laisser vide pour emoji"
+                        value={item.image || ""}
+                        onChange={(e) => updateField(item.id, "image", e.target.value || undefined)}
+                        className="w-full h-9 px-2 rounded-lg border border-transparent hover:border-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-800 focus:border-transparent text-xs text-gray-600"
+                      />
+                    </td>
+                    <td className="px-3 py-2 text-center">
+                      <button
+                        onClick={() => handleDelete(item.id)}
+                        className="w-8 h-8 rounded-lg hover:bg-rose-50 flex items-center justify-center text-gray-400 hover:text-rose-500 transition-colors"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
+              {filtered.length === 0 && (
+                <tr>
+                  <td colSpan={5} className="text-center py-8 text-sm text-gray-400">
+                    Aucun article trouvé.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Footer */}
+        <div className="shrink-0 px-6 py-3 border-t border-gray-100 flex items-center justify-between bg-gray-50">
+          <p className="text-xs text-gray-400">Les changements sont appliqués immédiatement au terminal de commande.</p>
+          <button
+            onClick={onClose}
+            className="h-10 px-6 rounded-lg font-semibold text-white transition-all active:scale-95"
+            style={{ backgroundColor: "#0096D6" }}
+          >
+            Terminé
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}

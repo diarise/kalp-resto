@@ -1,5 +1,5 @@
-import React, { useState, useCallback, useMemo } from "react";
-import { getInitialTables } from "@/lib/menuData";
+import React, { useState, useCallback, useMemo, useEffect } from "react";
+import { getInitialTables, MENU_ITEMS } from "@/lib/menuData";
 import StatusHeader from "@/components/pos/StatusHeader";
 import FloorPlan from "@/components/pos/FloorPlan";
 import MenuGrid from "@/components/pos/MenuGrid";
@@ -9,15 +9,38 @@ import CashierModal from "@/components/pos/CashierModal";
 import KitchenView from "@/components/pos/KitchenView";
 import BarView from "@/components/pos/BarView";
 import ActivityReport from "@/components/pos/ActivityReport";
+import MenuManagement from "@/components/pos/MenuManagement";
+
+const STORAGE_KEY = "kalpe_menu_items";
+
+function loadMenuItems() {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) return JSON.parse(stored);
+  } catch (e) {}
+  return MENU_ITEMS;
+}
 
 export default function Dashboard() {
   const [tables, setTables] = useState(() => getInitialTables());
   const [activeTableId, setActiveTableId] = useState(null);
   const [showKitchenModal, setShowKitchenModal] = useState(false);
   const [showCashierModal, setShowCashierModal] = useState(false);
+  const [showMenuConfig, setShowMenuConfig] = useState(false);
   const [currentView, setCurrentView] = useState("server");
   const [kitchenOrders, setKitchenOrders] = useState([]);
   const [barOrders, setBarOrders] = useState([]);
+  const [menuItems, setMenuItems] = useState(() => loadMenuItems());
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(menuItems));
+    } catch (e) {}
+  }, [menuItems]);
+
+  const handleMenuChange = useCallback((updated) => {
+    setMenuItems(updated);
+  }, []);
 
   const activeTable = useMemo(
     () => tables.find((t) => t.id === activeTableId) || null,
@@ -212,7 +235,7 @@ export default function Dashboard() {
 
   return (
     <div className="h-screen flex flex-col overflow-hidden" style={{ backgroundColor: "#F8FAFC" }}>
-      <StatusHeader currentView={currentView} onViewChange={setCurrentView} />
+      <StatusHeader currentView={currentView} onViewChange={setCurrentView} onOpenMenuConfig={() => setShowMenuConfig(true)} />
 
       {currentView === "kitchen" ? (
         <KitchenView orders={kitchenOrders} onMarkReady={handleMarkKitchenReady} />
@@ -228,6 +251,7 @@ export default function Dashboard() {
                 activeTable={activeTable}
                 onBack={handleBackToFloor}
                 onAddItem={handleAddItem}
+                menuItems={menuItems}
               />
             ) : (
               <FloorPlan
@@ -261,6 +285,13 @@ export default function Dashboard() {
           total={activeTable?.currentTicket.reduce((sum, i) => sum + i.qty * i.price, 0) || 0}
           onClose={handleCloseCashierModal}
           onValidate={handleCashierValidate}
+        />
+      )}
+      {showMenuConfig && (
+        <MenuManagement
+          items={menuItems}
+          onChange={handleMenuChange}
+          onClose={() => setShowMenuConfig(false)}
         />
       )}
     </div>

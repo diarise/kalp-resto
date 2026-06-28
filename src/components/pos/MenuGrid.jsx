@@ -10,10 +10,11 @@ const CATEGORY_PLACEHOLDERS = {
   supplements: { bg: "bg-gray-50", emoji: "➕" },
 };
 
-export default function MenuGrid({ activeTable, onBack, onAddItem }) {
+export default function MenuGrid({ activeTable, onBack, onAddItem, menuItems }) {
   const [activeCategory, setActiveCategory] = useState("plats");
 
-  const filteredItems = MENU_ITEMS.filter((item) => item.category === activeCategory);
+  const items = menuItems || MENU_ITEMS;
+  const filteredItems = items.filter((item) => item.category === activeCategory);
 
   const formatPrice = (price) => {
     return price.toLocaleString("fr-FR") + " CFA";
