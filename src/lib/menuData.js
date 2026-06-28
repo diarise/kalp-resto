@@ -5,6 +5,10 @@ export const MENU_CATEGORIES = [
   { id: "mer", label: "Fruits de Mer" },
   { id: "supplements", label: "Suppléments" },
   { id: "boissons", label: "Boissons" },
+  { id: "entrees", label: "Entrées" },
+  { id: "desserts", label: "Desserts" },
+  { id: "fast_food", label: "Fast Food" },
+  { id: "chichas", label: "Chichas & Lounge" },
 ];
 
 export const MENU_ITEMS = [
@@ -58,11 +62,69 @@ export const MENU_ITEMS = [
   { id: "supp-1", name: "SUPPLEMENT", price: 1000, category: "supplements" },
 
   // BOISSONS SÉNÉGALAISES
-  { id: "bois-1", name: "Bissap Classique", price: 1500, category: "boissons" },
+  { id: "bois-1", name: "Bissap Classique", price: 2000, category: "boissons" },
   { id: "bois-2", name: "Jus de Bouye", price: 2000, category: "boissons" },
-  { id: "bois-3", name: "Jus de Gingembre", price: 1500, category: "boissons" },
+  { id: "bois-3", name: "Jus de Gingembre", price: 2000, category: "boissons" },
   { id: "bois-4", name: "Jus de Ditakh", price: 2000, category: "boissons" },
   { id: "bois-5", name: "Café Touba", price: 1000, category: "boissons" },
+
+  // ENTRÉES
+  { id: "ent-1", name: "Salade Exotique Sucrée-Salée", price: 6000, category: "entrees" },
+  { id: "ent-2", name: "Salade Végétarienne Froide", price: 6000, category: "entrees" },
+  { id: "ent-3", name: "Salade Piémontaise", price: 6000, category: "entrees" },
+  { id: "ent-4", name: "Salade Sapphire", price: 8000, category: "entrees" },
+  { id: "ent-5", name: "Tartare de Crevettes à l'Avocat", price: 8000, category: "entrees" },
+  { id: "ent-6", name: "Salade Végétarienne Chaude", price: 7000, category: "entrees" },
+  { id: "ent-7", name: "Crevettes Sautées à l'Ail", price: 7000, category: "entrees" },
+  { id: "ent-8", name: "Tapas du Chef", price: 6000, category: "entrees" },
+
+  // DESSERTS
+  { id: "des-1", name: "Fondant Chocolat / Caramel", price: 6000, category: "desserts" },
+  { id: "des-2", name: "Tarte aux Pommes", price: 6000, category: "desserts" },
+  { id: "des-3", name: "Pain Perdu Gourmand", price: 6000, category: "desserts" },
+  { id: "des-4", name: "White Lady (Kinder/Oreo)", price: 6000, category: "desserts" },
+  { id: "des-5", name: "Assiette de Fruits Frais", price: 6000, category: "desserts" },
+
+  // FAST FOOD
+  { id: "ff-1", name: "Pizza Sapphire", price: 8500, category: "fast_food" },
+  { id: "ff-2", name: "Pizza Reine", price: 8000, category: "fast_food" },
+  { id: "ff-3", name: "Pizza Margarita", price: 7000, category: "fast_food" },
+  { id: "ff-4", name: "Pizza Sam (Fruits de Mer)", price: 11000, category: "fast_food" },
+  { id: "ff-5", name: "Pizza Adiza", price: 9000, category: "fast_food" },
+  { id: "ff-6", name: "Burger Sapphire", price: 6000, category: "fast_food" },
+  { id: "ff-7", name: "Sandwich Poulet", price: 5000, category: "fast_food" },
+  { id: "ff-8", name: "Sandwich Viande", price: 5000, category: "fast_food" },
+
+  // CHICHAS & LOUNGE
+  { id: "ch-1", name: "Chicha Menthe Classique", price: 7000, category: "chichas" },
+  { id: "ch-2", name: "Chicha Mi Amor", price: 10000, category: "chichas" },
+  { id: "ch-3", name: "Chicha Double Melon", price: 10000, category: "chichas" },
+  { id: "ch-4", name: "Chicha Hawaï", price: 10000, category: "chichas" },
+  { id: "ch-5", name: "Chicha Love 66", price: 10000, category: "chichas" },
+  { id: "ch-6", name: "Chicha Jibiar Dejavu", price: 10000, category: "chichas" },
+  { id: "ch-7", name: "Chicha Jibiar Enjoy", price: 10000, category: "chichas" },
+  { id: "ch-8", name: "Cocktail Fruits sur Vases", price: 15000, category: "chichas" },
+  { id: "ch-9", name: "Chicha Mojito Exotique", price: 15000, category: "chichas" },
+  { id: "ch-10", name: "Chicha Royale Ananas", price: 20000, category: "chichas" },
+  { id: "ch-11", name: "Chicha Royale Melon", price: 20000, category: "chichas" },
+
+  // NOUVELLES BOISSONS
+  { id: "bois-6", name: "Virgin Mojito", price: 5000, category: "boissons" },
+  { id: "bois-7", name: "Virgin Pina Colada", price: 5000, category: "boissons" },
+  { id: "bois-8", name: "Cocktail Sapphire", price: 5000, category: "boissons" },
+  { id: "bois-9", name: "Limonade Artisanale", price: 5000, category: "boissons" },
+  { id: "bois-10", name: "Ice Tea Pêche / Framboise", price: 5000, category: "boissons" },
+  { id: "bois-11", name: "Coca-Cola / Zero", price: 1500, category: "boissons" },
+  { id: "bois-12", name: "Fanta Orange / Ananas", price: 1500, category: "boissons" },
+  { id: "bois-13", name: "Sprite / Schweppes", price: 1500, category: "boissons" },
+  { id: "bois-14", name: "Red Bull", price: 2500, category: "boissons" },
+  { id: "bois-15", name: "Jus Frais Pressé (Orange)", price: 3000, category: "boissons" },
+  { id: "bois-16", name: "Jus Frais Pressé (Citron)", price: 2500, category: "boissons" },
+  { id: "bois-17", name: "Café au Lait / Cappuccino", price: 2500, category: "boissons" },
+  { id: "bois-18", name: "Chocolat Chaud", price: 3000, category: "boissons" },
+  { id: "bois-19", name: "Expresso Premium", price: 2000, category: "boissons" },
+  { id: "bois-20", name: "Eau Casamancaise", price: 1500, category: "boissons" },
+  { id: "bois-21", name: "Eau Gazeuse / Perrier", price: 2000, category: "boissons" },
 ];
 
 export function getInitialTables() {

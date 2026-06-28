@@ -18,8 +18,8 @@ function loadMenuItems() {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored) {
       const parsed = JSON.parse(stored);
-      // If cached menu is missing drinks (outdated), refresh from latest code
-      if (!parsed.some((i) => i.category === "boissons")) {
+      // If cached menu is missing new categories (outdated), refresh from latest code
+      if (!parsed.some((i) => i.category === "chichas")) {
         return MENU_ITEMS;
       }
       return parsed;
@@ -176,11 +176,13 @@ export default function Dashboard() {
     const now = Date.now();
     const tableName = table.name;
 
-    // Split items by category
-    const cuisineItems = table.currentTicket.filter(
-      (i) => i.category === "plats" || i.category === "grills"
+    // Split items by category — liquids & lounge route to Bar, all else to Cuisine
+    const barItems = table.currentTicket.filter(
+      (i) => i.category === "boissons" || i.category === "chichas"
     );
-    const barItems = table.currentTicket.filter((i) => i.category === "boissons");
+    const cuisineItems = table.currentTicket.filter(
+      (i) => i.category !== "boissons" && i.category !== "chichas"
+    );
 
     if (cuisineItems.length > 0) {
       setKitchenOrders((prev) => [
