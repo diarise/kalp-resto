@@ -16,7 +16,14 @@ const STORAGE_KEY = "kalpe_menu_items";
 function loadMenuItems() {
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) return JSON.parse(stored);
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      // If cached menu is missing drinks (outdated), refresh from latest code
+      if (!parsed.some((i) => i.category === "boissons")) {
+        return MENU_ITEMS;
+      }
+      return parsed;
+    }
   } catch (e) {}
   return MENU_ITEMS;
 }
