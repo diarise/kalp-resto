@@ -31,7 +31,7 @@ export default function OrderStepper({ status = "pending", variant = "kitchen" }
           const isUpcoming = idx > currentIdx;
           return (
             <React.Fragment key={stage.key}>
-              <div className="shrink-0">
+              <div className="shrink-0 flex items-center">
                 <div
                   className={`w-6 h-6 rounded-full flex items-center justify-center font-bold text-[11px] transition-all duration-300 ${
                     isComplete
@@ -51,7 +51,7 @@ export default function OrderStepper({ status = "pending", variant = "kitchen" }
                 </div>
               </div>
               {idx < STAGES.length - 1 && (
-                <div className="flex-1 h-0.5 mx-1.5 rounded-full bg-gray-100 overflow-hidden">
+                <div className="flex-1 h-0.5 mx-1.5 rounded-full bg-gray-100 overflow-hidden self-center">
                   <div
                     className="h-full transition-all duration-500"
                     style={{
