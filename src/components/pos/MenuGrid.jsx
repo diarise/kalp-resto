@@ -2,6 +2,14 @@ import React, { useState } from "react";
 import { ArrowLeft, Plus } from "lucide-react";
 import { MENU_CATEGORIES, MENU_ITEMS } from "@/lib/menuData";
 
+const CATEGORY_PLACEHOLDERS = {
+  plats: { bg: "bg-amber-50", emoji: "🍛" },
+  grills: { bg: "bg-rose-50", emoji: "🔥" },
+  pates: { bg: "bg-orange-50", emoji: "🍝" },
+  mer: { bg: "bg-blue-50", emoji: "🍤" },
+  supplements: { bg: "bg-gray-50", emoji: "➕" },
+};
+
 export default function MenuGrid({ activeTable, onBack, onAddItem }) {
   const [activeCategory, setActiveCategory] = useState("plats");
 
@@ -58,11 +66,17 @@ export default function MenuGrid({ activeTable, onBack, onAddItem }) {
               style={{ boxShadow: "0 4px 6px -1px rgba(0,0,0,0.05)" }}
             >
               <div className="relative aspect-square overflow-hidden bg-gray-100">
-                <img
-                  src={item.image}
-                  alt={item.name}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                />
+                {item.image ? (
+                  <img
+                    src={item.image}
+                    alt={item.name}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                ) : (
+                  <div className={`w-full h-full flex items-center justify-center ${CATEGORY_PLACEHOLDERS[item.category]?.bg || "bg-gray-50"}`}>
+                    <span className="text-5xl select-none">{CATEGORY_PLACEHOLDERS[item.category]?.emoji || "🍽️"}</span>
+                  </div>
+                )}
                 <div className="absolute top-2 right-2 w-8 h-8 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center shadow-sm opacity-0 group-hover:opacity-100 transition-opacity">
                   <Plus className="w-4 h-4 text-gray-800" />
                 </div>
