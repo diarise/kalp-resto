@@ -35,7 +35,13 @@ export default function Dashboard() {
     } catch (e) {}
     return [];
   });
-  const [barOrders, setBarOrders] = useState([]);
+  const [barOrders, setBarOrders] = useState(() => {
+    try {
+      const stored = localStorage.getItem("kalpe_bar_orders");
+      if (stored) return JSON.parse(stored);
+    } catch (e) {}
+    return [];
+  });
   const [menuItems, setMenuItems] = useState(() => loadMenuItems());
   const tablesRef = useRef(tables);
   tablesRef.current = tables;
@@ -51,6 +57,12 @@ export default function Dashboard() {
       localStorage.setItem("kalpe_kitchen_orders", JSON.stringify(kitchenOrders));
     } catch (e) {}
   }, [kitchenOrders]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem("kalpe_bar_orders", JSON.stringify(barOrders));
+    } catch (e) {}
+  }, [barOrders]);
 
   const handleMenuChange = useCallback((updated) => {
     setMenuItems(updated);
@@ -183,6 +195,7 @@ export default function Dashboard() {
           tableName,
           timestamp: now,
           items: barItems,
+          status: "pending",
         },
       ]);
     }
@@ -313,8 +326,28 @@ export default function Dashboard() {
     );
   }, []);
 
-  const handleMarkBarReady = useCallback((orderId) => {
-    setBarOrders((prev) => prev.filter((o) => o.id !== orderId));
+  // 3-stage state machine for bar orders: pending -> preparing -> ready -> served
+  const handleAdvanceBarOrder = useCallback((orderId) => {
+    setBarOrders((prev) => {
+      const order = prev.find((o) => o.id === orderId);
+      if (!order) return prev;
+      const currentStatus = order.status || "pending";
+      const nextStatus =
+        currentStatus === "pending"
+          ? "preparing"
+          : currentStatus === "preparing"
+          ? "ready"
+          : currentStatus === "ready"
+          ? "served"
+          : currentStatus;
+
+      if (nextStatus === "served") {
+        return prev.filter((o) => o.id !== orderId);
+      }
+      return prev.map((o) =>
+        o.id === orderId ? { ...o, status: nextStatus } : o
+      );
+    });
   }, []);
 
   return (
@@ -324,7 +357,7 @@ export default function Dashboard() {
       {currentView === "kitchen" ? (
         <KitchenView orders={kitchenOrders} onAdvance={handleAdvanceOrder} />
       ) : currentView === "bar" ? (
-        <BarView orders={barOrders} onMarkReady={handleMarkBarReady} />
+        <BarView orders={barOrders} onAdvance={handleAdvanceBarOrder} />
       ) : currentView === "report" ? (
         <ActivityReport />
       ) : (

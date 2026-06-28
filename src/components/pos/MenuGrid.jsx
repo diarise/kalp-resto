@@ -8,6 +8,7 @@ const CATEGORY_PLACEHOLDERS = {
   pates: { bg: "bg-orange-50", emoji: "🍝" },
   mer: { bg: "bg-blue-50", emoji: "🍤" },
   supplements: { bg: "bg-gray-50", emoji: "➕" },
+  boissons: { bg: "bg-cyan-50", emoji: "🥤" },
 };
 
 export default function MenuGrid({ activeTable, onBack, onAddItem, menuItems }) {

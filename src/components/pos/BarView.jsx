@@ -2,7 +2,7 @@ import React from "react";
 import { Wine, PackageOpen } from "lucide-react";
 import OrderCard from "@/components/pos/OrderCard";
 
-export default function BarView({ orders, onMarkReady }) {
+export default function BarView({ orders, onAdvance }) {
   return (
     <div className="h-full flex flex-col bg-gray-50">
       <div className="shrink-0 px-6 py-4 bg-white border-b border-gray-100 flex items-center justify-between">
@@ -31,7 +31,7 @@ export default function BarView({ orders, onMarkReady }) {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {orders.map((order) => (
-              <OrderCard key={order.id} order={order} onMarkReady={onMarkReady} />
+              <OrderCard key={order.id} order={order} onAdvance={onAdvance} />
             ))}
           </div>
         )}

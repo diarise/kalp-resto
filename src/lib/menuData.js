@@ -4,6 +4,7 @@ export const MENU_CATEGORIES = [
   { id: "pates", label: "Pâtes" },
   { id: "mer", label: "Fruits de Mer" },
   { id: "supplements", label: "Suppléments" },
+  { id: "boissons", label: "Boissons" },
 ];
 
 export const MENU_ITEMS = [
@@ -55,6 +56,13 @@ export const MENU_ITEMS = [
 
   // SUPPLEMENTS
   { id: "supp-1", name: "SUPPLEMENT", price: 1000, category: "supplements" },
+
+  // BOISSONS SÉNÉGALAISES
+  { id: "bois-1", name: "Bissap Classique", price: 1500, category: "boissons" },
+  { id: "bois-2", name: "Jus de Bouye", price: 2000, category: "boissons" },
+  { id: "bois-3", name: "Jus de Gingembre", price: 1500, category: "boissons" },
+  { id: "bois-4", name: "Jus de Ditakh", price: 2000, category: "boissons" },
+  { id: "bois-5", name: "Café Touba", price: 1000, category: "boissons" },
 ];
 
 export function getInitialTables() {
