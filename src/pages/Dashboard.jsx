@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo, useEffect } from "react";
+import React, { useState, useCallback, useMemo, useEffect, useRef } from "react";
 import { getInitialTables, MENU_ITEMS } from "@/lib/menuData";
 import StatusHeader from "@/components/pos/StatusHeader";
 import FloorPlan from "@/components/pos/FloorPlan";
@@ -28,15 +28,29 @@ export default function Dashboard() {
   const [showCashierModal, setShowCashierModal] = useState(false);
   const [showMenuConfig, setShowMenuConfig] = useState(false);
   const [currentView, setCurrentView] = useState("server");
-  const [kitchenOrders, setKitchenOrders] = useState([]);
+  const [kitchenOrders, setKitchenOrders] = useState(() => {
+    try {
+      const stored = localStorage.getItem("kalpe_kitchen_orders");
+      if (stored) return JSON.parse(stored);
+    } catch (e) {}
+    return [];
+  });
   const [barOrders, setBarOrders] = useState([]);
   const [menuItems, setMenuItems] = useState(() => loadMenuItems());
+  const tablesRef = useRef(tables);
+  tablesRef.current = tables;
 
   useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(menuItems));
     } catch (e) {}
   }, [menuItems]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem("kalpe_kitchen_orders", JSON.stringify(kitchenOrders));
+    } catch (e) {}
+  }, [kitchenOrders]);
 
   const handleMenuChange = useCallback((updated) => {
     setMenuItems(updated);
@@ -178,11 +192,13 @@ export default function Dashboard() {
         return { ...t, status: "occupee" };
       })
     );
+    // Keep ticket intact but deselect table so server returns to floor plan
     setShowKitchenModal(true);
   }, [activeTableId, tables]);
 
   const handleCloseKitchenModal = useCallback(() => {
     setShowKitchenModal(false);
+    // Deselect table so server returns to floor plan for next customer
     setActiveTableId(null);
   }, []);
 
@@ -226,7 +242,18 @@ export default function Dashboard() {
   }, []);
 
   const handleMarkKitchenReady = useCallback((orderId) => {
-    setKitchenOrders((prev) => prev.filter((o) => o.id !== orderId));
+    setKitchenOrders((prev) => {
+      const order = prev.find((o) => o.id === orderId);
+      if (order) {
+        const tableName = order.tableName;
+        setTables((tables) =>
+          tables.map((t) =>
+            t.name === tableName ? { ...t, status: "pret" } : t
+          )
+        );
+      }
+      return prev.filter((o) => o.id !== orderId);
+    });
   }, []);
 
   const handleMarkBarReady = useCallback((orderId) => {

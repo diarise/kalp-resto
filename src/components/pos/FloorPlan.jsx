@@ -59,6 +59,16 @@ const STATUS_CONFIG = {
     icon: Wrench,
     disabled: true,
   },
+  pret: {
+    bg: "bg-teal-50",
+    border: "border-teal-300",
+    text: "text-teal-700",
+    badge: "bg-teal-100 text-teal-700",
+    dot: "bg-teal-500",
+    label: "Prêt à servir",
+    icon: CheckCircle,
+    disabled: false,
+  },
 };
 
 export default function FloorPlan({ tables, onSelectTable, onUpdateTableStatus }) {

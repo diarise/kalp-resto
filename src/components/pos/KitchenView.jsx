@@ -29,9 +29,11 @@ export default function KitchenView({ orders, onMarkReady }) {
             <p className="text-sm text-gray-400">Aucune commande en attente en cuisine</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          <div className="flex gap-5 overflow-x-auto pb-4 snap-x">
             {orders.map((order) => (
-              <OrderCard key={order.id} order={order} onMarkReady={onMarkReady} />
+              <div key={order.id} className="snap-start">
+                <OrderCard order={order} onMarkReady={onMarkReady} />
+              </div>
             ))}
           </div>
         )}

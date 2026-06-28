@@ -1,43 +1,55 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Clock, CheckCircle } from "lucide-react";
-
-function formatTime(date) {
-  const pad = (n) => String(n).padStart(2, "0");
-  return `${pad(date.getHours())}:${pad(date.getMinutes())}`;
-}
 
 function getModifierText(item) {
   const mods = [item.piment, item.cuisson, item.boisson].filter(Boolean);
   return mods.length > 0 ? mods.join(", ") : null;
 }
 
+function getRelativeTime(timestamp) {
+  const diff = Math.floor((Date.now() - timestamp) / 1000);
+  if (diff < 60) return "Reçu à l'instant";
+  const mins = Math.floor(diff / 60);
+  if (mins < 60) return `Reçu il y a ${mins} min`;
+  const hrs = Math.floor(mins / 60);
+  return `Reçu il y a ${hrs}h ${mins % 60}min`;
+}
+
 export default function OrderCard({ order, onMarkReady }) {
+  const [, setTick] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => setTick((t) => t + 1), 10000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const elapsed = Math.floor((Date.now() - order.timestamp) / 1000);
+  const isUrgent = elapsed >= 900; // 15+ minutes
+
   return (
-    <div className="bg-white rounded-2xl border border-gray-200 shadow-sm flex flex-col overflow-hidden"
-         style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
+    <div className="bg-white rounded-2xl border-2 border-gray-200 shadow-md flex flex-col overflow-hidden min-w-[320px]"
+         style={{ boxShadow: "0 4px 12px rgba(0,0,0,0.08)" }}>
       {/* Header */}
-      <div className="bg-gray-800 px-4 py-3 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <span className="text-sm font-bold text-white">{order.tableName}</span>
-        </div>
-        <div className="flex items-center gap-1.5 text-gray-300">
-          <Clock className="w-3.5 h-3.5" />
-          <span className="text-xs font-medium">{formatTime(new Date(order.timestamp))}</span>
+      <div className={`px-5 py-4 flex items-center justify-between ${isUrgent ? "bg-rose-600" : "bg-gray-800"}`}>
+        <span className="text-2xl font-extrabold text-white tracking-tight">{order.tableName}</span>
+        <div className="flex items-center gap-1.5 text-white/90">
+          <Clock className="w-4 h-4" />
+          <span className="text-xs font-semibold">{getRelativeTime(order.timestamp)}</span>
         </div>
       </div>
 
       {/* Items */}
-      <div className="flex-1 px-4 py-3 space-y-2">
+      <div className="flex-1 px-5 py-4 space-y-3">
         {order.items.map((item, idx) => {
           const modText = getModifierText(item);
           return (
-            <div key={idx} className="border-b border-gray-50 last:border-0 pb-2 last:pb-0">
-              <div className="flex items-start gap-2">
-                <span className="text-sm font-bold text-gray-800 shrink-0">{item.qty}x</span>
+            <div key={idx} className="border-b border-gray-100 last:border-0 pb-3 last:pb-0">
+              <div className="flex items-start gap-3">
+                <span className="text-3xl font-extrabold text-gray-900 shrink-0 leading-none">{item.qty}x</span>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm text-gray-700">{item.name}</p>
+                  <p className="text-xl font-bold text-gray-800 leading-tight">{item.name}</p>
                   {modText && (
-                    <p className="text-xs italic text-gray-400 mt-0.5">→ {modText}</p>
+                    <p className="text-base italic text-amber-600 font-medium mt-1">→ {modText}</p>
                   )}
                 </div>
               </div>
@@ -47,14 +59,14 @@ export default function OrderCard({ order, onMarkReady }) {
       </div>
 
       {/* Action */}
-      <div className="px-4 pb-4">
+      <div className="px-5 pb-5">
         <button
           onClick={() => onMarkReady(order.id)}
-          className="w-full h-11 rounded-xl font-semibold text-white flex items-center justify-center gap-2 transition-all active:scale-95"
+          className="w-full h-16 rounded-xl font-bold text-white text-lg flex items-center justify-center gap-2.5 transition-all active:scale-95"
           style={{ backgroundColor: "#00A859" }}
         >
-          <CheckCircle className="w-4 h-4" />
-          Marquer comme Prêt
+          <CheckCircle className="w-6 h-6" />
+          ✓ Prêt à servir
         </button>
       </div>
     </div>
