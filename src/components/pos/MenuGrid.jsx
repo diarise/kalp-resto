@@ -26,7 +26,7 @@ export default function MenuGrid({ activeTable, onBack, onAddItem, menuItems }) 
   };
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full flex flex-col w-full min-w-0">
       {/* Header */}
       <div className="shrink-0 px-6 pt-5 pb-4 border-b border-gray-100">
         <div className="flex items-center gap-4 mb-4">
@@ -44,7 +44,7 @@ export default function MenuGrid({ activeTable, onBack, onAddItem, menuItems }) 
         </div>
 
         {/* Category Pills — premium horizontal tab strip */}
-        <div className="flex flex-nowrap overflow-x-auto whitespace-nowrap scrollbar-none gap-1 border-b border-gray-100 pb-2 -mx-1 px-1">
+        <div className="flex flex-nowrap overflow-x-auto whitespace-nowrap scrollbar-none w-full gap-1 border-b border-gray-100 pb-2 -mx-1 px-1">
           {MENU_CATEGORIES.map((cat) => {
             const isActive = activeCategory === cat.id;
             return (

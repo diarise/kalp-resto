@@ -370,8 +370,8 @@ export default function Dashboard() {
       ) : currentView === "report" ? (
         <ActivityReport />
       ) : (
-        <div className="flex-1 flex min-h-0">
-          <div className="flex-1" style={{ flexBasis: "65%" }}>
+        <div className="flex-1 flex min-h-0 min-w-0">
+          <div className="flex-1 min-w-0" style={{ flexBasis: "65%" }}>
             {activeTable ? (
               <MenuGrid
                 activeTable={activeTable}
@@ -389,7 +389,7 @@ export default function Dashboard() {
             )}
           </div>
 
-          <div className="shrink-0" style={{ flexBasis: "35%", maxWidth: "35%" }}>
+          <div className="shrink-0 min-w-0" style={{ flexBasis: "35%", maxWidth: "35%" }}>
             <TicketSidebar
               activeTable={activeTable}
               onUpdateQty={handleUpdateQty}
