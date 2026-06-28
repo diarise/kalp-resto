@@ -48,8 +48,8 @@ export default function TicketSidebar({
             <p className="text-xs text-gray-400 uppercase tracking-wider font-medium">Ticket Global</p>
             <p className="text-lg font-bold text-gray-800 mt-0.5">{activeTable.name}</p>
             {orderStatus && orderStatus !== "served" && (
-              <div className="mt-3">
-                <OrderStepper status={orderStatus} />
+              <div className="mt-4 py-3 px-1 rounded-xl bg-gray-50/80">
+                <OrderStepper status={orderStatus} variant="sidebar" />
               </div>
             )}
           </div>

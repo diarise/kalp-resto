@@ -27,9 +27,21 @@ export default function OrderCard({ order, onAdvance }) {
   const elapsed = Math.floor((Date.now() - order.timestamp) / 1000);
   const isUrgent = elapsed >= 900; // 15+ minutes
 
+  const STATUS_BORDER_COLOR = {
+    pending: "#0096D6",
+    preparing: "#F59E0B",
+    ready: "#00A859",
+    served: "#6B7280",
+  };
+  const orderStatus = order.status || "pending";
+  const borderColor = STATUS_BORDER_COLOR[orderStatus];
+
   return (
-    <div className="bg-white rounded-2xl border-2 border-gray-200 shadow-md flex flex-col overflow-hidden min-w-[320px]"
+    <div className="bg-white rounded-2xl border-2 border-gray-200 shadow-md flex flex-col overflow-hidden min-w-[320px] relative"
          style={{ boxShadow: "0 4px 12px rgba(0,0,0,0.08)" }}>
+      {/* Status top-border line */}
+      <div className="h-1.5 w-full" style={{ backgroundColor: borderColor }} />
+
       {/* Header */}
       <div className={`px-5 py-4 flex items-center justify-between ${isUrgent ? "bg-rose-600" : "bg-gray-800"}`}>
         <span className="text-2xl font-extrabold text-white tracking-tight">{order.tableName}</span>
@@ -40,8 +52,8 @@ export default function OrderCard({ order, onAdvance }) {
       </div>
 
       {/* Progress Timeline */}
-      <div className="px-5 pt-4 pb-2 bg-gray-50/50 border-b border-gray-100">
-        <OrderStepper status={order.status || "pending"} />
+      <div className="px-5 pt-3 pb-2.5 bg-gray-50/50 border-b border-gray-100">
+        <OrderStepper status={orderStatus} variant="kitchen" />
       </div>
 
       {/* Items */}
@@ -65,28 +77,28 @@ export default function OrderCard({ order, onAdvance }) {
       </div>
 
       {/* Action — 3-stage state machine */}
-      <div className="px-5 pb-4">
-        {order.status === "preparing" ? (
+      <div className="px-4 pb-4">
+        {orderStatus === "preparing" ? (
           <button
             onClick={() => onAdvance(order.id)}
-            className="w-full h-14 rounded-xl font-bold text-white text-base flex items-center justify-center gap-2 transition-all active:scale-[0.98] hover:opacity-90"
-            style={{ backgroundColor: "#F59E0B" }}
+            className="w-full h-12 rounded-2xl font-bold text-white text-sm flex items-center justify-center gap-2 transition-all duration-200 active:scale-[0.98] hover:shadow-lg"
+            style={{ backgroundColor: "#F59E0B", boxShadow: "0 2px 8px rgba(245,158,11,0.3)" }}
           >
             ⏳ Marquer comme Prêt
           </button>
-        ) : order.status === "ready" ? (
+        ) : orderStatus === "ready" ? (
           <button
             onClick={() => onAdvance(order.id)}
-            className="w-full h-14 rounded-xl font-bold text-white text-base flex items-center justify-center gap-2 transition-all active:scale-[0.98] hover:opacity-90"
-            style={{ backgroundColor: "#00A859" }}
+            className="w-full h-12 rounded-2xl font-bold text-white text-sm flex items-center justify-center gap-2 transition-all duration-200 active:scale-[0.98] hover:shadow-lg"
+            style={{ backgroundColor: "#00A859", boxShadow: "0 2px 8px rgba(0,168,89,0.3)" }}
           >
             🍽️ Confirmer la Livraison
           </button>
         ) : (
           <button
             onClick={() => onAdvance(order.id)}
-            className="w-full h-14 rounded-xl font-bold text-white text-base flex items-center justify-center gap-2 transition-all active:scale-[0.98] hover:opacity-90"
-            style={{ backgroundColor: "#0096D6" }}
+            className="w-full h-12 rounded-2xl font-bold text-white text-sm flex items-center justify-center gap-2 transition-all duration-200 active:scale-[0.98] hover:shadow-lg"
+            style={{ backgroundColor: "#0096D6", boxShadow: "0 2px 8px rgba(0,150,214,0.3)" }}
           >
             👨‍🍳 Commencer la préparation
           </button>
