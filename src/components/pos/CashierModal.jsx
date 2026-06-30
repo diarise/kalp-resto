@@ -1,5 +1,8 @@
 import React, { useState } from "react";
 import { X, Banknote, Smartphone, CreditCard, CheckCircle } from "lucide-react";
+import { base44 } from "@/api/base44Client";
+import { getCurrentStaff } from "@/lib/staffSession";
+import { generateInvoiceNumber } from "@/lib/sariExport";
 
 const PAYMENT_METHODS = [
   { id: "especes", label: "Espèces", icon: Banknote, activeBg: "bg-emerald-500", activeBorder: "border-emerald-500", iconColor: "text-emerald-600", hoverBg: "hover:border-emerald-300" },
@@ -10,8 +13,32 @@ const PAYMENT_METHODS = [
 
 export default function CashierModal({ table, total, onClose, onValidate }) {
   const [selected, setSelected] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
 
   const formatPrice = (price) => price.toLocaleString("fr-FR") + " CFA";
+
+  const handleSubmit = async () => {
+    if (!selected || submitting) return;
+    setSubmitting(true);
+    const currentStaff = getCurrentStaff();
+    const items = table?.currentTicket || [];
+    if (items.length > 0) {
+      try {
+        await base44.entities.Transaction.create({
+          invoice_number: generateInvoiceNumber(),
+          timestamp: new Date().toISOString(),
+          cashier_id: currentStaff?.id || "unknown",
+          cashier_name: currentStaff?.name || "Caissier",
+          total_amount: total,
+          items_snapshot: JSON.stringify(items),
+          payment_method: selected,
+          table_name: table?.name || "Table",
+        });
+      } catch (e) {}
+    }
+    setSubmitting(false);
+    onValidate(selected);
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
@@ -63,13 +90,13 @@ export default function CashierModal({ table, total, onClose, onValidate }) {
 
           {/* Validate */}
           <button
-            onClick={() => onValidate(selected)}
-            disabled={!selected}
+            onClick={handleSubmit}
+            disabled={!selected || submitting}
             className="h-14 rounded-2xl font-semibold text-white flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
             style={{ backgroundColor: "#00A859" }}
           >
             <CheckCircle className="w-5 h-5" />
-            Valider l'encaissement
+            {submitting ? "Enregistrement..." : "Valider l'encaissement"}
           </button>
         </div>
       </div>

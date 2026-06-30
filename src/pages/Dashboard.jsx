@@ -255,27 +255,8 @@ export default function Dashboard() {
     );
   }, []);
 
-  const handleCashierValidate = useCallback(async (paymentMethod) => {
+  const handleCashierValidate = useCallback(() => {
     if (!activeTableId) return;
-    const table = tables.find((t) => t.id === activeTableId);
-    if (table && table.currentTicket.length > 0) {
-      const invoice_number = generateInvoiceNumber();
-      const total_amount = table.currentTicket.reduce((sum, i) => sum + i.qty * i.price, 0);
-      try {
-        await base44.entities.Transaction.create({
-          invoice_number,
-          timestamp: new Date().toISOString(),
-          cashier_id: staff?.id || "",
-          cashier_name: staff?.name || "",
-          waiter_id: "",
-          waiter_name: "",
-          total_amount,
-          items_snapshot: JSON.stringify(table.currentTicket),
-          payment_method: paymentMethod || "",
-          table_name: table.name,
-        });
-      } catch (e) {}
-    }
     setTables((prev) =>
       prev.map((table) => {
         if (table.id !== activeTableId) return table;
@@ -284,7 +265,7 @@ export default function Dashboard() {
     );
     setShowCashierModal(false);
     setActiveTableId(null);
-  }, [activeTableId, tables, staff]);
+  }, [activeTableId]);
 
   const handleCloseCashierModal = useCallback(() => {
     setShowCashierModal(false);

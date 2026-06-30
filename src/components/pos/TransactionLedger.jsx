@@ -1,12 +1,19 @@
 import React, { useState, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { exportTransactionsToSari, downloadSariFile } from "@/lib/sariExport";
+import { getCurrentStaff } from "@/lib/staffSession";
 import { Search, Download, FileText, Receipt } from "lucide-react";
 
 export default function TransactionLedger() {
+  const navigate = useNavigate();
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({ date: "", waiter: "", invoice: "" });
+
+  useEffect(() => {
+    if (!getCurrentStaff()) navigate("/");
+  }, [navigate]);
 
   const loadTransactions = useCallback(async () => {
     setLoading(true);
