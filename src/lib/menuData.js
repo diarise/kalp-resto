@@ -51,6 +51,21 @@ export const MENU_ITEMS = [
   { id: "grill-18", name: "SOLE MEUNIERE", price: 12000, category: "grills" },
   { id: "dibi-plat-1", name: "Plateau Dibi Salé (Petit)", price: 15000, category: "grills" },
   { id: "dibi-plat-2", name: "Plateau Dibi Salé (Grand)", price: 25000, category: "grills" },
+  { id: "dibi-sale-15", name: "Plateau Dibi Salé", price: 15000, category: "grills" },
+  { id: "dibi-sale-25", name: "Grand Plateau Dibi Salé", price: 25000, category: "grills" },
+
+  // POULET
+  { id: "chk-1", name: "Choukouya de Poulet", price: 6000, category: "poulet" },
+  { id: "chk-2", name: "Demi Poulet Grillé", price: 5500, category: "poulet" },
+
+  // POISSON
+  { id: "fish-1", name: "Poisson Carpe Braisé", price: 7000, category: "poisson" },
+  { id: "fish-2", name: "Brochettes de Lotte", price: 8000, category: "poisson" },
+
+  // ACCOMPAGNEMENTS
+  { id: "acc-1", name: "Portion d'Alloco (Banane Malaxe)", price: 1500, category: "accompagnement" },
+  { id: "acc-2", name: "Frites Maison", price: 1500, category: "accompagnement" },
+  { id: "acc-3", name: "Riz Blanc Parfumé", price: 1000, category: "accompagnement" },
 
   // PATES
   { id: "pate-1", name: "TAGLIATELLES AUX GAMBAS / SAUCE ROUGE OU BLANCHE", price: 8000, category: "pates" },
