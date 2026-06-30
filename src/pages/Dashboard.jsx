@@ -19,7 +19,7 @@ function loadMenuItems() {
     if (stored) {
       const parsed = JSON.parse(stored);
       // If cached menu is missing new categories (outdated), refresh from latest code
-      if (!parsed.some((i) => i.category === "chichas") || !parsed.some((i) => i.category === "poulet")) {
+      if (!parsed.some((i) => i.category === "chichas") || !parsed.some((i) => i.category === "poulet") || !parsed.some((i) => i.category === "sale")) {
         return MENU_ITEMS;
       }
       return parsed;
