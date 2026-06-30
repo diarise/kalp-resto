@@ -1,10 +1,31 @@
 import React, { useState, useMemo } from "react";
-import { X, Search, Plus, Trash2 } from "lucide-react";
+import { X, Search, Plus, Trash2, Upload, Link2 } from "lucide-react";
 import { MENU_CATEGORIES } from "@/lib/menuData";
+
+function readFileAsBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
 
 export default function MenuManagement({ items, onChange, onClose }) {
   const [search, setSearch] = useState("");
   const [newItem, setNewItem] = useState({ name: "", price: "", category: "plats", image: "" });
+
+  const handleNewImageUpload = async (file) => {
+    if (!file) return;
+    const base64 = await readFileAsBase64(file);
+    setNewItem((prev) => ({ ...prev, image: base64 }));
+  };
+
+  const handleEditImageUpload = async (id, file) => {
+    if (!file) return;
+    const base64 = await readFileAsBase64(file);
+    updateField(id, "image", base64);
+  };
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -87,10 +108,20 @@ export default function MenuManagement({ items, onChange, onClose }) {
             <input
               type="text"
               placeholder="Image URL (optionnel)"
-              value={newItem.image}
+              value={newItem.image && !newItem.image.startsWith("data:") ? newItem.image : ""}
               onChange={(e) => setNewItem({ ...newItem, image: e.target.value })}
-              className="flex-1 min-w-[160px] h-10 px-3 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-gray-800 focus:border-transparent"
+              className="flex-1 min-w-[120px] h-10 px-3 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-gray-800 focus:border-transparent"
             />
+            <label className="h-10 px-4 rounded-lg border border-gray-200 bg-white text-sm font-medium text-gray-600 hover:bg-gray-50 flex items-center gap-1.5 cursor-pointer transition-all">
+              <Upload className="w-4 h-4" />
+              {newItem.image && newItem.image.startsWith("data:") ? "Image ✓" : "Upload"}
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => handleNewImageUpload(e.target.files?.[0])}
+              />
+            </label>
             <button
               onClick={handleAdd}
               className="h-10 px-5 rounded-lg font-semibold text-white flex items-center gap-1.5 transition-all active:scale-95"
@@ -161,13 +192,28 @@ export default function MenuManagement({ items, onChange, onClose }) {
                       </select>
                     </td>
                     <td className="px-3 py-2">
-                      <input
-                        type="text"
-                        placeholder="Laisser vide pour emoji"
-                        value={item.image || ""}
-                        onChange={(e) => updateField(item.id, "image", e.target.value || undefined)}
-                        className="w-full h-9 px-2 rounded-lg border border-transparent hover:border-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-800 focus:border-transparent text-xs text-gray-600"
-                      />
+                      <div className="flex items-center gap-1">
+                        {item.image && item.image.startsWith("data:") ? (
+                          <img src={item.image} alt="" className="w-8 h-8 rounded-lg object-cover shrink-0" />
+                        ) : (
+                          <input
+                            type="text"
+                            placeholder="URL ou upload"
+                            value={item.image || ""}
+                            onChange={(e) => updateField(item.id, "image", e.target.value || undefined)}
+                            className="w-full h-9 px-2 rounded-lg border border-transparent hover:border-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-800 focus:border-transparent text-xs text-gray-600"
+                          />
+                        )}
+                        <label className="w-9 h-9 shrink-0 rounded-lg border border-gray-200 hover:bg-gray-50 flex items-center justify-center cursor-pointer transition-all">
+                          <Upload className="w-3.5 h-3.5 text-gray-500" />
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={(e) => handleEditImageUpload(item.id, e.target.files?.[0])}
+                          />
+                        </label>
+                      </div>
                     </td>
                     <td className="px-3 py-2 text-center">
                       <button
