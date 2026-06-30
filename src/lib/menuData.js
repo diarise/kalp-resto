@@ -1,14 +1,16 @@
 export const MENU_CATEGORIES = [
-  { id: "plats", label: "Plats du Jour" },
-  { id: "grills", label: "Grillades & Dibi" },
-  { id: "pates", label: "Pâtes" },
+  { id: "plats", label: "Plat du Jour" },
+  { id: "boissons", label: "Boisson" },
+  { id: "entrees", label: "Entrée" },
+  { id: "grills", label: "Dibi et Grillade" },
+  { id: "poulet", label: "Poulet" },
+  { id: "poisson", label: "Poisson" },
   { id: "mer", label: "Fruits de Mer" },
-  { id: "supplements", label: "Suppléments" },
-  { id: "boissons", label: "Boissons" },
-  { id: "entrees", label: "Entrées" },
-  { id: "desserts", label: "Desserts" },
-  { id: "fast_food", label: "Fast Food" },
-  { id: "chichas", label: "Chichas & Lounge" },
+  { id: "pates", label: "Pâtes" },
+  { id: "accompagnement", label: "Accompagnement" },
+  { id: "supplements", label: "Supplément" },
+  { id: "desserts", label: "Dessert" },
+  { id: "chichas", label: "Chicha et Lounge" },
 ];
 
 export const MENU_ITEMS = [
@@ -47,6 +49,8 @@ export const MENU_ITEMS = [
   { id: "grill-16", name: "THIOF A LA PLANCHA", price: 19000, category: "grills" },
   { id: "grill-17", name: "DORADE BRAISEE", price: 17000, category: "grills" },
   { id: "grill-18", name: "SOLE MEUNIERE", price: 12000, category: "grills" },
+  { id: "dibi-plat-1", name: "Plateau Dibi Salé (Petit)", price: 15000, category: "grills" },
+  { id: "dibi-plat-2", name: "Plateau Dibi Salé (Grand)", price: 25000, category: "grills" },
 
   // PATES
   { id: "pate-1", name: "TAGLIATELLES AUX GAMBAS / SAUCE ROUGE OU BLANCHE", price: 8000, category: "pates" },

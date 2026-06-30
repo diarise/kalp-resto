@@ -5,8 +5,11 @@ import { MENU_CATEGORIES, MENU_ITEMS } from "@/lib/menuData";
 const CATEGORY_PLACEHOLDERS = {
   plats: { bg: "bg-amber-50", emoji: "🍛" },
   grills: { bg: "bg-rose-50", emoji: "🔥" },
-  pates: { bg: "bg-orange-50", emoji: "🍝" },
+  poulet: { bg: "bg-orange-50", emoji: "🍗" },
+  poisson: { bg: "bg-cyan-50", emoji: "🐟" },
   mer: { bg: "bg-blue-50", emoji: "🍤" },
+  pates: { bg: "bg-orange-50", emoji: "🍝" },
+  accompagnement: { bg: "bg-stone-50", emoji: "🍟" },
   supplements: { bg: "bg-gray-50", emoji: "➕" },
   boissons: { bg: "bg-cyan-50", emoji: "🥤" },
   entrees: { bg: "bg-emerald-50", emoji: "🥗" },
