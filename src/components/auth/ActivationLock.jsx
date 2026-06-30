@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Lock, ShieldCheck } from "lucide-react";
-import { validateMasterPin, activateMachine } from "@/lib/activation";
+import { activateApp } from "@/lib/activation";
 
 export default function ActivationLock() {
   const [pin, setPin] = useState("");
@@ -9,8 +9,7 @@ export default function ActivationLock() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (validateMasterPin(pin)) {
-      activateMachine();
+    if (activateApp(pin)) {
       window.location.reload();
     } else {
       setError(true);
