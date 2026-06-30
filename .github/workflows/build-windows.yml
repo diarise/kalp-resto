@@ -24,8 +24,11 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Build Windows installer
-        run: npm run dist:win
+      - name: Build web assets (Vite)
+        run: npm run build
+
+      - name: Package Windows installer (electron-builder)
+        run: npx electron-builder --win
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
