@@ -1,0 +1,2 @@
+# This directory hosts compiled desktop installer artifacts (.exe, .dmg)
+# Upload production builds here so they are served as static assets at /release/
