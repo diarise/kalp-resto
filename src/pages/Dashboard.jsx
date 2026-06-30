@@ -274,7 +274,7 @@ export default function Dashboard() {
 
   const handleLogout = useCallback(() => {
     clearStaff();
-    navigate("/");
+    navigate("/app");
   }, [navigate]);
 
   // 3-stage state machine: pending -> preparing -> ready -> served
@@ -373,7 +373,7 @@ export default function Dashboard() {
   }, []);
 
   useEffect(() => {
-    if (!staff) navigate("/");
+    if (!staff) navigate("/app");
   }, [staff, navigate]);
 
   if (!staff) return null;

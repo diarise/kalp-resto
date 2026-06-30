@@ -12,6 +12,7 @@ import ForgotPassword from '@/pages/ForgotPassword';
 import ResetPassword from '@/pages/ResetPassword';
 import Dashboard from '@/pages/Dashboard';
 import PinLogin from '@/pages/PinLogin';
+import Landing from '@/pages/Landing';
 import { checkActivationStatus } from '@/lib/activation';
 import ActivationLock from '@/components/auth/ActivationLock';
 
@@ -45,7 +46,8 @@ const AuthenticatedApp = () => {
       <Route path="/register" element={<Register />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
-      <Route path="/" element={<PinLogin />} />
+      <Route path="/" element={<Landing />} />
+      <Route path="/app" element={<PinLogin />} />
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
