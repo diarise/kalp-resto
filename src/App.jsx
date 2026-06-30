@@ -12,6 +12,8 @@ import ForgotPassword from '@/pages/ForgotPassword';
 import ResetPassword from '@/pages/ResetPassword';
 import Dashboard from '@/pages/Dashboard';
 import PinLogin from '@/pages/PinLogin';
+import { checkActivationStatus } from '@/lib/activation';
+import ActivationLock from '@/components/auth/ActivationLock';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -52,6 +54,9 @@ const AuthenticatedApp = () => {
 
 
 function App() {
+  if (!checkActivationStatus()) {
+    return <ActivationLock />;
+  }
 
   return (
     <AuthProvider>
