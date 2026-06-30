@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { X, Banknote, Smartphone, CreditCard, CheckCircle } from "lucide-react";
-import { base44 } from "@/api/base44Client";
+import { offlineTransaction } from "@/lib/offlineDB";
 import { getCurrentStaff } from "@/lib/staffSession";
 import { generateInvoiceNumber } from "@/lib/sariExport";
 
@@ -24,7 +24,7 @@ export default function CashierModal({ table, total, onClose, onValidate }) {
     const items = table?.currentTicket || [];
     if (items.length > 0) {
       try {
-        await base44.entities.Transaction.create({
+        await offlineTransaction.create({
           invoice_number: generateInvoiceNumber(),
           timestamp: new Date().toISOString(),
           cashier_id: currentStaff?.id || "unknown",

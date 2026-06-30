@@ -51,7 +51,22 @@ export function exportTransactionsToSari(transactions) {
   return lines.join("\n");
 }
 
+/**
+ * Downloads the SARI export file.
+ * If running inside the Electron container, writes directly to the native
+ * filesystem (C:/KalpeResto/SageExports/ on Windows, ~/KalpeResto/SageExports/
+ * on macOS/Linux) using fs.writeFileSync via the preload IPC bridge, creating
+ * the directory silently if it doesn't exist.
+ * Falls back to a standard browser anchor download when not in Electron.
+ */
 export function downloadSariFile(content, filename) {
+  // Electron native path — exposed via preload contextBridge
+  if (window.electronAPI && typeof window.electronAPI.writeSariFile === "function") {
+    window.electronAPI.writeSariFile(content, filename);
+    return;
+  }
+
+  // Browser fallback
   const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");

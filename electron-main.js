@@ -1,5 +1,13 @@
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
+const fs = require('fs');
+const os = require('os');
+
+function getSageExportDir() {
+  const isWin = process.platform === 'win32';
+  const base = isWin ? 'C:' : os.homedir();
+  return path.join(base, 'KalpeResto', 'SageExports');
+}
 
 function createWindow() {
   const win = new BrowserWindow({
@@ -9,6 +17,7 @@ function createWindow() {
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
+      preload: path.join(__dirname, 'preload.js'),
     }
   });
 
@@ -26,6 +35,21 @@ function createWindow() {
     }
   });
 }
+
+// IPC: native SARI file deposit — silently creates the export directory if needed
+ipcMain.handle('write-sari-file', (event, content, filename) => {
+  try {
+    const dir = getSageExportDir();
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    const filePath = path.join(dir, filename);
+    fs.writeFileSync(filePath, content, 'utf-8');
+    return { success: true, path: filePath };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
 
 app.whenReady().then(createWindow);
 

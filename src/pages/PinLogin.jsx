@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
+import { offlineStaff } from "@/lib/offlineDB";
 import { setCurrentStaff, ROLE_LABELS } from "@/lib/staffSession";
 import { UtensilsCrossed, Delete, Lock } from "lucide-react";
 
@@ -27,7 +27,7 @@ export default function PinLogin() {
     setLoading(true);
     setError("");
     try {
-      const results = await base44.entities.Staff.filter({ pin, active: true });
+      const results = await offlineStaff.filter({ pin, active: true });
       if (results && results.length > 0) {
         const staff = results[0];
         setCurrentStaff(staff);

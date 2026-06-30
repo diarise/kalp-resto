@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
+import { offlineTransaction } from "@/lib/offlineDB";
 import { exportTransactionsToSari, downloadSariFile } from "@/lib/sariExport";
 import { getCurrentStaff } from "@/lib/staffSession";
 import { Search, Download, FileText, Receipt } from "lucide-react";
@@ -18,7 +18,7 @@ export default function TransactionLedger() {
   const loadTransactions = useCallback(async () => {
     setLoading(true);
     try {
-      const all = await base44.entities.Transaction.list("-timestamp", 500);
+      const all = await offlineTransaction.list("-timestamp", 500);
       setTransactions(all || []);
     } catch (e) {
       setTransactions([]);
