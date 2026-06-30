@@ -51,6 +51,23 @@ ipcMain.handle('write-sari-file', (event, content, filename) => {
   }
 });
 
+// IPC: silent thermal receipt printing — hidden window injected with HTML, sent to default printer
+ipcMain.handle('print-receipt', async (event, htmlContent) => {
+  let workerWindow = new BrowserWindow({ show: false, webPreferences: { nodeIntegration: true } });
+  workerWindow.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(htmlContent)}`);
+
+  workerWindow.webContents.on('did-finish-load', () => {
+    workerWindow.webContents.print({
+      silent: true,
+      printBackground: true,
+      margins: { marginType: 'none' }
+    }, () => {
+      workerWindow.destroy();
+    });
+  });
+  return { success: true };
+});
+
 app.whenReady().then(createWindow);
 
 app.on('window-all-closed', () => {

@@ -11,6 +11,7 @@ import BarView from "@/components/pos/BarView";
 import ActivityReport from "@/components/pos/ActivityReport";
 import MenuManagement from "@/components/pos/MenuManagement";
 import TransactionLedger from "@/components/pos/TransactionLedger";
+import ZReport from "@/components/pos/ZReport";
 import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { getCurrentStaff, clearStaff } from "@/lib/staffSession";
@@ -389,6 +390,8 @@ export default function Dashboard() {
         <ActivityReport />
       ) : currentView === "ledger" ? (
         <TransactionLedger />
+      ) : currentView === "z_report" ? (
+        <ZReport />
       ) : (
         <div className="flex-1 flex min-h-0 min-w-0">
           <div className="flex-1 min-w-0" style={{ flexBasis: "65%" }}>

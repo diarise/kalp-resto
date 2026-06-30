@@ -25,7 +25,7 @@ export const ROLE_LABELS = {
 };
 
 export const ROLE_PERMISSIONS = {
-  gerante: ["server", "kitchen", "bar", "report", "ledger", "menu_config"],
+  gerante: ["server", "kitchen", "bar", "report", "ledger", "menu_config", "z_report"],
   caisse_matin: ["server", "kitchen", "bar", "ledger"],
   caisse_soir: ["server", "kitchen", "bar", "ledger"],
   serveur: ["server", "kitchen", "bar"],

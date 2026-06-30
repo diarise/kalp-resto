@@ -3,6 +3,7 @@ import { X, Banknote, Smartphone, CreditCard, CheckCircle } from "lucide-react";
 import { offlineTransaction } from "@/lib/offlineDB";
 import { getCurrentStaff } from "@/lib/staffSession";
 import { generateInvoiceNumber } from "@/lib/sariExport";
+import { generateReceiptHtml, printThermalReceipt } from "@/lib/thermalReceipt";
 
 const PAYMENT_METHODS = [
   { id: "especes", label: "Espèces", icon: Banknote, activeBg: "bg-emerald-500", activeBorder: "border-emerald-500", iconColor: "text-emerald-600", hoverBg: "hover:border-emerald-300" },
@@ -22,10 +23,11 @@ export default function CashierModal({ table, total, onClose, onValidate }) {
     setSubmitting(true);
     const currentStaff = getCurrentStaff();
     const items = table?.currentTicket || [];
+    const invoiceNumber = generateInvoiceNumber();
     if (items.length > 0) {
       try {
         await offlineTransaction.create({
-          invoice_number: generateInvoiceNumber(),
+          invoice_number: invoiceNumber,
           timestamp: new Date().toISOString(),
           cashier_id: currentStaff?.id || "unknown",
           cashier_name: currentStaff?.name || "Caissier",
@@ -35,6 +37,9 @@ export default function CashierModal({ table, total, onClose, onValidate }) {
           table_name: table?.name || "Table",
         });
       } catch (e) {}
+      // Auto-print thermal receipt after transaction is recorded
+      const html = generateReceiptHtml({ table, staff: currentStaff, invoiceNumber, paymentMethod: selected });
+      printThermalReceipt(html);
     }
     setSubmitting(false);
     onValidate(selected);

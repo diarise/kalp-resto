@@ -1,5 +1,7 @@
 import React from "react";
 import { X, Printer } from "lucide-react";
+import { generateReceiptHtml, printThermalReceipt } from "@/lib/thermalReceipt";
+import { getCurrentStaff } from "@/lib/staffSession";
 
 const RESTAURANT_NAME = "KALPÉ RESTO";
 const RESTAURANT_ADDR = "Dakar, Sénégal";
@@ -25,7 +27,8 @@ export default function PrintReceiptModal({ table, onClose }) {
   const totalNet = sousTotal + tva;
 
   const handlePrint = () => {
-    window.print();
+    const html = generateReceiptHtml({ table, staff: getCurrentStaff() });
+    printThermalReceipt(html);
   };
 
   return (

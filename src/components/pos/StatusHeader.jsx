@@ -1,5 +1,5 @@
 import React from "react";
-import { UtensilsCrossed, ChefHat, Wine, LayoutGrid, BarChart3, Settings, LogOut, Receipt } from "lucide-react";
+import { UtensilsCrossed, ChefHat, Wine, LayoutGrid, BarChart3, Settings, LogOut, Receipt, FileBarChart } from "lucide-react";
 import { ROLE_LABELS, canAccess } from "@/lib/staffSession";
 
 const ALL_VIEWS = [
@@ -8,6 +8,7 @@ const ALL_VIEWS = [
   { id: "bar", label: "Bar", icon: Wine },
   { id: "report", label: "Rapport", icon: BarChart3 },
   { id: "ledger", label: "Caisse", icon: Receipt },
+  { id: "z_report", label: "Rapport Z", icon: FileBarChart },
 ];
 
 export default function StatusHeader({ currentView, onViewChange, onOpenMenuConfig, staff, onLogout }) {
