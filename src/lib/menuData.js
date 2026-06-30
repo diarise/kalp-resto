@@ -63,7 +63,7 @@ export const MENU_ITEMS = [
   { id: "fish-2", name: "Brochettes de Lotte", price: 8000, category: "poisson" },
 
   // ACCOMPAGNEMENTS
-  { id: "acc-1", name: "Portion d'Alloco (Banane Malaxe)", price: 1500, category: "accompagnement" },
+  { id: "acc-1", name: "Portion d'Alloco", price: 1500, category: "accompagnement" },
   { id: "acc-2", name: "Frites Maison", price: 1500, category: "accompagnement" },
   { id: "acc-3", name: "Riz Blanc Parfumé", price: 1000, category: "accompagnement" },
 
