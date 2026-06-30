@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
-const VALID_KEYS = ["CLIENT-DAKAR-2026"];
+const VALID_KEYS = ["CLIENT-DAKAR-2026", "DEVELOPER-MASTER"];
 const DOWNLOADS = {
   win: "/release/Kalpe Resto POS Setup 0.0.0.exe",
   mac: "/release/Kalpe Resto POS-0.0.0.dmg",
