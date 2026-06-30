@@ -1,0 +1,53 @@
+{
+  "name": "Transaction",
+  "type": "object",
+  "properties": {
+    "invoice_number": {
+      "type": "string",
+      "title": "Num\u00e9ro de Facture"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Horodatage"
+    },
+    "cashier_id": {
+      "type": "string",
+      "title": "ID Caissier"
+    },
+    "cashier_name": {
+      "type": "string",
+      "title": "Nom Caissier"
+    },
+    "waiter_id": {
+      "type": "string",
+      "title": "ID Serveur"
+    },
+    "waiter_name": {
+      "type": "string",
+      "title": "Nom Serveur"
+    },
+    "total_amount": {
+      "type": "number",
+      "title": "Montant Total"
+    },
+    "items_snapshot": {
+      "type": "string",
+      "title": "Articles (JSON)"
+    },
+    "payment_method": {
+      "type": "string",
+      "title": "M\u00e9thode de Paiement"
+    },
+    "table_name": {
+      "type": "string",
+      "title": "Table"
+    }
+  },
+  "required": [
+    "invoice_number",
+    "timestamp",
+    "total_amount",
+    "items_snapshot"
+  ]
+}

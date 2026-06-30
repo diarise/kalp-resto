@@ -63,7 +63,7 @@ export default function CashierModal({ table, total, onClose, onValidate }) {
 
           {/* Validate */}
           <button
-            onClick={onValidate}
+            onClick={() => onValidate(selected)}
             disabled={!selected}
             className="h-14 rounded-2xl font-semibold text-white flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
             style={{ backgroundColor: "#00A859" }}

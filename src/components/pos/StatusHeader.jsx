@@ -1,14 +1,18 @@
 import React from "react";
-import { UtensilsCrossed, User, ChefHat, Wine, LayoutGrid, BarChart3, Settings } from "lucide-react";
+import { UtensilsCrossed, ChefHat, Wine, LayoutGrid, BarChart3, Settings, LogOut, Receipt } from "lucide-react";
+import { ROLE_LABELS, canAccess } from "@/lib/staffSession";
 
-const VIEWS = [
-  { id: "server", label: "Vue Serveur", icon: LayoutGrid },
-  { id: "kitchen", label: "Écran Cuisine", icon: ChefHat },
-  { id: "bar", label: "Écran Bar", icon: Wine },
-  { id: "report", label: "Rapport d'activité", icon: BarChart3 },
+const ALL_VIEWS = [
+  { id: "server", label: "Serveur", icon: LayoutGrid },
+  { id: "kitchen", label: "Cuisine", icon: ChefHat },
+  { id: "bar", label: "Bar", icon: Wine },
+  { id: "report", label: "Rapport", icon: BarChart3 },
+  { id: "ledger", label: "Caisse", icon: Receipt },
 ];
 
-export default function StatusHeader({ currentView, onViewChange, onOpenMenuConfig }) {
+export default function StatusHeader({ currentView, onViewChange, onOpenMenuConfig, staff, onLogout }) {
+  const views = ALL_VIEWS.filter((v) => !staff || canAccess(staff.role, v.id));
+
   return (
     <div className="h-14 shrink-0 bg-white border-b border-gray-100 flex items-center justify-between px-6"
          style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.04)" }}>
@@ -19,12 +23,11 @@ export default function StatusHeader({ currentView, onViewChange, onOpenMenuConf
         <span className="text-base font-semibold text-gray-800 tracking-tight">
           Kalpé Resto
         </span>
-        <span className="text-xs text-gray-400 font-medium ml-1 hidden sm:inline">dashboard</span>
       </div>
 
       {/* View Switcher */}
       <div className="flex items-center gap-1 bg-gray-100 rounded-xl p-1">
-        {VIEWS.map((view) => {
+        {views.map((view) => {
           const Icon = view.icon;
           const isActive = currentView === view.id;
           return (
@@ -45,7 +48,7 @@ export default function StatusHeader({ currentView, onViewChange, onOpenMenuConf
       </div>
 
       <div className="flex items-center gap-3">
-        {onOpenMenuConfig && (
+        {onOpenMenuConfig && (!staff || canAccess(staff.role, "menu_config")) && (
           <button
             onClick={onOpenMenuConfig}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-gray-100 text-gray-600 hover:bg-gray-200 transition-all"
@@ -54,10 +57,25 @@ export default function StatusHeader({ currentView, onViewChange, onOpenMenuConf
             <span className="hidden sm:inline">Config Menu</span>
           </button>
         )}
-        <div className="flex items-center gap-2 text-sm text-gray-500">
-          <User className="w-4 h-4" />
-          <span className="hidden sm:inline">Serveur: <span className="font-medium text-gray-700">Aminata</span></span>
-        </div>
+        {staff && (
+          <div className="flex items-center gap-2 text-sm">
+            <div className="text-right hidden sm:block">
+              <p className="font-medium text-gray-700 leading-tight">{staff.name}</p>
+              <p className="text-xs text-gray-400 leading-tight">{ROLE_LABELS[staff.role] || staff.role}</p>
+            </div>
+            <div className="w-8 h-8 rounded-full bg-gray-900 text-white flex items-center justify-center text-xs font-bold">
+              {staff.name.charAt(0).toUpperCase()}
+            </div>
+          </div>
+        )}
+        {onLogout && (
+          <button
+            onClick={onLogout}
+            className="w-8 h-8 rounded-lg hover:bg-red-50 flex items-center justify-center transition-colors group"
+          >
+            <LogOut className="w-4 h-4 text-gray-400 group-hover:text-red-500" />
+          </button>
+        )}
       </div>
     </div>
   );

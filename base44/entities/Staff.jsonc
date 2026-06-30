@@ -1,0 +1,34 @@
+{
+  "name": "Staff",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "title": "Nom"
+    },
+    "role": {
+      "type": "string",
+      "enum": [
+        "gerante",
+        "caisse_matin",
+        "caisse_soir",
+        "serveur"
+      ],
+      "title": "R\u00f4le"
+    },
+    "pin": {
+      "type": "string",
+      "title": "PIN"
+    },
+    "active": {
+      "type": "boolean",
+      "default": true,
+      "title": "Actif"
+    }
+  },
+  "required": [
+    "name",
+    "role",
+    "pin"
+  ]
+}

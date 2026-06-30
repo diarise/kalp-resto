@@ -1,0 +1,37 @@
+const STAFF_KEY = "kalpe_current_staff";
+
+export function getCurrentStaff() {
+  try {
+    const s = localStorage.getItem(STAFF_KEY);
+    return s ? JSON.parse(s) : null;
+  } catch {
+    return null;
+  }
+}
+
+export function setCurrentStaff(staff) {
+  localStorage.setItem(STAFF_KEY, JSON.stringify(staff));
+}
+
+export function clearStaff() {
+  localStorage.removeItem(STAFF_KEY);
+}
+
+export const ROLE_LABELS = {
+  gerante: "Gérante",
+  caisse_matin: "Caisse Matin",
+  caisse_soir: "Caisse Soir",
+  serveur: "Serveur",
+};
+
+export const ROLE_PERMISSIONS = {
+  gerante: ["server", "kitchen", "bar", "report", "ledger", "menu_config"],
+  caisse_matin: ["server", "kitchen", "bar", "ledger"],
+  caisse_soir: ["server", "kitchen", "bar", "ledger"],
+  serveur: ["server", "kitchen", "bar"],
+};
+
+export function canAccess(role, view) {
+  const perms = ROLE_PERMISSIONS[role] || [];
+  return perms.includes(view);
+}

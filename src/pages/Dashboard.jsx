@@ -10,6 +10,11 @@ import KitchenView from "@/components/pos/KitchenView";
 import BarView from "@/components/pos/BarView";
 import ActivityReport from "@/components/pos/ActivityReport";
 import MenuManagement from "@/components/pos/MenuManagement";
+import TransactionLedger from "@/components/pos/TransactionLedger";
+import { useNavigate } from "react-router-dom";
+import { base44 } from "@/api/base44Client";
+import { getCurrentStaff, clearStaff } from "@/lib/staffSession";
+import { generateInvoiceNumber } from "@/lib/sariExport";
 
 const STORAGE_KEY = "kalpe_menu_items";
 
@@ -29,6 +34,8 @@ function loadMenuItems() {
 }
 
 export default function Dashboard() {
+  const navigate = useNavigate();
+  const staff = getCurrentStaff();
   const [tables, setTables] = useState(() => getInitialTables());
   const [activeTableId, setActiveTableId] = useState(null);
   const [showKitchenModal, setShowKitchenModal] = useState(false);
@@ -248,8 +255,27 @@ export default function Dashboard() {
     );
   }, []);
 
-  const handleCashierValidate = useCallback(() => {
+  const handleCashierValidate = useCallback(async (paymentMethod) => {
     if (!activeTableId) return;
+    const table = tables.find((t) => t.id === activeTableId);
+    if (table && table.currentTicket.length > 0) {
+      const invoice_number = generateInvoiceNumber();
+      const total_amount = table.currentTicket.reduce((sum, i) => sum + i.qty * i.price, 0);
+      try {
+        await base44.entities.Transaction.create({
+          invoice_number,
+          timestamp: new Date().toISOString(),
+          cashier_id: staff?.id || "",
+          cashier_name: staff?.name || "",
+          waiter_id: "",
+          waiter_name: "",
+          total_amount,
+          items_snapshot: JSON.stringify(table.currentTicket),
+          payment_method: paymentMethod || "",
+          table_name: table.name,
+        });
+      } catch (e) {}
+    }
     setTables((prev) =>
       prev.map((table) => {
         if (table.id !== activeTableId) return table;
@@ -258,11 +284,16 @@ export default function Dashboard() {
     );
     setShowCashierModal(false);
     setActiveTableId(null);
-  }, [activeTableId]);
+  }, [activeTableId, tables, staff]);
 
   const handleCloseCashierModal = useCallback(() => {
     setShowCashierModal(false);
   }, []);
+
+  const handleLogout = useCallback(() => {
+    clearStaff();
+    navigate("/");
+  }, [navigate]);
 
   // 3-stage state machine: pending -> preparing -> ready -> served
   const handleAdvanceOrder = useCallback((orderId) => {
@@ -359,9 +390,15 @@ export default function Dashboard() {
     });
   }, []);
 
+  useEffect(() => {
+    if (!staff) navigate("/");
+  }, [staff, navigate]);
+
+  if (!staff) return null;
+
   return (
     <div className="h-screen flex flex-col overflow-hidden" style={{ backgroundColor: "#F8FAFC" }}>
-      <StatusHeader currentView={currentView} onViewChange={setCurrentView} onOpenMenuConfig={() => setShowMenuConfig(true)} />
+      <StatusHeader currentView={currentView} onViewChange={setCurrentView} onOpenMenuConfig={() => setShowMenuConfig(true)} staff={staff} onLogout={handleLogout} />
 
       {currentView === "kitchen" ? (
         <KitchenView orders={kitchenOrders} onAdvance={handleAdvanceOrder} />
@@ -369,6 +406,8 @@ export default function Dashboard() {
         <BarView orders={barOrders} onAdvance={handleAdvanceBarOrder} />
       ) : currentView === "report" ? (
         <ActivityReport />
+      ) : currentView === "ledger" ? (
+        <TransactionLedger />
       ) : (
         <div className="flex-1 flex min-h-0 min-w-0">
           <div className="flex-1 min-w-0" style={{ flexBasis: "65%" }}>
