@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
-const VALID_KEYS = ["CLIENT-DAKAR-2026", "KALPE-DEMO-77"];
+const VALID_KEYS = ["CLIENT-DAKAR-2026"];
 const DOWNLOADS = {
-  win: "release/Kalpe Resto POS Setup 0.0.0.exe",
-  mac: "release/Kalpe Resto POS-0.0.0.dmg",
+  win: "/release/Kalpe Resto POS Setup 0.0.0.exe",
+  mac: "/release/Kalpe Resto POS-0.0.0.dmg",
 };
 
 const FEATURES = [
@@ -46,40 +46,28 @@ const DownloadIcon = ({ className }) => (
   <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg>
 );
 
-export default function Landing() {
+export default function LandingPage() {
   const [modalOpen, setModalOpen] = useState(false);
-  const [step, setStep] = useState("code");
-  const [accessCode, setAccessCode] = useState("");
-  const [error, setError] = useState(false);
-  const [shaking, setShaking] = useState(false);
+  const [modalStep, setModalStep] = useState("code");
+  const [inputCode, setInputCode] = useState("");
+  const [isError, setIsError] = useState(false);
 
   const openModal = () => {
-    setStep("code");
-    setAccessCode("");
-    setError(false);
+    setModalStep("code");
+    setInputCode("");
+    setIsError(false);
     setModalOpen(true);
   };
 
   const closeModal = () => setModalOpen(false);
 
   const validateCode = () => {
-    if (VALID_KEYS.includes(accessCode.trim().toUpperCase())) {
-      setStep("platform");
-      setError(false);
+    if (VALID_KEYS.includes(inputCode.trim().toUpperCase())) {
+      setModalStep("platform");
+      setIsError(false);
     } else {
-      setError(true);
-      setShaking(true);
-      setTimeout(() => setShaking(false), 400);
+      setIsError(true);
     }
-  };
-
-  const downloadFile = (platform) => {
-    const link = document.createElement("a");
-    link.href = DOWNLOADS[platform];
-    link.download = "";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
   };
 
   useEffect(() => {
@@ -92,7 +80,7 @@ export default function Landing() {
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 antialiased">
       {/* NAVBAR */}
-      <nav className="fixed top-0 left-0 right-0 z-40 border-b border-slate-800/50 backdrop-blur-xl bg-slate-950/70">
+      <nav className="sticky top-0 z-40 border-b border-slate-800/50 backdrop-blur-xl bg-slate-950/70">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center">
@@ -112,17 +100,17 @@ export default function Landing() {
       </nav>
 
       {/* HERO */}
-      <section className="pt-40 pb-24 px-6" style={{ background: "radial-gradient(ellipse at top, #1e293b 0%, #0f172a 60%, #020617 100%)" }}>
+      <section className="pt-32 pb-24 px-6" style={{ background: "radial-gradient(ellipse at top, #1e293b 0%, #0f172a 60%, #020617 100%)" }}>
         <div className="max-w-4xl mx-auto text-center animate-fade-in">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800/80 border border-slate-700 text-xs font-medium text-slate-300 mb-8">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-            Version 2026 disponible
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            Version Écosystème 2026 opérationnelle
           </div>
           <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight leading-tight mb-6">
             KALPÉ RESTO POS
           </h1>
           <p className="text-lg md:text-2xl text-slate-300 leading-relaxed max-w-3xl mx-auto mb-10">
-            Le système de caisse intelligent, ultra-rapide, et 100% autonome.
+            Le système de caisse intelligent, ultra-rapide et 100% autonome. Encaisser sans limites, même hors-ligne.
           </p>
           <button onClick={openModal} className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-slate-100 text-slate-900 text-base font-bold hover:bg-white transition-all active:scale-95 shadow-2xl shadow-slate-100/10">
             <DownloadIcon className="w-5 h-5" />
@@ -172,39 +160,39 @@ export default function Landing() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={closeModal}></div>
 
-          <div className={`relative w-full max-w-md bg-slate-900 rounded-2xl border border-slate-800 p-8 shadow-2xl ${shaking ? "animate-shake" : ""}`}>
+          <div className="relative w-full max-w-md bg-slate-900 rounded-2xl border border-slate-800 p-8 shadow-2xl">
             <button onClick={closeModal} className="absolute top-4 right-4 text-slate-500 hover:text-slate-300 transition-colors">
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
             </button>
 
-            {step === "code" ? (
+            {modalStep === "code" ? (
               <>
                 <div className="text-center mb-6">
                   <div className="w-14 h-14 rounded-2xl bg-slate-800 flex items-center justify-center mx-auto mb-4">
                     <svg className="w-7 h-7 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
                   </div>
-                  <h2 className="text-lg font-bold">Téléchargement sécurisé</h2>
+                  <h2 className="text-lg font-bold">Télécharger sécurisé</h2>
                   <p className="text-sm text-slate-400 mt-1">Entrez votre code d'accès de téléchargement unique.</p>
                 </div>
 
                 <input
                   type="text"
-                  value={accessCode}
-                  onChange={(e) => { setAccessCode(e.target.value); setError(false); }}
+                  value={inputCode}
+                  onChange={(e) => { setInputCode(e.target.value); setIsError(false); }}
                   onKeyDown={(e) => { if (e.key === "Enter") validateCode(); }}
                   placeholder="XXXX-XXXX-XXXX"
                   autoFocus
                   className="w-full h-12 rounded-xl bg-slate-950 border border-slate-800 text-center text-sm font-mono tracking-wider text-white outline-none focus:border-slate-600 transition-colors"
                 />
 
-                {error && (
+                {isError && (
                   <div className="mt-3 px-4 py-2.5 rounded-lg bg-red-500/10 border border-red-500/30 text-center">
                     <p className="text-sm text-red-400 font-medium">Code invalide. Veuillez contacter l'administrateur.</p>
                   </div>
                 )}
 
                 <button onClick={validateCode} className="w-full h-12 mt-4 rounded-xl bg-slate-100 text-slate-900 font-semibold hover:bg-white transition-all active:scale-95">
-                  Valider le code
+                  Vérifier l'autorisation
                 </button>
               </>
             ) : (
@@ -213,19 +201,19 @@ export default function Landing() {
                   <div className="w-14 h-14 rounded-2xl bg-emerald-500/10 flex items-center justify-center mx-auto mb-4">
                     <svg className="w-7 h-7 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                   </div>
-                  <h2 className="text-lg font-bold">Code validé ✓</h2>
+                  <h2 className="text-lg font-bold">Autorisation accordée</h2>
                   <p className="text-sm text-slate-400 mt-1">Sélectionnez votre système d'exploitation.</p>
                 </div>
 
                 <div className="space-y-3">
-                  <button onClick={() => downloadFile("win")} className="w-full h-14 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-semibold flex items-center justify-center gap-2 transition-all active:scale-95">
+                  <a href={DOWNLOADS.win} download className="w-full h-14 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-semibold flex items-center justify-center gap-2 transition-all active:scale-95">
                     <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.9-1.801"/></svg>
-                    Windows (.exe)
-                  </button>
-                  <button onClick={() => downloadFile("mac")} className="w-full h-14 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-semibold flex items-center justify-center gap-2 transition-all active:scale-95">
+                    Windows Client (.exe)
+                  </a>
+                  <a href={DOWNLOADS.mac} download className="w-full h-14 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-semibold flex items-center justify-center gap-2 transition-all active:scale-95">
                     <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.26 17.01 2.62 12.45 4.46 9.3c.92-1.59 2.56-2.6 4.34-2.63 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.36 2.85M12.36 3.94c.7-.85 1.85-1.43 2.86-1.44.12 1.1-.32 2.2-1 3-1 .85-2.1 1.43-3.35 1.42-.14-1.07.4-2.15.99-2.98z"/></svg>
-                    macOS (.dmg)
-                  </button>
+                    macOS Architecture (.dmg)
+                  </a>
                 </div>
 
                 <p className="text-xs text-slate-500 text-center mt-5">Une fois installé, utilisez votre clé de licence pour activer le terminal de caisse.</p>
