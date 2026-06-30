@@ -1,0 +1,4 @@
+AuthType Basic
+AuthName "Accès Restreint - Kalpé Resto POS"
+AuthUserFile /path/to/.htpasswd
+Require valid-user
