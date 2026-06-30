@@ -11,6 +11,7 @@ export const MENU_CATEGORIES = [
   { id: "supplements", label: "Supplément" },
   { id: "desserts", label: "Dessert" },
   { id: "chichas", label: "Chicha et Lounge" },
+  { id: "sale", label: "Plats Salés" },
 ];
 
 export const MENU_ITEMS = [
@@ -51,8 +52,8 @@ export const MENU_ITEMS = [
   { id: "grill-18", name: "SOLE MEUNIERE", price: 12000, category: "grills" },
   { id: "dibi-plat-1", name: "Plateau Dibi Salé (Petit)", price: 15000, category: "grills" },
   { id: "dibi-plat-2", name: "Plateau Dibi Salé (Grand)", price: 25000, category: "grills" },
-  { id: "dibi-sale-15", name: "Plateau Dibi Salé", price: 15000, category: "grills" },
-  { id: "dibi-sale-25", name: "Grand Plateau Dibi Salé", price: 25000, category: "grills" },
+  { id: "dibi-sale-15", name: "Plateau Dibi Salé", price: 15000, category: "sale" },
+  { id: "dibi-sale-25", name: "Grand Plateau Dibi Salé", price: 25000, category: "sale" },
 
   // POULET
   { id: "chk-1", name: "Choukouya de Poulet", price: 6000, category: "poulet" },

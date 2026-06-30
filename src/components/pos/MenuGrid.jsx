@@ -16,6 +16,7 @@ const CATEGORY_PLACEHOLDERS = {
   desserts: { bg: "bg-pink-50", emoji: "🍰" },
   fast_food: { bg: "bg-amber-50", emoji: "🍔" },
   chichas: { bg: "bg-purple-50", emoji: "💨" },
+  sale: { bg: "bg-red-50", emoji: "🍖" },
 };
 
 export default function MenuGrid({ activeTable, onBack, onAddItem, menuItems }) {
