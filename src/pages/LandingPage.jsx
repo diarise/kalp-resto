@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 const VALID_KEYS = ["CLIENT-DAKAR-2026", "DEVELOPER-MASTER"];
 const DOWNLOADS = {
-  win: "https://docs.google.com/uc?export=download&id=1_JBLzmixDM6yBpUrtlCRdF63HgMVsTnL",
+  win: "https://github.com/diarise/kalp-resto/releases/download/v1.0.0/Kalpe-Resto-POS-Windows-Installer.zip",
   mac: "/release/Kalpe Resto POS-0.0.0.dmg",
 };
 
