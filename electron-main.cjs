@@ -51,21 +51,44 @@ ipcMain.handle('write-sari-file', (event, content, filename) => {
   }
 });
 
-// IPC: silent thermal receipt printing — hidden window injected with HTML, sent to default printer
+// IPC: thermal receipt printing — hidden worker window injected with HTML, triggers system print dialog
 ipcMain.handle('print-receipt', async (event, htmlContent) => {
-  let workerWindow = new BrowserWindow({ show: false, webPreferences: { nodeIntegration: true } });
-  workerWindow.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(htmlContent)}`);
-
-  workerWindow.webContents.on('did-finish-load', () => {
-    workerWindow.webContents.print({
-      silent: true,
-      printBackground: true,
-      margins: { marginType: 'none' }
-    }, () => {
-      workerWindow.destroy();
+  let workerWindow = null;
+  try {
+    workerWindow = new BrowserWindow({
+      show: false,
+      webPreferences: {
+        nodeIntegration: false,
+        contextIsolation: true
+      }
     });
-  });
-  return { success: true };
+
+    await workerWindow.loadURL('data:text/html;charset=utf-8,' + encodeURIComponent(htmlContent));
+
+    const result = await new Promise((resolve) => {
+      workerWindow.webContents.print({
+        silent: false,
+        printBackground: true,
+        margins: { marginType: 'none' }
+      }, (success, failureReason) => {
+        if (success) {
+          resolve({ success: true });
+        } else {
+          resolve({ success: false, error: failureReason || 'Print cancelled or failed' });
+        }
+      });
+    });
+
+    if (workerWindow && !workerWindow.isDestroyed()) {
+      workerWindow.destroy();
+    }
+    return result;
+  } catch (error) {
+    if (workerWindow && !workerWindow.isDestroyed()) {
+      workerWindow.destroy();
+    }
+    return { success: false, error: error.message };
+  }
 });
 
 // White-label: force app name for macOS menu bar
