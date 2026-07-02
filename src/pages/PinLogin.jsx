@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { offlineStaff } from "@/lib/offlineDB";
 import { setCurrentStaff, ROLE_LABELS } from "@/lib/staffSession";
+import { startShift } from "@/lib/shiftManager";
 import { UtensilsCrossed, Delete, Lock } from "lucide-react";
 
 export default function PinLogin() {
@@ -31,6 +32,7 @@ export default function PinLogin() {
       if (results && results.length > 0) {
         const staff = results[0];
         setCurrentStaff(staff);
+        startShift(staff);
         navigate("/dashboard");
       } else {
         setError("PIN invalide");

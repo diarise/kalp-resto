@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { offlineTransaction } from "@/lib/offlineDB";
 import { generateZReportHtml, printThermalReceipt } from "@/lib/thermalReceipt";
 import { getCurrentStaff } from "@/lib/staffSession";
-import { Calendar, Printer, FileBarChart, TrendingUp, Receipt, ShoppingBag } from "lucide-react";
+import { getActiveShift, endShift } from "@/lib/shiftManager";
+import { Calendar, Printer, FileBarChart, TrendingUp, Receipt, ShoppingBag, Clock } from "lucide-react";
 
 export default function ZReport() {
   const navigate = useNavigate();
@@ -11,6 +12,7 @@ export default function ZReport() {
   const [loading, setLoading] = useState(true);
   const [reportDate, setReportDate] = useState(() => new Date().toISOString().slice(0, 10));
   const [printing, setPrinting] = useState(false);
+  const [activeShift, setActiveShift] = useState(() => getActiveShift());
 
   useEffect(() => {
     if (!getCurrentStaff()) navigate("/");
@@ -31,11 +33,14 @@ export default function ZReport() {
     loadTransactions();
   }, [loadTransactions]);
 
-  const dayTx = transactions.filter((t) => {
-    if (!t.timestamp) return false;
-    const d = new Date(t.timestamp);
-    return d.toISOString().slice(0, 10) === reportDate;
-  });
+  // When an active shift exists, isolate sales by shift_id; otherwise fall back to date
+  const dayTx = activeShift
+    ? transactions.filter((t) => t.shift_id === activeShift.id)
+    : transactions.filter((t) => {
+        if (!t.timestamp) return false;
+        const d = new Date(t.timestamp);
+        return d.toISOString().slice(0, 10) === reportDate;
+      });
 
   const totalRevenue = dayTx.reduce((sum, t) => sum + (t.total_amount || 0), 0);
   const txCount = dayTx.length;
@@ -78,10 +83,36 @@ export default function ZReport() {
     setPrinting(true);
     const html = generateZReportHtml({
       date: reportDate,
-      transactions,
-      cashierName: getCurrentStaff()?.name,
+      transactions: dayTx,
+      cashierName: activeShift?.cashier_name || getCurrentStaff()?.name,
     });
     await printThermalReceipt(html);
+    setPrinting(false);
+  };
+
+  const handleCloseShift = async () => {
+    setPrinting(true);
+    const shiftTx = transactions.filter((t) => t.shift_id === activeShift?.id);
+    const totalRevenue = shiftTx.reduce((sum, t) => sum + (t.total_amount || 0), 0);
+    const byMethod = {};
+    for (const t of shiftTx) {
+      const m = t.payment_method || "autre";
+      if (!byMethod[m]) byMethod[m] = { count: 0, total: 0 };
+      byMethod[m].count++;
+      byMethod[m].total += t.total_amount || 0;
+    }
+    endShift({
+      total_amount: totalRevenue,
+      transaction_count: shiftTx.length,
+      by_method: byMethod,
+    });
+    const html = generateZReportHtml({
+      date: reportDate,
+      transactions: shiftTx,
+      cashierName: activeShift?.cashier_name,
+    });
+    await printThermalReceipt(html);
+    setActiveShift(null);
     setPrinting(false);
   };
 
@@ -128,6 +159,37 @@ export default function ZReport() {
             </button>
           </div>
         </div>
+
+        {activeShift && (
+          <div className="bg-slate-800 rounded-2xl p-5 mb-6 flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="w-10 h-10 rounded-xl bg-slate-700 flex items-center justify-center">
+                <Clock className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <p className="text-sm font-bold text-white">Shift Actif — {activeShift.cashier_name}</p>
+                <p className="text-xs text-slate-400">
+                  Débuté le {new Date(activeShift.start_time).toLocaleString("fr-FR")}
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={handleCloseShift}
+              disabled={printing || loading}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-white bg-red-500 hover:bg-red-600 active:scale-95 transition-all disabled:opacity-40"
+            >
+              <FileBarChart className="w-4 h-4" />
+              {printing ? "Clôture..." : "Clôturer le shift"}
+            </button>
+          </div>
+        )}
+        {!activeShift && !loading && (
+          <div className="bg-amber-50 rounded-2xl p-5 mb-6 border border-amber-200">
+            <p className="text-sm font-medium text-amber-700">
+              Aucun shift actif. Les ventes ne sont pas isolées par session. Reconnectez-vous pour démarrer un nouveau shift.
+            </p>
+          </div>
+        )}
 
         {loading ? (
           <div className="flex items-center justify-center h-64">

@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow, ipcMain, Menu } = require('electron');
 const path = require('path');
 const fs = require('fs');
 const os = require('os');
@@ -67,6 +67,61 @@ ipcMain.handle('print-receipt', async (event, htmlContent) => {
   });
   return { success: true };
 });
+
+// White-label: force app name for macOS menu bar
+app.setName('Kalpé Resto POS');
+
+// Custom application menu — ensures "About" and "Quit" show brand name, not folder name
+const menuTemplate = [
+  {
+    label: 'Kalpé Resto POS',
+    submenu: [
+      { role: 'about', label: 'À propos de Kalpé Resto POS' },
+      { type: 'separator' },
+      { role: 'services' },
+      { type: 'separator' },
+      { role: 'hide', label: 'Masquer Kalpé Resto POS' },
+      { role: 'hideOthers' },
+      { role: 'unhide' },
+      { type: 'separator' },
+      { role: 'quit', label: 'Quitter Kalpé Resto POS' }
+    ]
+  },
+  {
+    label: 'Édition',
+    submenu: [
+      { role: 'undo', label: 'Annuler' },
+      { role: 'redo', label: 'Rétablir' },
+      { type: 'separator' },
+      { role: 'cut', label: 'Couper' },
+      { role: 'copy', label: 'Copier' },
+      { role: 'paste', label: 'Coller' },
+      { role: 'selectAll', label: 'Tout sélectionner' }
+    ]
+  },
+  {
+    label: 'Affichage',
+    submenu: [
+      { role: 'reload', label: 'Recharger' },
+      { role: 'forceReload', label: 'Forcer le rechargement' },
+      { role: 'toggleDevTools', label: 'Outils de développement' },
+      { type: 'separator' },
+      { role: 'resetZoom', label: 'Taille réelle' },
+      { role: 'zoomIn', label: 'Zoom avant' },
+      { role: 'zoomOut', label: 'Zoom arrière' },
+      { type: 'separator' },
+      { role: 'togglefullscreen', label: 'Plein écran' }
+    ]
+  },
+  {
+    label: 'Fenêtre',
+    submenu: [
+      { role: 'minimize', label: 'Réduire' },
+      { role: 'close', label: 'Fermer' }
+    ]
+  }
+];
+Menu.setApplicationMenu(Menu.buildFromTemplate(menuTemplate));
 
 app.whenReady().then(createWindow);
 
