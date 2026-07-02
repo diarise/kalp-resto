@@ -22,7 +22,7 @@ export default function StatusHeader({ currentView, onViewChange, onOpenMenuConf
           <UtensilsCrossed className="w-4 h-4 text-white" />
         </div>
         <span className="text-base font-semibold text-gray-800 tracking-tight">
-          Kalpé Resto
+          SAPPHIRE RESTAURANT
         </span>
       </div>
 

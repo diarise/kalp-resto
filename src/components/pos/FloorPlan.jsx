@@ -166,6 +166,9 @@ export default function FloorPlan({ tables, onSelectTable, onUpdateTableStatus, 
                 >
                   <Icon className={`w-5 h-5 ${cfg.text}`} />
                   <span className={`text-sm font-semibold ${cfg.text}`}>{table.name}</span>
+                  {table.subLabel && (
+                    <span className="text-[10px] font-medium text-gray-400 uppercase tracking-wider">{table.subLabel}</span>
+                  )}
                   <span className={`text-xs px-2.5 py-0.5 rounded-full font-medium ${cfg.badge}`}>
                     {cfg.label}
                   </span>
@@ -178,6 +181,9 @@ export default function FloorPlan({ tables, onSelectTable, onUpdateTableStatus, 
                 >
                   <Icon className={`w-5 h-5 ${cfg.text}`} />
                   <span className={`text-sm font-semibold ${cfg.text}`}>{table.name}</span>
+                  {table.subLabel && (
+                    <span className="text-[10px] font-medium text-gray-400 uppercase tracking-wider">{table.subLabel}</span>
+                  )}
                   <span className={`text-xs px-2.5 py-0.5 rounded-full font-medium ${cfg.badge}`}>
                     {cfg.label}
                   </span>
