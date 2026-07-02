@@ -202,36 +202,34 @@ export default function TicketSidebar({
               <span className="text-2xl font-extrabold text-gray-900">{formatPrice(total)}</span>
             </div>
 
-            {/* Print Receipt button */}
+            {/* ENVOYER — primary action */}
             <div className="px-5 pb-3">
               <button
-                onClick={() => {
-                  setShowPrintModal(true);
-                  if (onPrintReceipt) onPrintReceipt();
-                }}
-                className="w-full h-11 rounded-xl font-medium text-white flex items-center justify-center gap-2 transition-all active:scale-95"
-                style={{ backgroundColor: "#0096D6" }}
+                onClick={onSendKitchen}
+                disabled={activeTable.currentTicket.length === 0}
+                className="w-full h-14 rounded-2xl font-semibold text-white flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed bg-orange-600"
               >
-                <Printer className="w-4 h-4" />
-                Imprimer Note
+                <Send className="w-4 h-4" />
+                ENVOYER
               </button>
             </div>
 
             <div className="px-5 pb-5 flex gap-3">
               <button
-                onClick={onSendKitchen}
+                onClick={() => {
+                  setShowPrintModal(true);
+                  if (onPrintReceipt) onPrintReceipt();
+                }}
                 disabled={activeTable.currentTicket.length === 0}
-                className="flex-1 h-14 rounded-2xl font-semibold text-white flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
-                style={{ backgroundColor: "#0096D6" }}
+                className="flex-1 h-14 rounded-2xl font-semibold text-white flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed bg-sky-600"
               >
-                <Send className="w-4 h-4" />
-                ENVOYER CUISINE
+                <Printer className="w-4 h-4" />
+                Imprimer TICKET
               </button>
               <button
                 onClick={onCashOut}
                 disabled={activeTable.currentTicket.length === 0}
-                className="flex-1 h-14 rounded-2xl font-semibold text-white flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
-                style={{ backgroundColor: "#00A859" }}
+                className="flex-1 h-14 rounded-2xl font-semibold text-white flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed bg-emerald-600"
               >
                 <CreditCard className="w-4 h-4" />
                 ENCAISSER

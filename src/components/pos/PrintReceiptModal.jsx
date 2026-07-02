@@ -6,7 +6,6 @@ import { getCurrentStaff } from "@/lib/staffSession";
 const RESTAURANT_NAME = "KALPÉ RESTO";
 const RESTAURANT_ADDR = "Dakar, Sénégal";
 const SERVER_NAME = "Aminata";
-const TVA_RATE = 0.18;
 
 function formatDate(date) {
   const pad = (n) => String(n).padStart(2, "0");
@@ -25,8 +24,6 @@ export default function PrintReceiptModal({ table, onClose }) {
   const [printing, setPrinting] = useState(false);
   const [printResult, setPrintResult] = useState(null);
   const sousTotal = table.currentTicket.reduce((sum, i) => sum + i.qty * i.price, 0);
-  const tva = Math.round(sousTotal * TVA_RATE);
-  const totalNet = sousTotal + tva;
 
   const handlePrint = async () => {
     setPrinting(true);
@@ -154,17 +151,13 @@ export default function PrintReceiptModal({ table, onClose }) {
                 <span>Sous-total</span>
                 <span>{formatCFA(sousTotal)}</span>
               </div>
-              <div className="flex justify-between">
-                <span>TVA (18%)</span>
-                <span>{formatCFA(tva)}</span>
-              </div>
             </div>
 
             <div className="border-t border-dashed border-gray-300 my-2" />
 
             <div className="flex justify-between text-sm font-bold">
-              <span>TOTAL NET</span>
-              <span>{formatCFA(totalNet)}</span>
+              <span>TOTAL</span>
+              <span>{formatCFA(sousTotal)}</span>
             </div>
 
             <div className="border-t border-dashed border-gray-300 my-4" />
