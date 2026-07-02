@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 const VALID_KEYS = ["CLIENT-DAKAR-2026", "DEVELOPER-MASTER"];
 const DOWNLOADS = {
-  win: "https://github.com/diarise/kalp-resto/releases/download/v1.0.0-beta/SAPPHIRE.RESTAURANT.POS.Setup.0.0.0.exe",
+  win: "/downloads/SAPPHIRE.RESTAURANT.POS.Setup.0.0.0.exe",
 };
 
 const FEATURES = [
