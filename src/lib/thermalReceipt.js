@@ -4,7 +4,7 @@
  * Used by both customer receipts and Z-Reports.
  */
 
-import restaurantLogo from "@/assets/logo.jpeg";
+import { logoBase64 as restaurantLogo } from "@/assets/logoData";
 
 const RESTAURANT_NAME = "SAPPHIRE RESTAURANT";
 const RESTAURANT_ADDR = "Dakar, Sénégal";

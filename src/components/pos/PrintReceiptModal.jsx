@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { X, Printer } from "lucide-react";
 import { generateReceiptHtml, printThermalReceipt } from "@/lib/thermalReceipt";
 import { getCurrentStaff } from "@/lib/staffSession";
-import restaurantLogo from "@/assets/logo.jpeg";
+import { logoBase64 as restaurantLogo } from "@/assets/logoData";
 
 const RESTAURANT_NAME = "SAPPHIRE RESTAURANT";
 const RESTAURANT_ADDR = "Dakar, Sénégal";
