@@ -108,10 +108,8 @@ export function generateZReportHtml({ date, transactions, cashierName }) {
   const reportDate = date ? new Date(date) : new Date();
   const dayLabel = `${pad(reportDate.getDate())}/${pad(reportDate.getMonth() + 1)}/${reportDate.getFullYear()}`;
 
-  const dayTx = transactions.filter((t) => {
-    const td = new Date(t.timestamp);
-    return td.toDateString() === reportDate.toDateString();
-  });
+  // Caller is responsible for filtering (by date or by shift) — use transactions as-is
+  const dayTx = transactions;
 
   const totalRevenue = dayTx.reduce((sum, t) => sum + (t.total_amount || 0), 0);
   const txCount = dayTx.length;

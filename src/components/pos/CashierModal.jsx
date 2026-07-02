@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { X, Banknote, Smartphone, CreditCard, CheckCircle } from "lucide-react";
 import { offlineTransaction } from "@/lib/offlineDB";
 import { getCurrentStaff } from "@/lib/staffSession";
+import { getActiveShift } from "@/lib/shiftManager";
 import { generateInvoiceNumber } from "@/lib/sariExport";
 import { generateReceiptHtml, printThermalReceipt } from "@/lib/thermalReceipt";
 
@@ -26,6 +27,7 @@ export default function CashierModal({ table, total, onClose, onValidate }) {
     const invoiceNumber = generateInvoiceNumber();
     if (items.length > 0) {
       try {
+        const activeShift = getActiveShift();
         await offlineTransaction.create({
           invoice_number: invoiceNumber,
           timestamp: new Date().toISOString(),
@@ -35,6 +37,7 @@ export default function CashierModal({ table, total, onClose, onValidate }) {
           items_snapshot: JSON.stringify(items),
           payment_method: selected,
           table_name: table?.name || "Table",
+          shift_id: activeShift?.id || null,
         });
       } catch (e) {}
       // Auto-print thermal receipt after transaction is recorded

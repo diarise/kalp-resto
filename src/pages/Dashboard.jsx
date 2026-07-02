@@ -37,7 +37,13 @@ function loadMenuItems() {
 export default function Dashboard() {
   const navigate = useNavigate();
   const staff = getCurrentStaff();
-  const [tables, setTables] = useState(() => getInitialTables());
+  const [tables, setTables] = useState(() => {
+    try {
+      const stored = localStorage.getItem("kalpe_tables");
+      if (stored) return JSON.parse(stored);
+    } catch (e) {}
+    return getInitialTables();
+  });
   const [activeTableId, setActiveTableId] = useState(null);
   const [showKitchenModal, setShowKitchenModal] = useState(false);
   const [showCashierModal, setShowCashierModal] = useState(false);
@@ -78,6 +84,13 @@ export default function Dashboard() {
       localStorage.setItem("kalpe_bar_orders", JSON.stringify(barOrders));
     } catch (e) {}
   }, [barOrders]);
+
+  // Persist table states (orders, statuses) so data survives app restarts
+  useEffect(() => {
+    try {
+      localStorage.setItem("kalpe_tables", JSON.stringify(tables));
+    } catch (e) {}
+  }, [tables]);
 
   const handleMenuChange = useCallback((updated) => {
     setMenuItems(updated);
