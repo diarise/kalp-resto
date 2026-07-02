@@ -1,7 +1,7 @@
 import { Toaster } from "@/components/ui/toaster"
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClientInstance } from '@/lib/query-client'
-import { HashRouter as Router, Route, Routes } from 'react-router-dom';
+import { HashRouter as Router, Route, Routes, Navigate, Outlet } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
@@ -22,6 +22,13 @@ const isElectron =
     window.process.type === "renderer") ||
   (typeof navigator !== "undefined" &&
     navigator.userAgent.toLowerCase().indexOf(" electron/") > -1);
+
+const ActivationGate = () => {
+  if (!checkActivationStatus()) {
+    return <ActivationLock />;
+  }
+  return <Outlet />;
+};
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -53,9 +60,11 @@ const AuthenticatedApp = () => {
       <Route path="/register" element={<Register />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
-      <Route path="/" element={isElectron ? <PinLogin /> : <LandingPage />} />
-      <Route path="/app" element={<PinLogin />} />
-      <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/" element={isElectron ? <Navigate to="/terminal" replace /> : <LandingPage />} />
+      <Route element={<ActivationGate />}>
+        <Route path="/terminal" element={<PinLogin />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+      </Route>
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
@@ -63,10 +72,6 @@ const AuthenticatedApp = () => {
 
 
 function App() {
-  if (!checkActivationStatus()) {
-    return <ActivationLock />;
-  }
-
   return (
     <AuthProvider>
       <QueryClientProvider client={queryClientInstance}>

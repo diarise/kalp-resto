@@ -88,7 +88,7 @@ export default function LandingPage() {
             <span className="font-bold tracking-tight">SAPPHIRE RESTAURANT</span>
           </div>
           <div className="flex items-center gap-3">
-            <Link to="/app" className="px-4 py-2 rounded-lg text-slate-300 text-sm font-medium hover:text-white transition-colors">
+            <Link to="/terminal" className="px-4 py-2 rounded-lg text-slate-300 text-sm font-medium hover:text-white transition-colors">
               Accéder au terminal
             </Link>
             <button onClick={openModal} className="px-4 py-2 rounded-lg bg-slate-100 text-slate-900 text-sm font-semibold hover:bg-white transition-colors">
