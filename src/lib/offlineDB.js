@@ -9,6 +9,27 @@ import { base44 } from "@/api/base44Client";
 const STAFF_CACHE_KEY = "kalpe_offline_staff";
 const TX_CACHE_KEY = "kalpe_offline_transactions";
 
+/**
+ * Default staff roster — used to seed the local cache when the cloud API
+ * is unreachable (e.g. Electron desktop app running via file:// protocol).
+ * This ensures PIN login works 100% offline on first launch.
+ */
+const DEFAULT_STAFF = [
+  { id: "staff-gerante", name: "Safietou", role: "gerante", pin: "4556", active: true },
+  { id: "staff-caisse-matin", name: "Caisse Matin", role: "caisse_matin", pin: "3210", active: true },
+  { id: "staff-caisse-soir", name: "Caisse Soir", role: "caisse_soir", pin: "8990", active: true },
+  { id: "staff-serveur", name: "Aminata", role: "serveur", pin: "1234", active: true },
+];
+
+function ensureStaffSeed() {
+  const cached = readCache(STAFF_CACHE_KEY);
+  if (!cached || cached.length === 0) {
+    writeCache(STAFF_CACHE_KEY, DEFAULT_STAFF);
+    return DEFAULT_STAFF;
+  }
+  return cached;
+}
+
 function readCache(key) {
   try {
     const raw = localStorage.getItem(key);
@@ -60,7 +81,7 @@ export const offlineStaff = {
       }
       return results || [];
     } catch {
-      const cached = readCache(STAFF_CACHE_KEY);
+      const cached = ensureStaffSeed();
       return cached.filter((r) => matchesQuery(r, query));
     }
   },
@@ -73,7 +94,7 @@ export const offlineStaff = {
       }
       return results || [];
     } catch {
-      let cached = readCache(STAFF_CACHE_KEY);
+      let cached = ensureStaffSeed();
       cached = sortBy(cached, sort);
       if (limit) cached = cached.slice(0, limit);
       return cached;
