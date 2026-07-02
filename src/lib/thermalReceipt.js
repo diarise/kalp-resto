@@ -26,27 +26,34 @@ const THERMAL_CSS = `
   body {
     width: 80mm;
     font-family: 'Courier New', monospace;
-    font-size: 12px;
+    font-size: 13px;
+    font-weight: bold;
     color: #000;
-    line-height: 1.4;
+    line-height: 1.5;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
   }
   .center { text-align: center; }
   .right { text-align: right; }
-  .bold { font-weight: bold; }
-  .lg { font-size: 16px; }
-  .xl { font-size: 20px; }
-  .sm { font-size: 10px; }
-  .hr { border-top: 1px dashed #000; margin: 6px 0; }
-  .row { display: flex; justify-content: space-between; }
-  .items-header { display: flex; font-weight: bold; border-bottom: 1px solid #000; padding-bottom: 3px; margin-bottom: 3px; }
-  .item-line { display: flex; margin-bottom: 2px; }
+  .bold { font-weight: 900; }
+  .lg { font-size: 17px; }
+  .xl { font-size: 22px; }
+  .sm { font-size: 11px; font-weight: bold; }
+  .hr { border-top: 2px dashed #000; margin: 6px 0; }
+  .row { display: flex; justify-content: space-between; font-weight: bold; }
+  .items-header { display: flex; font-weight: 900; border-bottom: 2px solid #000; padding-bottom: 3px; margin-bottom: 3px; }
+  .item-line { display: flex; margin-bottom: 2px; font-weight: bold; }
   .item-qty { width: 8mm; }
   .item-name { flex: 1; }
   .item-price { width: 22mm; text-align: right; }
-  .item-mod { font-size: 10px; padding-left: 8mm; font-style: italic; }
-  .total-row { display: flex; justify-content: space-between; font-weight: bold; font-size: 16px; margin-top: 4px; }
+  .item-mod { font-size: 11px; padding-left: 8mm; font-style: italic; font-weight: bold; }
+  .total-row { display: flex; justify-content: space-between; font-weight: 900; font-size: 17px; margin-top: 4px; }
   .mt { margin-top: 8px; }
   .mb { margin-bottom: 8px; }
+  @media print {
+    body { color: #000; }
+    * { color: #000 !important; }
+  }
 `;
 
 function wrapHtml(body) {

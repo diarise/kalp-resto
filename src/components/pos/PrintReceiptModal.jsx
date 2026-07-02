@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { X, Printer } from "lucide-react";
 import { generateReceiptHtml, printThermalReceipt } from "@/lib/thermalReceipt";
 import { getCurrentStaff } from "@/lib/staffSession";
@@ -22,13 +22,27 @@ function formatCFA(price) {
 
 export default function PrintReceiptModal({ table, onClose }) {
   const now = new Date();
+  const [printing, setPrinting] = useState(false);
+  const [printResult, setPrintResult] = useState(null);
   const sousTotal = table.currentTicket.reduce((sum, i) => sum + i.qty * i.price, 0);
   const tva = Math.round(sousTotal * TVA_RATE);
   const totalNet = sousTotal + tva;
 
-  const handlePrint = () => {
-    const html = generateReceiptHtml({ table, staff: getCurrentStaff() });
-    printThermalReceipt(html);
+  const handlePrint = async () => {
+    setPrinting(true);
+    setPrintResult(null);
+    try {
+      const html = generateReceiptHtml({ table, staff: getCurrentStaff() });
+      const result = await printThermalReceipt(html);
+      if (result && result.success) {
+        setPrintResult("Impression lancée avec succès");
+      } else {
+        setPrintResult(result?.error || "Impression annulée ou échouée");
+      }
+    } catch (e) {
+      setPrintResult("Erreur d'impression — réessayez");
+    }
+    setPrinting(false);
   };
 
   return (
@@ -164,17 +178,24 @@ export default function PrintReceiptModal({ table, onClose }) {
 
           {/* Bottom action buttons */}
           <div className="px-6 pb-6 pt-2 space-y-2 bg-white" style={{ fontFamily: "ui-sans-serif, system-ui, sans-serif" }}>
+            {printResult && (
+              <p className={`text-xs text-center font-medium ${printResult.includes("succès") ? "text-emerald-600" : "text-red-500"}`}>
+                {printResult}
+              </p>
+            )}
             <button
               onClick={handlePrint}
-              className="w-full h-12 rounded-xl font-semibold text-white flex items-center justify-center gap-2 transition-all active:scale-95"
+              disabled={printing}
+              className="w-full h-12 rounded-xl font-semibold text-white flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
               style={{ backgroundColor: "#0096D6" }}
             >
               <Printer className="w-4 h-4" />
-              Lancer l'impression
+              {printing ? "Impression en cours..." : "Lancer l'impression"}
             </button>
             <button
               onClick={onClose}
-              className="w-full h-11 rounded-xl font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 transition-all active:scale-95"
+              disabled={printing}
+              className="w-full h-11 rounded-xl font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 transition-all active:scale-95 disabled:opacity-50"
             >
               Fermer
             </button>
