@@ -2,11 +2,11 @@ import React, { useState } from "react";
 import { X, Printer } from "lucide-react";
 import { generateReceiptHtml, printThermalReceipt } from "@/lib/thermalReceipt";
 import { getCurrentStaff } from "@/lib/staffSession";
+import restaurantLogo from "@/assets/logo.jpeg";
 
 const RESTAURANT_NAME = "SAPPHIRE RESTAURANT";
 const RESTAURANT_ADDR = "Dakar, Sénégal";
 const SERVER_NAME = "Aminata";
-const LOGO_URL = "https://raw.githubusercontent.com/diarise/kalp-resto/refs/heads/main/logo.jpeg?token=GHSAT0AAAAAAEBM4OJYSFO7GKXGWGFCSCTY2SF4GIA";
 
 function formatDate(date) {
   const pad = (n) => String(n).padStart(2, "0");
@@ -86,7 +86,7 @@ export default function PrintReceiptModal({ table, onClose }) {
           <div className="px-6 py-8">
             {/* Header */}
             <div className="text-center mb-4">
-              <img src={LOGO_URL} alt="Logo" className="mx-auto mb-2" style={{ width: "130px", height: "auto" }} />
+              <img src={restaurantLogo} alt="SAPPHIRE RESTAURANT Logo" className="mx-auto mb-2" style={{ width: "130px", height: "auto" }} />
               <h2 className="text-base font-bold tracking-wide">{RESTAURANT_NAME}</h2>
               <p className="text-[11px] text-gray-500">{RESTAURANT_ADDR}</p>
               <p className="text-[11px] text-gray-500 mt-0.5">Tél: +221 77 000 00 00</p>
