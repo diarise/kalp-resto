@@ -85,7 +85,7 @@ export default function LandingPage() {
             <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center">
               <svg className="w-5 h-5 text-slate-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
             </div>
-            <span className="font-bold tracking-tight">Kalpé Resto</span>
+            <span className="font-bold tracking-tight">SAPPHIRE RESTAURANT</span>
           </div>
           <div className="flex items-center gap-3">
             <Link to="/app" className="px-4 py-2 rounded-lg text-slate-300 text-sm font-medium hover:text-white transition-colors">
@@ -106,7 +106,7 @@ export default function LandingPage() {
             Version Écosystème 2026 opérationnelle
           </div>
           <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight leading-tight mb-6">
-            KALPÉ RESTO POS
+            SAPPHIRE RESTAURANT POS
           </h1>
           <p className="text-lg md:text-2xl text-slate-300 leading-relaxed max-w-3xl mx-auto mb-10">
             Le système de caisse intelligent, ultra-rapide et 100% autonome. Encaisser sans limites, même hors-ligne.
@@ -151,7 +151,7 @@ export default function LandingPage() {
 
       {/* FOOTER */}
       <footer className="py-8 px-6 border-t border-slate-800 text-center">
-        <p className="text-sm text-slate-500">© 2026 Kalpé Resto · Tous droits réservés</p>
+        <p className="text-sm text-slate-500">© 2026 SAPPHIRE RESTAURANT · Tous droits réservés</p>
       </footer>
 
       {/* DOWNLOAD MODAL */}

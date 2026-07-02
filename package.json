@@ -1,13 +1,13 @@
 {
-  "name": "kalpe-resto-pos",
+  "name": "sapphire-restaurant-pos",
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "author": "Kalpé Resto",
-  "description": "Kalpé Resto POS — Système de caisse intelligent et autonome",
+  "author": "SAPPHIRE RESTAURANT",
+  "description": "SAPPHIRE RESTAURANT POS — Système de caisse intelligent et autonome",
   "build": {
-    "appId": "com.kalperesto.pos",
-    "productName": "Kalpe Resto POS",
+    "appId": "com.sapphirerestaurant.pos",
+    "productName": "SAPPHIRE RESTAURANT POS",
     "directories": {
       "output": "release"
     },

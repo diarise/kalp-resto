@@ -4,9 +4,10 @@
  * Used by both customer receipts and Z-Reports.
  */
 
-const RESTAURANT_NAME = "KALPÉ RESTO";
+const RESTAURANT_NAME = "SAPPHIRE RESTAURANT";
 const RESTAURANT_ADDR = "Dakar, Sénégal";
 const RESTAURANT_PHONE = "+221 77 000 00 00";
+const LOGO_URL = "https://raw.githubusercontent.com/diarise/kalp-resto/refs/heads/main/logo.jpeg?token=GHSAT0AAAAAAEBM4OJYSFO7GKXGWGFCSCTY2SF4GIA";
 const TVA_RATE = 0.18;
 
 function pad(n) {
@@ -79,6 +80,7 @@ export function generateReceiptHtml({ table, staff, invoiceNumber, paymentMethod
 
   return wrapHtml(`
     <div class="center mb">
+      <img src="${LOGO_URL}" alt="Logo" style="width:130px;height:auto;display:block;margin:0 auto 4px;" />
       <div class="xl bold">${RESTAURANT_NAME}</div>
       <div class="sm">${RESTAURANT_ADDR}</div>
       <div class="sm">${RESTAURANT_PHONE}</div>
@@ -192,7 +194,7 @@ export function generateZReportHtml({ date, transactions, cashierName }) {
     <div class="hr"></div>
     <div class="center sm mt">
       <div>*** Fin du Rapport Z ***</div>
-      <div>Kalpé Resto POS</div>
+      <div>SAPPHIRE RESTAURANT POS</div>
     </div>
   `);
 }

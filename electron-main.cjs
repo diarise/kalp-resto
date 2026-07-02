@@ -13,7 +13,7 @@ function createWindow() {
   const win = new BrowserWindow({
     width: 1280,
     height: 800,
-    title: "Kalpé Resto POS",
+    title: "SAPPHIRE RESTAURANT POS",
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
@@ -92,22 +92,22 @@ ipcMain.handle('print-receipt', async (event, htmlContent) => {
 });
 
 // White-label: force app name for macOS menu bar
-app.setName('Kalpé Resto POS');
+app.setName('SAPPHIRE RESTAURANT POS');
 
 // Custom application menu — ensures "About" and "Quit" show brand name, not folder name
 const menuTemplate = [
   {
-    label: 'Kalpé Resto POS',
+    label: 'SAPPHIRE RESTAURANT POS',
     submenu: [
-      { role: 'about', label: 'À propos de Kalpé Resto POS' },
+      { role: 'about', label: 'À propos de SAPPHIRE RESTAURANT POS' },
       { type: 'separator' },
       { role: 'services' },
       { type: 'separator' },
-      { role: 'hide', label: 'Masquer Kalpé Resto POS' },
+      { role: 'hide', label: 'Masquer SAPPHIRE RESTAURANT POS' },
       { role: 'hideOthers' },
       { role: 'unhide' },
       { type: 'separator' },
-      { role: 'quit', label: 'Quitter Kalpé Resto POS' }
+      { role: 'quit', label: 'Quitter SAPPHIRE RESTAURANT POS' }
     ]
   },
   {

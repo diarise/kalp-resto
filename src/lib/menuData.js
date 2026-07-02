@@ -149,9 +149,9 @@ export const MENU_ITEMS = [
 
 export function getInitialTables() {
   const ZONES = [
-    { zone: "salle", count: 20 },
-    { zone: "terrasse", count: 50 },
-    { zone: "etage", count: 30 },
+    { zone: "salle", count: 20, prefix: "CS" },
+    { zone: "terrasse", count: 50, prefix: "CT" },
+    { zone: "etage", count: 30, prefix: "CE" },
   ];
 
   // Production mode: all tables start as 'Libre' (Free) with empty tickets
@@ -160,9 +160,11 @@ export function getInitialTables() {
   let globalId = 1;
   for (const z of ZONES) {
     for (let i = 1; i <= z.count; i++) {
+      const num = String(i).padStart(2, "0");
       tables.push({
         id: globalId++,
-        name: `Table ${String(i).padStart(2, "0")}`,
+        name: `Table ${num}`,
+        subLabel: `${z.prefix}${num}`,
         zone: z.zone,
         status: "libre",
         currentTicket: [],

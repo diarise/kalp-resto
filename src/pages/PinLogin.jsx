@@ -54,7 +54,7 @@ export default function PinLogin() {
           <div className="w-14 h-14 rounded-2xl bg-gray-900 flex items-center justify-center mb-4">
             <UtensilsCrossed className="w-7 h-7 text-white" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-800 tracking-tight">Kalpé Resto</h1>
+          <h1 className="text-2xl font-bold text-gray-800 tracking-tight">SAPPHIRE RESTAURANT</h1>
           <p className="text-sm text-gray-400 mt-1">Entrez votre PIN pour continuer</p>
         </div>
 
