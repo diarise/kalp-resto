@@ -1,7 +1,7 @@
 {
   "name": "sapphire-restaurant-pos",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "author": "SAPPHIRE RESTAURANT",
   "description": "SAPPHIRE RESTAURANT POS — Système de caisse intelligent et autonome",
@@ -18,10 +18,16 @@
       "package.json"
     ],
     "win": {
-      "target": "nsis"
+      "target": "nsis",
+      "artifactName": "Sapphire-Restaurant-POS-Setup-${version}.${ext}"
     },
     "mac": {
       "target": "dmg"
+    },
+    "publish": {
+      "provider": "github",
+      "owner": "diarise",
+      "repo": "kalp-resto"
     }
   },
   "main": "electron-main.cjs",

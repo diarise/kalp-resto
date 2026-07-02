@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 const VALID_KEYS = ["CLIENT-DAKAR-2026", "DEVELOPER-MASTER"];
 const DOWNLOADS = {
-  win: "https://github.com/diarise/kalp-resto/actions/runs/28560800001/artifacts/8027414799",
+  win: "https://github.com/diarise/kalp-resto/releases/download/v1.0.0-beta/Sapphire-Restaurant-POS-Setup-1.0.0.exe",
 };
 
 const FEATURES = [
@@ -207,7 +207,7 @@ export default function LandingPage() {
                 <div className="space-y-3">
                   <a href={DOWNLOADS.win} target="_blank" rel="noopener noreferrer" className="w-full h-16 rounded-xl bg-slate-100 hover:bg-white text-slate-900 font-bold flex items-center justify-center gap-2 transition-all active:scale-95 text-base">
                     <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.9-1.801"/></svg>
-                    Télécharger pour Windows (.zip)
+                    Télécharger pour Windows (.exe)
                   </a>
                 </div>
 

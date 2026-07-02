@@ -32,10 +32,13 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Upload installer artifact
-        uses: actions/upload-artifact@v4
+      - name: Upload to GitHub Release
+        uses: softprops/action-gh-release@v2
         with:
-          name: Kalpe-Resto-POS-Windows-Installer
-          path: release/*.exe
-          if-no-files-found: error
-          retention-days: 30
+          tag_name: v1.0.0-beta
+          name: SAPPHIRE RESTAURANT POS v1.0.0-beta
+          files: release/*.exe
+          prerelease: true
+          draft: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
