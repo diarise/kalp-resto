@@ -16,6 +16,13 @@ import LandingPage from '@/pages/LandingPage';
 import { checkActivationStatus } from '@/lib/activation';
 import ActivationLock from '@/components/auth/ActivationLock';
 
+const isElectron =
+  (typeof window !== "undefined" &&
+    window.process &&
+    window.process.type === "renderer") ||
+  (typeof navigator !== "undefined" &&
+    navigator.userAgent.toLowerCase().indexOf(" electron/") > -1);
+
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
 
@@ -46,7 +53,7 @@ const AuthenticatedApp = () => {
       <Route path="/register" element={<Register />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
-      <Route path="/" element={<LandingPage />} />
+      <Route path="/" element={isElectron ? <PinLogin /> : <LandingPage />} />
       <Route path="/app" element={<PinLogin />} />
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="*" element={<PageNotFound />} />
