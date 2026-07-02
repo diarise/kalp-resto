@@ -64,8 +64,6 @@ export function generateReceiptHtml({ table, staff, invoiceNumber, paymentMethod
   const now = new Date();
   const items = table?.currentTicket || [];
   const sousTotal = items.reduce((sum, i) => sum + i.qty * i.price, 0);
-  const tva = Math.round(sousTotal * TVA_RATE);
-  const totalNet = sousTotal + tva;
 
   const itemsHtml = items.map((item) => {
     const mods = [item.piment, item.cuisson, item.boisson].filter(Boolean);
@@ -98,9 +96,7 @@ export function generateReceiptHtml({ table, staff, invoiceNumber, paymentMethod
     </div>
     ${itemsHtml}
     <div class="hr"></div>
-    <div class="row"><span>Sous-total</span><span>${formatCFA(sousTotal)}</span></div>
-    <div class="row"><span>TVA (18%)</span><span>${formatCFA(tva)}</span></div>
-    <div class="total-row"><span>TOTAL NET</span><span>${formatCFA(totalNet)}</span></div>
+    <div class="total-row"><span>TOTAL</span><span>${formatCFA(sousTotal)}</span></div>
     <div class="hr"></div>
     <div class="row"><span>Paiement</span><span class="bold">${paymentMethod || "—"}</span></div>
     <div class="hr"></div>

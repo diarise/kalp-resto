@@ -149,19 +149,20 @@ export const MENU_ITEMS = [
 
 export function getInitialTables() {
   const ZONES = [
-    { zone: "salle", startId: 1, count: 15 },
-    { zone: "etage", startId: 16, count: 30 },
-    { zone: "terrasse", startId: 46, count: 30 },
+    { zone: "salle", count: 20 },
+    { zone: "terrasse", count: 50 },
+    { zone: "etage", count: 30 },
   ];
 
   // Production mode: all tables start as 'Libre' (Free) with empty tickets
+  // Each zone restarts numbering at 01; global id stays unique for lookups
   const tables = [];
+  let globalId = 1;
   for (const z of ZONES) {
-    for (let i = 0; i < z.count; i++) {
-      const id = z.startId + i;
+    for (let i = 1; i <= z.count; i++) {
       tables.push({
-        id,
-        name: `Table ${id}`,
+        id: globalId++,
+        name: `Table ${String(i).padStart(2, "0")}`,
         zone: z.zone,
         status: "libre",
         currentTicket: [],
