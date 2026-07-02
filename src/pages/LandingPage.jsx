@@ -3,8 +3,7 @@ import { Link } from "react-router-dom";
 
 const VALID_KEYS = ["CLIENT-DAKAR-2026", "DEVELOPER-MASTER"];
 const DOWNLOADS = {
-  win: "/release/Kalpe Resto POS Setup 0.0.0.exe",
-  mac: "/release/Kalpe Resto POS-0.0.0.dmg",
+  win: "https://github.com/diarise/kalp-resto/actions/runs/28560800001/artifacts/8027414799",
 };
 
 const FEATURES = [
@@ -116,7 +115,7 @@ export default function LandingPage() {
             <DownloadIcon className="w-5 h-5" />
             Télécharger l'application
           </button>
-          <p className="text-sm text-slate-500 mt-4">Windows & macOS · Installation en un clic</p>
+          <p className="text-sm text-slate-500 mt-4">Windows · Installation en un clic</p>
         </div>
       </section>
 
@@ -202,17 +201,17 @@ export default function LandingPage() {
                     <svg className="w-7 h-7 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                   </div>
                   <h2 className="text-lg font-bold">Autorisation accordée</h2>
-                  <p className="text-sm text-slate-400 mt-1">Sélectionnez votre système d'exploitation.</p>
+                  <p className="text-sm text-slate-400 mt-1">Cliquez ci-dessous pour télécharger le programme d'installation.</p>
                 </div>
 
                 <div className="space-y-3">
-                  <a href={DOWNLOADS.win} download className="w-full h-16 rounded-xl bg-slate-100 hover:bg-white text-slate-900 font-bold flex items-center justify-center gap-2 transition-all active:scale-95 text-base">
+                  <a href={DOWNLOADS.win} target="_blank" rel="noopener noreferrer" className="w-full h-16 rounded-xl bg-slate-100 hover:bg-white text-slate-900 font-bold flex items-center justify-center gap-2 transition-all active:scale-95 text-base">
                     <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.9-1.801"/></svg>
-                    Télécharger pour Windows (.exe)
+                    Télécharger pour Windows (.zip)
                   </a>
                 </div>
 
-                <p className="text-xs text-slate-500 text-center mt-5">Une fois installé, utilisez votre clé de licence pour activer le terminal de caisse.</p>
+                <p className="text-xs text-slate-500 text-center mt-5">Le fichier .zip contient l'installateur exécutable Windows. Une fois installé, utilisez votre clé de licence pour activer le terminal de caisse.</p>
               </>
             )}
           </div>
