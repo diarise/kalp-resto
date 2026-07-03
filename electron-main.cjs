@@ -92,6 +92,58 @@ ipcMain.handle('print-receipt', async (event, htmlContent) => {
   }
 });
 
+// IPC: get system installed hardware printers
+ipcMain.handle('get-printers', (event) => {
+  try {
+    const win = BrowserWindow.fromWebContents(event.sender);
+    if (!win) return [];
+    return win.webContents.getPrinters();
+  } catch (error) {
+    return [];
+  }
+});
+
+// IPC: silent background print to a specific hardware printer (prep tickets)
+ipcMain.handle('print-silent', async (event, htmlContent, deviceName) => {
+  let workerWindow = null;
+  try {
+    workerWindow = new BrowserWindow({
+      show: false,
+      webPreferences: {
+        nodeIntegration: false,
+        contextIsolation: true
+      }
+    });
+
+    await workerWindow.loadURL('data:text/html;charset=utf-8,' + encodeURIComponent(htmlContent));
+
+    const result = await new Promise((resolve) => {
+      workerWindow.webContents.print({
+        silent: true,
+        deviceName: deviceName || undefined,
+        printBackground: true,
+        margins: { marginType: 'none' }
+      }, (success, failureReason) => {
+        if (success) {
+          resolve({ success: true });
+        } else {
+          resolve({ success: false, error: failureReason || 'Print failed' });
+        }
+      });
+    });
+
+    if (workerWindow && !workerWindow.isDestroyed()) {
+      workerWindow.destroy();
+    }
+    return result;
+  } catch (error) {
+    if (workerWindow && !workerWindow.isDestroyed()) {
+      workerWindow.destroy();
+    }
+    return { success: false, error: error.message };
+  }
+});
+
 // White-label: force app name for macOS menu bar
 app.setName('SAPPHIRE RESTAURANT POS');
 

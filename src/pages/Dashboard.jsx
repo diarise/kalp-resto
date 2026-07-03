@@ -10,12 +10,15 @@ import KitchenView from "@/components/pos/KitchenView";
 import BarView from "@/components/pos/BarView";
 import ActivityReport from "@/components/pos/ActivityReport";
 import MenuManagement from "@/components/pos/MenuManagement";
+import PrinterConfigModal from "@/components/pos/PrinterConfigModal";
 import TransactionLedger from "@/components/pos/TransactionLedger";
 import ZReport from "@/components/pos/ZReport";
 import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { getCurrentStaff, clearStaff } from "@/lib/staffSession";
 import { generateInvoiceNumber } from "@/lib/sariExport";
+import { getKitchenPrinter, getBarPrinter } from "@/lib/printerConfig";
+import { generateKitchenPrepHtml, generateBarPrepHtml } from "@/lib/prepTicket";
 
 const STORAGE_KEY = "kalpe_menu_items";
 
@@ -48,6 +51,7 @@ export default function Dashboard() {
   const [showKitchenModal, setShowKitchenModal] = useState(false);
   const [showCashierModal, setShowCashierModal] = useState(false);
   const [showMenuConfig, setShowMenuConfig] = useState(false);
+  const [showPrinterConfig, setShowPrinterConfig] = useState(false);
   const [currentView, setCurrentView] = useState("server");
   const [kitchenOrders, setKitchenOrders] = useState(() => {
     try {
@@ -236,9 +240,24 @@ export default function Dashboard() {
         return { ...t, status: "occupee" };
       })
     );
+
+    // Silent split-routing: print prep tickets to assigned hardware printers
+    if (window.electronAPI && typeof window.electronAPI.printSilent === "function") {
+      const kitchenPrinter = getKitchenPrinter();
+      const barPrinter = getBarPrinter();
+      if (cuisineItems.length > 0 && kitchenPrinter) {
+        const html = generateKitchenPrepHtml({ table, staff, items: cuisineItems });
+        window.electronAPI.printSilent(html, kitchenPrinter);
+      }
+      if (barItems.length > 0 && barPrinter) {
+        const html = generateBarPrepHtml({ table, staff, items: barItems });
+        window.electronAPI.printSilent(html, barPrinter);
+      }
+    }
+
     // Keep ticket intact but deselect table so server returns to floor plan
     setShowKitchenModal(true);
-  }, [activeTableId, tables]);
+  }, [activeTableId, tables, staff]);
 
   const handleCloseKitchenModal = useCallback(() => {
     setShowKitchenModal(false);
@@ -393,7 +412,7 @@ export default function Dashboard() {
 
   return (
     <div className="h-screen flex flex-col overflow-hidden bg-slate-950">
-      <StatusHeader currentView={currentView} onViewChange={setCurrentView} onOpenMenuConfig={() => setShowMenuConfig(true)} staff={staff} onLogout={handleLogout} />
+      <StatusHeader currentView={currentView} onViewChange={setCurrentView} onOpenMenuConfig={() => setShowMenuConfig(true)} onOpenPrinterConfig={() => setShowPrinterConfig(true)} staff={staff} onLogout={handleLogout} />
 
       {currentView === "kitchen" ? (
         <KitchenView orders={kitchenOrders} onAdvance={handleAdvanceOrder} />
@@ -463,6 +482,9 @@ export default function Dashboard() {
           onChange={handleMenuChange}
           onClose={() => setShowMenuConfig(false)}
         />
+      )}
+      {showPrinterConfig && (
+        <PrinterConfigModal onClose={() => setShowPrinterConfig(false)} />
       )}
     </div>
   );

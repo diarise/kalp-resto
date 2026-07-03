@@ -1,5 +1,5 @@
 import React from "react";
-import { UtensilsCrossed, ChefHat, Wine, LayoutGrid, BarChart3, Settings, LogOut, Receipt, FileBarChart } from "lucide-react";
+import { UtensilsCrossed, ChefHat, Wine, LayoutGrid, BarChart3, Settings, LogOut, Receipt, FileBarChart, Printer } from "lucide-react";
 import { ROLE_LABELS, canAccess } from "@/lib/staffSession";
 import { PRODUCT_BRAND, LICENSEE_NAME } from "@/lib/branding";
 
@@ -12,7 +12,7 @@ const ALL_VIEWS = [
   { id: "z_report", label: "Contrôle de caisse", icon: FileBarChart },
 ];
 
-export default function StatusHeader({ currentView, onViewChange, onOpenMenuConfig, staff, onLogout }) {
+export default function StatusHeader({ currentView, onViewChange, onOpenMenuConfig, onOpenPrinterConfig, staff, onLogout }) {
   const views = ALL_VIEWS.filter((v) => !staff || canAccess(staff.role, v.id));
 
   return (
@@ -57,6 +57,15 @@ export default function StatusHeader({ currentView, onViewChange, onOpenMenuConf
           >
             <Settings className="w-3.5 h-3.5" />
             <span className="hidden sm:inline">Config Menu</span>
+          </button>
+        )}
+        {onOpenPrinterConfig && (!staff || canAccess(staff.role, "printer_config")) && (
+          <button
+            onClick={onOpenPrinterConfig}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition-all"
+          >
+            <Printer className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Imprimantes</span>
           </button>
         )}
         {staff && (
