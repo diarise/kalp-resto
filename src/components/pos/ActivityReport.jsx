@@ -57,56 +57,56 @@ export default function ActivityReport() {
       label: "Ventes Totales",
       value: formatCFA(totalRevenue),
       icon: TrendingUp,
-      bg: "bg-emerald-50",
-      iconBg: "bg-emerald-100",
-      iconColor: "text-emerald-600",
-      valueColor: "text-emerald-700",
+      bg: "bg-slate-900 border border-slate-800",
+      iconBg: "bg-emerald-500/10",
+      iconColor: "text-emerald-400",
+      valueColor: "text-emerald-400",
     },
     {
       label: "Tickets Fermés",
       value: String(txCount),
       icon: Receipt,
-      bg: "bg-blue-50",
-      iconBg: "bg-blue-100",
-      iconColor: "text-blue-600",
-      valueColor: "text-blue-700",
+      bg: "bg-slate-900 border border-slate-800",
+      iconBg: "bg-sky-500/10",
+      iconColor: "text-sky-400",
+      valueColor: "text-sky-400",
     },
     {
       label: "Articles Vendus",
       value: String(totalItemsSold),
       icon: ShoppingBag,
-      bg: "bg-amber-50",
-      iconBg: "bg-amber-100",
-      iconColor: "text-amber-600",
-      valueColor: "text-amber-700",
+      bg: "bg-slate-900 border border-slate-800",
+      iconBg: "bg-amber-500/10",
+      iconColor: "text-amber-400",
+      valueColor: "text-amber-400",
     },
     {
       label: "Plat le Plus Populaire",
       value: mostPopular,
       icon: Award,
-      bg: "bg-purple-50",
-      iconBg: "bg-purple-100",
-      iconColor: "text-purple-600",
-      valueColor: "text-purple-700",
+      bg: "bg-slate-900 border border-slate-800",
+      iconBg: "bg-purple-500/10",
+      iconColor: "text-purple-400",
+      valueColor: "text-purple-400",
     },
   ];
 
   const today = new Date().toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
 
   return (
-    <div className="flex-1 overflow-y-auto bg-gray-50">
+    <div className="flex-1 overflow-y-auto bg-slate-950">
       <div className="max-w-6xl mx-auto p-8">
         {/* Header */}
         <div className="mb-8">
-          <h2 className="text-2xl font-bold text-gray-800">Rapport d'Activité</h2>
-          <p className="text-sm text-gray-400 mt-1">
+          <h2 className="text-2xl font-bold text-slate-100">Rapport d'Activité</h2>
+          <p className="text-sm text-slate-500 mt-1">
             Vue d'ensemble des ventes et performances — {today}
           </p>
         </div>
 
         {loading ? (
           <div className="flex items-center justify-center h-64">
-            <div className="w-8 h-8 border-4 border-gray-100 border-t-gray-400 rounded-full animate-spin" />
+            <div className="w-8 h-8 border-4 border-slate-800 border-t-slate-400 rounded-full animate-spin" />
           </div>
         ) : (
           <>
@@ -117,15 +117,14 @@ export default function ActivityReport() {
                 return (
                   <div
                     key={stat.label}
-                    className={`${stat.bg} rounded-2xl p-5 border border-gray-100`}
-                    style={{ boxShadow: "0 2px 8px -2px rgba(0,0,0,0.04)" }}
+                    className={`${stat.bg} rounded-2xl p-5`}
                   >
                     <div className="flex items-start justify-between mb-3">
                       <div className={`w-10 h-10 rounded-xl ${stat.iconBg} flex items-center justify-center`}>
                         <Icon className={`w-5 h-5 ${stat.iconColor}`} />
                       </div>
                     </div>
-                    <p className="text-xs text-gray-500 font-medium uppercase tracking-wider mb-1">
+                    <p className="text-xs text-slate-500 font-medium uppercase tracking-wider mb-1">
                       {stat.label}
                     </p>
                     <p className={`text-xl font-extrabold ${stat.valueColor} ${stat.value.length > 12 ? "text-base" : ""}`}>
@@ -137,23 +136,23 @@ export default function ActivityReport() {
             </div>
 
             {/* Bar Graph */}
-            <div className="bg-white rounded-2xl border border-gray-100 p-6" style={{ boxShadow: "0 2px 8px -2px rgba(0,0,0,0.04)" }}>
+            <div className="bg-slate-900 rounded-2xl border border-slate-800 p-6">
               <div className="flex items-center gap-2 mb-6">
-                <Trophy className="w-5 h-5 text-amber-500" />
-                <h3 className="text-lg font-bold text-gray-800">Top Articles Vendus</h3>
+                <Trophy className="w-5 h-5 text-amber-400" />
+                <h3 className="text-lg font-bold text-slate-100">Top Articles Vendus</h3>
               </div>
 
               {topItems.length === 0 ? (
-                <p className="text-sm text-gray-400 text-center py-8">Aucune vente enregistrée pour le moment.</p>
+                <p className="text-sm text-slate-500 text-center py-8">Aucune vente enregistrée pour le moment.</p>
               ) : (
                 <div className="space-y-4">
                   {topItems.map(([name, data], idx) => (
                     <div key={name} className="flex items-center gap-4">
                       <div className="w-32 shrink-0 flex items-center gap-2">
-                        <span className="text-xs font-bold text-gray-300 w-4">{idx + 1}</span>
-                        <span className="text-sm font-medium text-gray-700 truncate">{name}</span>
+                        <span className="text-xs font-bold text-slate-600 w-4">{idx + 1}</span>
+                        <span className="text-sm font-medium text-slate-300 truncate">{name}</span>
                       </div>
-                      <div className="flex-1 h-8 bg-gray-50 rounded-lg overflow-hidden relative">
+                      <div className="flex-1 h-8 bg-slate-800 rounded-lg overflow-hidden relative">
                         <div
                           className="h-full rounded-lg flex items-center justify-end pr-2 transition-all duration-500"
                           style={{
@@ -169,10 +168,10 @@ export default function ActivityReport() {
                         </div>
                       </div>
                       <div className="w-24 shrink-0 text-right">
-                        <span className="text-sm font-semibold text-gray-600">
+                        <span className="text-sm font-semibold text-slate-300">
                           {data.revenue.toLocaleString("fr-FR")}
                         </span>
-                        <span className="text-xs text-gray-400 ml-0.5">CFA</span>
+                        <span className="text-xs text-slate-500 ml-0.5">CFA</span>
                       </div>
                     </div>
                   ))}

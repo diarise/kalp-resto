@@ -49,30 +49,29 @@ export default function CashierModal({ table, total, onClose, onValidate }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
       <div
-        className="bg-white rounded-2xl p-8 max-w-md w-full mx-4 relative"
-        style={{ boxShadow: "0 20px 25px -5px rgba(0,0,0,0.15)" }}
+        className="bg-slate-900 rounded-2xl border border-slate-800 p-8 max-w-md w-full mx-4 relative"
       >
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 w-8 h-8 rounded-lg hover:bg-gray-100 flex items-center justify-center transition-colors"
+          className="absolute top-4 right-4 w-8 h-8 rounded-lg hover:bg-slate-800 flex items-center justify-center transition-colors"
         >
-          <X className="w-4 h-4 text-gray-500" />
+          <X className="w-4 h-4 text-slate-400" />
         </button>
 
         <div className="flex flex-col">
-          <h2 className="text-xl font-bold text-gray-800">Encaissement</h2>
-          <p className="text-sm text-gray-400 mb-5">{table?.name}</p>
+          <h2 className="text-xl font-bold text-slate-100">Encaissement</h2>
+          <p className="text-sm text-slate-500 mb-5">{table?.name}</p>
 
           {/* Total */}
-          <div className="bg-gray-50 rounded-xl p-4 mb-5 flex items-center justify-between">
-            <span className="text-sm font-medium text-gray-500">Total à payer</span>
-            <span className="text-2xl font-extrabold text-gray-900">{formatPrice(total)}</span>
+          <div className="bg-slate-800 rounded-xl p-4 mb-5 flex items-center justify-between">
+            <span className="text-sm font-medium text-slate-400">Total à payer</span>
+            <span className="text-2xl font-extrabold text-white">{formatPrice(total)}</span>
           </div>
 
           {/* Payment Methods */}
-          <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-3">
+          <p className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-3">
             Mode de paiement
           </p>
           <div className="grid grid-cols-2 gap-3 mb-6">
@@ -86,7 +85,7 @@ export default function CashierModal({ table, total, onClose, onValidate }) {
                   className={`flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all active:scale-95 ${
                     isActive
                       ? `${method.activeBorder} ${method.activeBg} text-white`
-                      : `border-gray-100 bg-white text-gray-700 ${method.hoverBg}`
+                      : `border-slate-700 bg-slate-800 text-slate-300 ${method.hoverBg}`
                   }`}
                 >
                   <Icon className={`w-6 h-6 ${isActive ? "text-white" : method.iconColor}`} />
@@ -100,8 +99,7 @@ export default function CashierModal({ table, total, onClose, onValidate }) {
           <button
             onClick={handleSubmit}
             disabled={!selected || submitting}
-            className="h-14 rounded-2xl font-semibold text-white flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
-            style={{ backgroundColor: "#00A859" }}
+            className="h-14 rounded-xl font-semibold text-white flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed bg-emerald-600 hover:bg-emerald-500"
           >
             <CheckCircle className="w-5 h-5" />
             {submitting ? "Enregistrement..." : "Valider l'encaissement"}

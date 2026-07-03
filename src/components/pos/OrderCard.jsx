@@ -37,13 +37,12 @@ export default function OrderCard({ order, onAdvance }) {
   const borderColor = STATUS_BORDER_COLOR[orderStatus];
 
   return (
-    <div className="bg-white rounded-2xl border-2 border-gray-200 shadow-md flex flex-col overflow-hidden min-w-[320px] relative"
-         style={{ boxShadow: "0 4px 12px rgba(0,0,0,0.08)" }}>
+    <div className="bg-slate-900 rounded-2xl border border-slate-800 flex flex-col overflow-hidden min-w-[320px] relative">
       {/* Status top-border line */}
       <div className="h-1.5 w-full" style={{ backgroundColor: borderColor }} />
 
       {/* Header */}
-      <div className={`px-5 py-4 flex items-center justify-between ${isUrgent ? "bg-rose-600" : "bg-gray-800"}`}>
+      <div className={`px-5 py-4 flex items-center justify-between ${isUrgent ? "bg-rose-600" : "bg-slate-800"}`}>
         <span className="text-2xl font-extrabold text-white tracking-tight">{order.tableName}</span>
         <div className="flex items-center gap-1.5 text-white/90">
           <Clock className="w-4 h-4" />
@@ -52,7 +51,7 @@ export default function OrderCard({ order, onAdvance }) {
       </div>
 
       {/* Progress Timeline */}
-      <div className="px-5 pt-3 pb-2.5 bg-gray-50/50 border-b border-gray-100">
+      <div className="px-5 pt-3 pb-2.5 bg-slate-950/50 border-b border-slate-800">
         <OrderStepper status={orderStatus} variant="kitchen" />
       </div>
 
@@ -61,13 +60,13 @@ export default function OrderCard({ order, onAdvance }) {
         {order.items.map((item, idx) => {
           const modText = getModifierText(item);
           return (
-            <div key={idx} className="border-b border-gray-100 last:border-0 pb-3 last:pb-0">
+            <div key={idx} className="border-b border-slate-800 last:border-0 pb-3 last:pb-0">
               <div className="flex items-start gap-3">
-                <span className="text-3xl font-extrabold text-gray-900 shrink-0 leading-none">{item.qty}x</span>
+                <span className="text-3xl font-extrabold text-slate-100 shrink-0 leading-none">{item.qty}x</span>
                 <div className="flex-1 min-w-0">
-                  <p className="text-xl font-bold text-gray-800 leading-tight">{item.name}</p>
+                  <p className="text-xl font-bold text-slate-100 leading-tight">{item.name}</p>
                   {modText && (
-                    <p className="text-base italic text-amber-600 font-medium mt-1">→ {modText}</p>
+                    <p className="text-base italic text-amber-400 font-medium mt-1">→ {modText}</p>
                   )}
                 </div>
               </div>
@@ -81,24 +80,24 @@ export default function OrderCard({ order, onAdvance }) {
         {orderStatus === "preparing" ? (
           <button
             onClick={() => onAdvance(order.id)}
-            className="w-full h-12 rounded-2xl font-bold text-white text-sm flex items-center justify-center gap-2 transition-all duration-200 active:scale-[0.98] hover:shadow-lg"
-            style={{ backgroundColor: "#F59E0B", boxShadow: "0 2px 8px rgba(245,158,11,0.3)" }}
+            className="w-full h-12 rounded-xl font-bold text-white text-sm flex items-center justify-center gap-2 transition-all duration-200 active:scale-[0.98] hover:brightness-110"
+            style={{ backgroundColor: "#F59E0B" }}
           >
             ⏳ Marquer comme Prêt
           </button>
         ) : orderStatus === "ready" ? (
           <button
             onClick={() => onAdvance(order.id)}
-            className="w-full h-12 rounded-2xl font-bold text-white text-sm flex items-center justify-center gap-2 transition-all duration-200 active:scale-[0.98] hover:shadow-lg"
-            style={{ backgroundColor: "#00A859", boxShadow: "0 2px 8px rgba(0,168,89,0.3)" }}
+            className="w-full h-12 rounded-xl font-bold text-white text-sm flex items-center justify-center gap-2 transition-all duration-200 active:scale-[0.98] hover:brightness-110"
+            style={{ backgroundColor: "#00A859" }}
           >
             🍽️ Confirmer la Livraison
           </button>
         ) : (
           <button
             onClick={() => onAdvance(order.id)}
-            className="w-full h-12 rounded-2xl font-bold text-white text-sm flex items-center justify-center gap-2 transition-all duration-200 active:scale-[0.98] hover:shadow-lg"
-            style={{ backgroundColor: "#0096D6", boxShadow: "0 2px 8px rgba(0,150,214,0.3)" }}
+            className="w-full h-12 rounded-xl font-bold text-white text-sm flex items-center justify-center gap-2 transition-all duration-200 active:scale-[0.98] hover:brightness-110"
+            style={{ backgroundColor: "#0096D6" }}
           >
             👨‍🍳 Commencer la préparation
           </button>
