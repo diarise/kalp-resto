@@ -3,9 +3,9 @@ import { Users, Clock, CheckCircle, Bookmark, Wrench } from "lucide-react";
 import TableStatusMenu from "@/components/pos/TableStatusMenu";
 
 const ZONES = [
-  { id: "salle", label: "Rez-de-chaussée", emoji: "🛋️" },
-  { id: "etage", label: "1er Étage", emoji: "🏢" },
-  { id: "terrasse", label: "Terrasse", emoji: "🌿" },
+  { id: "salle", label: "SALLE", emoji: "🛋️" },
+  { id: "terrasse", label: "TERRASSE", emoji: "🌿" },
+  { id: "etage", label: "ETAGE", emoji: "🏢" },
 ];
 
 const STATUS_CONFIG = {
@@ -169,7 +169,7 @@ export default function FloorPlan({ tables, onSelectTable, onUpdateTableStatus, 
                   {table.subLabel && (
                     <span className="text-[10px] font-medium text-gray-400 uppercase tracking-wider">{table.subLabel}</span>
                   )}
-                  <span className={`text-xs px-2.5 py-0.5 rounded-full font-medium ${cfg.badge}`}>
+                  <span className={`text-base px-2.5 py-0.5 rounded-full font-bold ${cfg.badge}`}>
                     {cfg.label}
                   </span>
                 </div>
@@ -184,7 +184,7 @@ export default function FloorPlan({ tables, onSelectTable, onUpdateTableStatus, 
                   {table.subLabel && (
                     <span className="text-[10px] font-medium text-gray-400 uppercase tracking-wider">{table.subLabel}</span>
                   )}
-                  <span className={`text-xs px-2.5 py-0.5 rounded-full font-medium ${cfg.badge}`}>
+                  <span className={`text-base px-2.5 py-0.5 rounded-full font-bold ${cfg.badge}`}>
                     {cfg.label}
                   </span>
                   {itemCount > 0 && (

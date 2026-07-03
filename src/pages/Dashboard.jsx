@@ -287,7 +287,7 @@ export default function Dashboard() {
 
   const handleLogout = useCallback(() => {
     clearStaff();
-    navigate("/app");
+    navigate("/terminal");
   }, [navigate]);
 
   // 3-stage state machine: pending -> preparing -> ready -> served
@@ -386,13 +386,13 @@ export default function Dashboard() {
   }, []);
 
   useEffect(() => {
-    if (!staff) navigate("/app");
+    if (!staff) navigate("/terminal");
   }, [staff, navigate]);
 
   if (!staff) return null;
 
   return (
-    <div className="h-screen flex flex-col overflow-hidden" style={{ backgroundColor: "#F8FAFC" }}>
+    <div className="h-screen flex flex-col overflow-hidden bg-background">
       <StatusHeader currentView={currentView} onViewChange={setCurrentView} onOpenMenuConfig={() => setShowMenuConfig(true)} staff={staff} onLogout={handleLogout} />
 
       {currentView === "kitchen" ? (

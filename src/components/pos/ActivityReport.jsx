@@ -48,8 +48,7 @@ export default function ActivityReport() {
   }
 
   const topItems = Object.entries(itemMap)
-    .sort((a, b) => b[1].qty - a[1].qty)
-    .slice(0, 6);
+    .sort((a, b) => b[1].qty - a[1].qty);
   const maxQty = topItems.length > 0 ? topItems[0][1].qty : 1;
   const mostPopular = topItems.length > 0 ? topItems[0][0] : "—";
 

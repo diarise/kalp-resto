@@ -73,10 +73,6 @@ export default function ZReport() {
     .sort((a, b) => b[1].qty - a[1].qty)
     .slice(0, 8);
 
-  const TVA_RATE = 0.18;
-  const totalTVA = Math.round(totalRevenue * TVA_RATE / 1.18);
-  const totalHT = totalRevenue - totalTVA;
-
   const formatPrice = (price) => (price || 0).toLocaleString("fr-FR") + " CFA";
 
   const handlePrint = async () => {
@@ -134,7 +130,7 @@ export default function ZReport() {
               <FileBarChart className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-gray-800">Rapport Z</h2>
+              <h2 className="text-2xl font-bold text-gray-800">Contrôle de caisse</h2>
               <p className="text-sm text-gray-400">Clôture de journée — {reportDate}</p>
             </div>
           </div>
@@ -198,7 +194,7 @@ export default function ZReport() {
         ) : (
           <>
             {/* Summary Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-6">
               <div className="bg-emerald-50 rounded-2xl p-5 border border-gray-100" style={{ boxShadow: "0 2px 8px -2px rgba(0,0,0,0.04)" }}>
                 <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center mb-3">
                   <TrendingUp className="w-5 h-5 text-emerald-600" />
@@ -220,13 +216,7 @@ export default function ZReport() {
                 <p className="text-xs text-gray-500 font-medium uppercase tracking-wider mb-1">Articles Vendus</p>
                 <p className="text-xl font-extrabold text-amber-700">{totalItemsSold}</p>
               </div>
-              <div className="bg-slate-50 rounded-2xl p-5 border border-gray-100" style={{ boxShadow: "0 2px 8px -2px rgba(0,0,0,0.04)" }}>
-                <div className="w-10 h-10 rounded-xl bg-slate-200 flex items-center justify-center mb-3">
-                  <FileBarChart className="w-5 h-5 text-slate-600" />
-                </div>
-                <p className="text-xs text-gray-500 font-medium uppercase tracking-wider mb-1">Total HT</p>
-                <p className="text-xl font-extrabold text-slate-700">{formatPrice(totalHT)}</p>
-              </div>
+
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
@@ -246,10 +236,7 @@ export default function ZReport() {
                         <span className="text-sm font-semibold text-gray-800">{formatPrice(data.total)}</span>
                       </div>
                     ))}
-                    <div className="flex items-center justify-between pt-3 mt-2 border-t-2 border-gray-100">
-                      <span className="text-sm font-bold text-gray-800">Total TVA (18%)</span>
-                      <span className="text-sm font-bold text-gray-600">{formatPrice(totalTVA)}</span>
-                    </div>
+
                   </div>
                 )}
               </div>

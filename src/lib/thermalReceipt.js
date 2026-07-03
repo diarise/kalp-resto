@@ -9,7 +9,6 @@ import { logoBase64 as restaurantLogo } from "@/assets/logoData";
 const RESTAURANT_NAME = "SAPPHIRE RESTAURANT";
 const RESTAURANT_ADDR = "Dakar, Sénégal";
 const RESTAURANT_PHONE = "+221 77 000 00 00";
-const TVA_RATE = 0.18;
 
 function pad(n) {
   return String(n).padStart(2, "0");
@@ -147,9 +146,6 @@ export function generateZReportHtml({ date, transactions, cashierName }) {
     .sort((a, b) => b[1].qty - a[1].qty)
     .slice(0, 10);
 
-  const totalTVA = Math.round(totalRevenue * TVA_RATE / 1.18);
-  const totalHT = totalRevenue - totalTVA;
-
   const methodRows = Object.entries(byMethod).map(([method, data]) => `
     <div class="row">
       <span>${method} (${data.count})</span>
@@ -178,8 +174,6 @@ export function generateZReportHtml({ date, transactions, cashierName }) {
     <div class="hr"></div>
     <div class="center bold lg">RÉCAPITULATIF</div>
     <div class="row mt"><span>Nombre de transactions</span><span class="bold">${txCount}</span></div>
-    <div class="row"><span>Total HT</span><span>${formatCFA(totalHT)}</span></div>
-    <div class="row"><span>Total TVA (18%)</span><span>${formatCFA(totalTVA)}</span></div>
     <div class="total-row"><span>TOTAL TTC</span><span>${formatCFA(totalRevenue)}</span></div>
     <div class="hr"></div>
     <div class="center bold mt mb">PAR MODE DE PAIEMENT</div>

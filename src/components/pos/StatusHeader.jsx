@@ -8,7 +8,7 @@ const ALL_VIEWS = [
   { id: "bar", label: "Bar", icon: Wine },
   { id: "report", label: "Rapport", icon: BarChart3 },
   { id: "ledger", label: "Caisse", icon: Receipt },
-  { id: "z_report", label: "Rapport Z", icon: FileBarChart },
+  { id: "z_report", label: "Contrôle de caisse", icon: FileBarChart },
 ];
 
 export default function StatusHeader({ currentView, onViewChange, onOpenMenuConfig, staff, onLogout }) {

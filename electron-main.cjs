@@ -14,6 +14,7 @@ function createWindow() {
     width: 1280,
     height: 800,
     title: "SAPPHIRE RESTAURANT POS",
+    autoHideMenuBar: true,
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
@@ -144,7 +145,11 @@ const menuTemplate = [
     ]
   }
 ];
-Menu.setApplicationMenu(Menu.buildFromTemplate(menuTemplate));
+if (process.platform === 'win32') {
+  Menu.setApplicationMenu(null);
+} else {
+  Menu.setApplicationMenu(Menu.buildFromTemplate(menuTemplate));
+}
 
 app.whenReady().then(createWindow);
 
