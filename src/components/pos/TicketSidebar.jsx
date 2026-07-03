@@ -40,23 +40,23 @@ export default function TicketSidebar({
   };
 
   return (
-    <div className="w-full h-full flex flex-col bg-white border-l border-gray-100">
+    <div className="w-full h-full flex flex-col bg-slate-900 border-l border-slate-800">
       {/* Header */}
-      <div className="shrink-0 px-5 py-4 border-b border-gray-100">
+      <div className="shrink-0 px-5 py-4 border-b border-slate-800">
         {activeTable ? (
           <div>
-            <p className="text-xs text-gray-400 uppercase tracking-wider font-medium">Ticket Global</p>
-            <p className="text-lg font-bold text-gray-800 mt-0.5">{activeTable.name}</p>
+            <p className="text-xs text-slate-500 uppercase tracking-wider font-medium">Ticket Global</p>
+            <p className="text-lg font-bold text-slate-100 mt-0.5">{activeTable.name}</p>
             {orderStatus && orderStatus !== "served" && activeTable.currentTicket.length > 0 && (
-              <div className="mt-4 py-3 px-2 rounded-xl bg-gray-50/80">
+              <div className="mt-4 py-3 px-2 rounded-xl bg-slate-800/50">
                 <OrderStepper status={orderStatus} variant="sidebar" />
               </div>
             )}
           </div>
         ) : (
           <div className="text-center py-2">
-            <ShoppingBag className="w-6 h-6 text-gray-300 mx-auto mb-2" />
-            <p className="text-sm text-gray-400">Sélectionnez une table pour commencer</p>
+            <ShoppingBag className="w-6 h-6 text-slate-600 mx-auto mb-2" />
+            <p className="text-sm text-slate-500">Sélectionnez une table pour commencer</p>
           </div>
         )}
       </div>
@@ -65,10 +65,10 @@ export default function TicketSidebar({
       <div className="flex-1 overflow-y-auto px-5 py-3">
         {activeTable && activeTable.currentTicket.length === 0 && (
           <div className="flex flex-col items-center justify-center h-full text-center px-4">
-            <div className="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center mb-3">
-              <ShoppingBag className="w-5 h-5 text-gray-300" />
+            <div className="w-12 h-12 rounded-2xl bg-slate-800 flex items-center justify-center mb-3">
+              <ShoppingBag className="w-5 h-5 text-slate-600" />
             </div>
-            <p className="text-sm text-gray-400 leading-relaxed">
+            <p className="text-sm text-slate-500 leading-relaxed">
               Aucun article sur ce ticket. Touchez le menu à gauche pour ajouter.
             </p>
           </div>
@@ -80,17 +80,17 @@ export default function TicketSidebar({
           const modifierText = getItemModifiers(item);
 
           return (
-            <div key={item.id} className="py-3 border-b border-gray-50 last:border-0">
+            <div key={item.id} className="py-3 border-b border-slate-800 last:border-0">
               <div className="flex items-center gap-3">
                 <div className="flex-1 min-w-0 cursor-pointer" onClick={() => handleRowClick(item.id)}>
                   <div className="flex items-center gap-1">
-                    <p className="text-sm font-medium text-gray-800 truncate">{item.name}</p>
-                    <ChevronDown className={`w-3 h-3 text-gray-400 shrink-0 transition-transform ${isExpanded ? "rotate-180" : ""}`} />
+                    <p className="text-sm font-medium text-slate-100 truncate">{item.name}</p>
+                    <ChevronDown className={`w-3 h-3 text-slate-500 shrink-0 transition-transform ${isExpanded ? "rotate-180" : ""}`} />
                   </div>
                   {modifierText ? (
-                    <p className="text-xs italic text-gray-400 mt-0.5">→ {modifierText}</p>
+                    <p className="text-xs italic text-slate-500 mt-0.5">→ {modifierText}</p>
                   ) : (
-                    <p className="text-xs text-gray-400 mt-0.5">{formatPrice(item.price)} / unité</p>
+                    <p className="text-xs text-slate-500 mt-0.5">{formatPrice(item.price)} / unité</p>
                   )}
                 </div>
 
@@ -103,20 +103,20 @@ export default function TicketSidebar({
                         onUpdateQty(item.id, item.qty - 1);
                       }
                     }}
-                    className="w-7 h-7 rounded-lg bg-gray-100 flex items-center justify-center text-gray-500 hover:bg-gray-200 active:scale-90 transition-all"
+                    className="w-7 h-7 rounded-lg bg-slate-800 flex items-center justify-center text-slate-400 hover:bg-slate-700 active:scale-90 transition-all"
                   >
                     {item.qty <= 1 ? <Trash2 className="w-3 h-3" /> : <Minus className="w-3 h-3" />}
                   </button>
-                  <span className="w-6 text-center text-sm font-semibold text-gray-800">{item.qty}</span>
+                  <span className="w-6 text-center text-sm font-semibold text-slate-100">{item.qty}</span>
                   <button
                     onClick={() => onUpdateQty(item.id, item.qty + 1)}
-                    className="w-7 h-7 rounded-lg bg-gray-100 flex items-center justify-center text-gray-500 hover:bg-gray-200 active:scale-90 transition-all"
+                    className="w-7 h-7 rounded-lg bg-slate-800 flex items-center justify-center text-slate-400 hover:bg-slate-700 active:scale-90 transition-all"
                   >
                     <Plus className="w-3 h-3" />
                   </button>
                 </div>
 
-                <span className="text-sm font-semibold text-gray-800 w-20 text-right shrink-0">
+                <span className="text-sm font-semibold text-slate-100 w-20 text-right shrink-0">
                   {formatPrice(item.qty * item.price)}
                 </span>
               </div>
@@ -126,7 +126,7 @@ export default function TicketSidebar({
                 <div className="mt-2.5 pl-1 space-y-2">
                   {isBoisson ? (
                     <div className="flex flex-wrap items-center gap-1.5">
-                      <span className="text-[10px] font-semibold uppercase tracking-wider text-gray-400 mr-1">Boisson:</span>
+                      <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 mr-1">Boisson:</span>
                       {BOISSON_OPTIONS.map((opt) => {
                         const isActive = item.boisson === opt;
                         return (
@@ -135,8 +135,8 @@ export default function TicketSidebar({
                             onClick={() => onSetModifier(item.id, "boisson", isActive ? "" : opt)}
                             className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-all active:scale-95 ${
                               isActive
-                                ? "bg-gray-800 text-white"
-                                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                                ? "bg-slate-100 text-slate-900"
+                                : "bg-slate-800 text-slate-400 hover:bg-slate-700"
                             }`}
                           >
                             {opt}
@@ -147,7 +147,7 @@ export default function TicketSidebar({
                   ) : (
                     <>
                       <div className="flex flex-wrap items-center gap-1.5">
-                        <span className="text-[10px] font-semibold uppercase tracking-wider text-gray-400 mr-1">Piment:</span>
+                        <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 mr-1">Piment:</span>
                         {PIMENT_OPTIONS.map((opt) => {
                           const isActive = item.piment === opt;
                           return (
@@ -156,8 +156,8 @@ export default function TicketSidebar({
                               onClick={() => onSetModifier(item.id, "piment", isActive ? "" : opt)}
                               className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-all active:scale-95 ${
                                 isActive
-                                  ? "bg-gray-800 text-white"
-                                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                                  ? "bg-slate-100 text-slate-900"
+                                  : "bg-slate-800 text-slate-400 hover:bg-slate-700"
                               }`}
                             >
                               {opt}
@@ -166,7 +166,7 @@ export default function TicketSidebar({
                         })}
                       </div>
                       <div className="flex flex-wrap items-center gap-1.5">
-                        <span className="text-[10px] font-semibold uppercase tracking-wider text-gray-400 mr-1">Cuisson:</span>
+                        <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 mr-1">Cuisson:</span>
                         {CUISSON_OPTIONS.map((opt) => {
                           const isActive = item.cuisson === opt;
                           return (
@@ -175,8 +175,8 @@ export default function TicketSidebar({
                               onClick={() => onSetModifier(item.id, "cuisson", isActive ? "" : opt)}
                               className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-all active:scale-95 ${
                                 isActive
-                                  ? "bg-gray-800 text-white"
-                                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                                  ? "bg-slate-100 text-slate-900"
+                                  : "bg-slate-800 text-slate-400 hover:bg-slate-700"
                               }`}
                             >
                               {opt}
@@ -194,12 +194,12 @@ export default function TicketSidebar({
       </div>
 
       {/* Total + Actions */}
-      <div className="shrink-0 border-t border-gray-100">
+      <div className="shrink-0 border-t border-slate-800">
         {activeTable && (
           <>
             <div className="px-5 py-4 flex items-center justify-between">
-              <span className="text-sm font-medium text-gray-500 uppercase tracking-wider">Total</span>
-              <span className="text-2xl font-extrabold text-gray-900">{formatPrice(total)}</span>
+              <span className="text-sm font-medium text-slate-400 uppercase tracking-wider">Total</span>
+              <span className="text-2xl font-extrabold text-white">{formatPrice(total)}</span>
             </div>
 
             {/* ENVOYER — primary action */}
@@ -207,7 +207,7 @@ export default function TicketSidebar({
               <button
                 onClick={onSendKitchen}
                 disabled={activeTable.currentTicket.length === 0}
-                className="w-full h-14 rounded-2xl font-semibold text-white flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed bg-orange-600"
+                className="w-full h-14 rounded-xl font-semibold text-white flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed bg-orange-600 hover:bg-orange-500"
               >
                 <Send className="w-4 h-4" />
                 ENVOYER
@@ -221,7 +221,7 @@ export default function TicketSidebar({
                   if (onPrintReceipt) onPrintReceipt();
                 }}
                 disabled={activeTable.currentTicket.length === 0}
-                className="flex-1 h-14 rounded-2xl font-semibold text-white flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed bg-sky-600"
+                className="flex-1 h-14 rounded-xl font-semibold text-white flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed bg-sky-600 hover:bg-sky-500"
               >
                 <Printer className="w-4 h-4" />
                 Imprimer TICKET
@@ -229,7 +229,7 @@ export default function TicketSidebar({
               <button
                 onClick={onCashOut}
                 disabled={activeTable.currentTicket.length === 0}
-                className="flex-1 h-14 rounded-2xl font-semibold text-white flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed bg-emerald-600"
+                className="flex-1 h-14 rounded-xl font-semibold text-white flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed bg-emerald-600 hover:bg-emerald-500"
               >
                 <CreditCard className="w-4 h-4" />
                 ENCAISSER

@@ -10,61 +10,61 @@ const ZONES = [
 
 const STATUS_CONFIG = {
   libre: {
-    bg: "bg-emerald-50",
-    border: "border-emerald-200",
-    text: "text-emerald-700",
-    badge: "bg-emerald-100 text-emerald-600",
-    dot: "bg-emerald-500",
+    bg: "bg-slate-900",
+    border: "border-slate-800",
+    text: "text-emerald-400",
+    badge: "bg-emerald-500/10 text-emerald-400",
+    dot: "bg-emerald-400",
     label: "Libre",
     icon: CheckCircle,
     disabled: false,
   },
   occupee: {
-    bg: "bg-rose-50",
-    border: "border-rose-200",
-    text: "text-rose-700",
-    badge: "bg-rose-100 text-rose-600",
-    dot: "bg-rose-500",
+    bg: "bg-slate-900",
+    border: "border-slate-800",
+    text: "text-rose-400",
+    badge: "bg-rose-500/10 text-rose-400",
+    dot: "bg-rose-400",
     label: "Occupée",
     icon: Users,
     disabled: false,
   },
   attente: {
-    bg: "bg-amber-50",
-    border: "border-amber-200",
-    text: "text-amber-700",
-    badge: "bg-amber-100 text-amber-600",
-    dot: "bg-amber-500",
+    bg: "bg-slate-900",
+    border: "border-slate-800",
+    text: "text-amber-400",
+    badge: "bg-amber-500/10 text-amber-400",
+    dot: "bg-amber-400",
     label: "En attente",
     icon: Clock,
     disabled: false,
   },
   reservee: {
-    bg: "bg-purple-50",
-    border: "border-purple-200",
-    text: "text-purple-700",
-    badge: "bg-purple-100 text-purple-600",
-    dot: "bg-purple-500",
+    bg: "bg-slate-900",
+    border: "border-slate-800",
+    text: "text-purple-400",
+    badge: "bg-purple-500/10 text-purple-400",
+    dot: "bg-purple-400",
     label: "Réservée",
     icon: Bookmark,
     disabled: false,
   },
   horsService: {
-    bg: "bg-gray-100",
-    border: "border-gray-200",
-    text: "text-gray-500",
-    badge: "bg-gray-200 text-gray-500",
-    dot: "bg-gray-400",
+    bg: "bg-slate-900",
+    border: "border-slate-800",
+    text: "text-slate-500",
+    badge: "bg-slate-700/50 text-slate-400",
+    dot: "bg-slate-500",
     label: "Hors service",
     icon: Wrench,
     disabled: true,
   },
   pret: {
-    bg: "bg-teal-50",
-    border: "border-teal-300",
-    text: "text-teal-700",
-    badge: "bg-teal-100 text-teal-700",
-    dot: "bg-teal-500",
+    bg: "bg-slate-900",
+    border: "border-slate-800",
+    text: "text-teal-400",
+    badge: "bg-teal-500/10 text-teal-400",
+    dot: "bg-teal-400",
     label: "Prêt à servir",
     icon: CheckCircle,
     disabled: false,
@@ -97,12 +97,12 @@ export default function FloorPlan({ tables, onSelectTable, onUpdateTableStatus, 
   return (
     <div className="h-full flex flex-col p-6 overflow-hidden">
       <div className="mb-4">
-        <h2 className="text-lg font-semibold text-slate-800">Plan de Salle</h2>
+        <h2 className="text-lg font-semibold text-slate-100">Plan de Salle</h2>
         <p className="text-sm text-slate-500 mt-0.5">Sélectionnez une table pour prendre commande</p>
       </div>
 
       {/* Zone Switcher */}
-      <div className="flex items-center gap-1.5 bg-gray-100 rounded-xl p-1 mb-4 w-fit">
+      <div className="flex items-center gap-1.5 bg-slate-900 rounded-xl p-1 mb-4 w-fit border border-slate-800">
         {ZONES.map((zone) => {
           const isActive = activeZone === zone.id;
           return (
@@ -111,14 +111,14 @@ export default function FloorPlan({ tables, onSelectTable, onUpdateTableStatus, 
               onClick={() => setActiveZone(zone.id)}
               className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-medium transition-all ${
                 isActive
-                  ? "bg-white text-gray-800 shadow-sm"
-                  : "text-gray-500 hover:text-gray-700"
+                  ? "bg-slate-950 text-white"
+                  : "text-slate-400 hover:text-slate-200"
               }`}
             >
               <span className="text-sm">{zone.emoji}</span>
               <span>{zone.label}</span>
               <span className={`ml-0.5 text-[10px] px-1.5 py-0.5 rounded-full font-bold ${
-                isActive ? "bg-gray-800 text-white" : "bg-gray-200 text-gray-500"
+                isActive ? "bg-white text-slate-900" : "bg-slate-800 text-slate-400"
               }`}>
                 {zoneCounts[zone.id]}
               </span>
@@ -131,7 +131,7 @@ export default function FloorPlan({ tables, onSelectTable, onUpdateTableStatus, 
         {Object.entries(STATUS_CONFIG).map(([key, cfg]) => {
           const count = zoneTables.filter((t) => t.status === key).length;
           return (
-            <div key={key} className="flex items-center gap-2 text-xs text-gray-500">
+            <div key={key} className="flex items-center gap-2 text-xs text-slate-500">
               <div className={`w-2.5 h-2.5 rounded-full ${cfg.dot}`} />
               <span>{cfg.label} ({count})</span>
             </div>
@@ -151,7 +151,7 @@ export default function FloorPlan({ tables, onSelectTable, onUpdateTableStatus, 
               table.status === "reservee" ||
               table.status === "horsService");
 
-          const cardClasses = `bg-white border border-slate-200 rounded-2xl shadow-sm hover:shadow-md flex flex-col items-center justify-center gap-2 transition-all duration-200 ${
+          const cardClasses = `bg-slate-900 border border-slate-800 rounded-2xl flex flex-col items-center justify-center gap-2 transition-all duration-200 ${
             activeZone === "salle" ? "h-32" : "h-24"
           }`;
 
@@ -165,9 +165,9 @@ export default function FloorPlan({ tables, onSelectTable, onUpdateTableStatus, 
                   className={`${cardClasses} opacity-60 cursor-not-allowed pointer-events-none`}
                 >
                   <Icon className={`w-5 h-5 ${cfg.text}`} />
-                  <span className={`text-sm font-semibold text-slate-800`}>{table.name}</span>
+                  <span className={`text-sm font-semibold text-slate-100`}>{table.name}</span>
                   {table.subLabel && (
-                    <span className="text-[10px] font-medium text-slate-400 uppercase tracking-wider">{table.subLabel}</span>
+                    <span className="text-[10px] font-medium text-slate-500 uppercase tracking-wider">{table.subLabel}</span>
                   )}
                   <span className={`text-base px-2.5 py-0.5 rounded-full font-bold ${cfg.badge}`}>
                     {cfg.label}
@@ -176,12 +176,12 @@ export default function FloorPlan({ tables, onSelectTable, onUpdateTableStatus, 
               ) : (
                 <button
                   onClick={() => onSelectTable(table.id)}
-                  className={`w-full ${cardClasses} active:scale-95`}
+                  className={`w-full ${cardClasses} active:scale-95 hover:border-slate-700 hover:bg-slate-800/80`}
                 >
                   <Icon className={`w-5 h-5 ${cfg.text}`} />
-                  <span className={`text-sm font-semibold text-slate-800`}>{table.name}</span>
+                  <span className={`text-sm font-semibold text-slate-100`}>{table.name}</span>
                   {table.subLabel && (
-                    <span className="text-[10px] font-medium text-slate-400 uppercase tracking-wider">{table.subLabel}</span>
+                    <span className="text-[10px] font-medium text-slate-500 uppercase tracking-wider">{table.subLabel}</span>
                   )}
                   <span className={`text-base px-2.5 py-0.5 rounded-full font-bold ${cfg.badge}`}>
                     {cfg.label}

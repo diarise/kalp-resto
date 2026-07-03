@@ -392,7 +392,7 @@ export default function Dashboard() {
   if (!staff) return null;
 
   return (
-    <div className="h-screen flex flex-col overflow-hidden bg-slate-50">
+    <div className="h-screen flex flex-col overflow-hidden bg-slate-950">
       <StatusHeader currentView={currentView} onViewChange={setCurrentView} onOpenMenuConfig={() => setShowMenuConfig(true)} staff={staff} onLogout={handleLogout} />
 
       {currentView === "kitchen" ? (
