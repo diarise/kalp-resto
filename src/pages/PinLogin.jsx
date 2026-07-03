@@ -4,6 +4,7 @@ import { offlineStaff } from "@/lib/offlineDB";
 import { setCurrentStaff, ROLE_LABELS } from "@/lib/staffSession";
 import { startShift } from "@/lib/shiftManager";
 import { UtensilsCrossed, Delete, Lock } from "lucide-react";
+import { PRODUCT_BRAND, LICENSEE_NAME } from "@/lib/branding";
 
 export default function PinLogin() {
   const [pin, setPin] = useState("");
@@ -51,11 +52,12 @@ export default function PinLogin() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
       <div className="w-full max-w-sm">
         <div className="flex flex-col items-center mb-8">
-          <div className="w-14 h-14 rounded-2xl bg-gray-900 flex items-center justify-center mb-4">
+          <div className="w-14 h-14 rounded-2xl bg-slate-900 flex items-center justify-center mb-4">
             <UtensilsCrossed className="w-7 h-7 text-white" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-800 tracking-tight">SAPPHIRE RESTAURANT</h1>
-          <p className="text-sm text-gray-400 mt-1">Entrez votre PIN pour continuer</p>
+          <h1 className="text-2xl font-bold text-slate-800 tracking-tight">{PRODUCT_BRAND}</h1>
+          <p className="text-sm text-slate-500 mt-0.5 font-medium">{LICENSEE_NAME}</p>
+          <p className="text-xs text-slate-400 mt-2">Entrez votre PIN pour continuer</p>
         </div>
 
         <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-8">

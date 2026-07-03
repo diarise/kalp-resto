@@ -97,8 +97,8 @@ export default function FloorPlan({ tables, onSelectTable, onUpdateTableStatus, 
   return (
     <div className="h-full flex flex-col p-6 overflow-hidden">
       <div className="mb-4">
-        <h2 className="text-lg font-semibold text-gray-800">Plan de Salle</h2>
-        <p className="text-sm text-gray-400 mt-0.5">Sélectionnez une table pour prendre commande</p>
+        <h2 className="text-lg font-semibold text-slate-800">Plan de Salle</h2>
+        <p className="text-sm text-slate-500 mt-0.5">Sélectionnez une table pour prendre commande</p>
       </div>
 
       {/* Zone Switcher */}
@@ -151,7 +151,7 @@ export default function FloorPlan({ tables, onSelectTable, onUpdateTableStatus, 
               table.status === "reservee" ||
               table.status === "horsService");
 
-          const cardClasses = `${cfg.bg} ${cfg.border} border-2 rounded-2xl flex flex-col items-center justify-center gap-2 transition-all duration-200 ${
+          const cardClasses = `bg-white border border-slate-200 rounded-2xl shadow-sm hover:shadow-md flex flex-col items-center justify-center gap-2 transition-all duration-200 ${
             activeZone === "salle" ? "h-32" : "h-24"
           }`;
 
@@ -165,9 +165,9 @@ export default function FloorPlan({ tables, onSelectTable, onUpdateTableStatus, 
                   className={`${cardClasses} opacity-60 cursor-not-allowed pointer-events-none`}
                 >
                   <Icon className={`w-5 h-5 ${cfg.text}`} />
-                  <span className={`text-sm font-semibold ${cfg.text}`}>{table.name}</span>
+                  <span className={`text-sm font-semibold text-slate-800`}>{table.name}</span>
                   {table.subLabel && (
-                    <span className="text-[10px] font-medium text-gray-400 uppercase tracking-wider">{table.subLabel}</span>
+                    <span className="text-[10px] font-medium text-slate-400 uppercase tracking-wider">{table.subLabel}</span>
                   )}
                   <span className={`text-base px-2.5 py-0.5 rounded-full font-bold ${cfg.badge}`}>
                     {cfg.label}
@@ -176,13 +176,12 @@ export default function FloorPlan({ tables, onSelectTable, onUpdateTableStatus, 
               ) : (
                 <button
                   onClick={() => onSelectTable(table.id)}
-                  className={`w-full ${cardClasses} active:scale-95 hover:shadow-md`}
-                  style={{ boxShadow: "0 4px 6px -1px rgba(0,0,0,0.05)" }}
+                  className={`w-full ${cardClasses} active:scale-95`}
                 >
                   <Icon className={`w-5 h-5 ${cfg.text}`} />
-                  <span className={`text-sm font-semibold ${cfg.text}`}>{table.name}</span>
+                  <span className={`text-sm font-semibold text-slate-800`}>{table.name}</span>
                   {table.subLabel && (
-                    <span className="text-[10px] font-medium text-gray-400 uppercase tracking-wider">{table.subLabel}</span>
+                    <span className="text-[10px] font-medium text-slate-400 uppercase tracking-wider">{table.subLabel}</span>
                   )}
                   <span className={`text-base px-2.5 py-0.5 rounded-full font-bold ${cfg.badge}`}>
                     {cfg.label}

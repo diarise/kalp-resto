@@ -1,6 +1,7 @@
 import React from "react";
 import { UtensilsCrossed, ChefHat, Wine, LayoutGrid, BarChart3, Settings, LogOut, Receipt, FileBarChart } from "lucide-react";
 import { ROLE_LABELS, canAccess } from "@/lib/staffSession";
+import { PRODUCT_BRAND, LICENSEE_NAME } from "@/lib/branding";
 
 const ALL_VIEWS = [
   { id: "server", label: "Serveur", icon: LayoutGrid },
@@ -15,15 +16,15 @@ export default function StatusHeader({ currentView, onViewChange, onOpenMenuConf
   const views = ALL_VIEWS.filter((v) => !staff || canAccess(staff.role, v.id));
 
   return (
-    <div className="h-14 shrink-0 bg-white border-b border-gray-100 flex items-center justify-between px-6"
-         style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.04)" }}>
+    <div className="h-14 shrink-0 bg-white border-b border-slate-200 flex items-center justify-between px-6 shadow-sm">
       <div className="flex items-center gap-3">
-        <div className="w-8 h-8 rounded-xl bg-gray-900 flex items-center justify-center">
+        <div className="w-9 h-9 rounded-xl bg-slate-900 flex items-center justify-center shrink-0">
           <UtensilsCrossed className="w-4 h-4 text-white" />
         </div>
-        <span className="text-base font-semibold text-gray-800 tracking-tight">
-          SAPPHIRE RESTAURANT
-        </span>
+        <div className="flex flex-col leading-tight">
+          <span className="text-sm font-semibold text-slate-800 tracking-tight">{PRODUCT_BRAND}</span>
+          <span className="text-xs text-slate-500 font-medium">{LICENSEE_NAME}</span>
+        </div>
       </div>
 
       {/* View Switcher */}
