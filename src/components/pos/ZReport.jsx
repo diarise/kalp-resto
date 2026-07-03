@@ -151,7 +151,7 @@ export default function ZReport() {
               style={{ backgroundColor: "#0096D6" }}
             >
               <Printer className="w-4 h-4" />
-              {printing ? "Impression..." : "Imprimer Z"}
+              {printing ? "Impression..." : "Imprimer la clôture"}
             </button>
           </div>
         </div>
