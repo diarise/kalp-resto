@@ -5,7 +5,8 @@ import { getCurrentStaff } from "@/lib/staffSession";
 import { logoBase64 as restaurantLogo } from "@/assets/logoData";
 
 const RESTAURANT_NAME = "SAPPHIRE RESTAURANT";
-const RESTAURANT_ADDR = "Dakar, Sénégal";
+const RESTAURANT_ADDR = "BOURGUIBA EN FACE ÉCOLE POLICE";
+const RESTAURANT_PHONE = "+221 78 442 24 24 - 78 440 05 05";
 const SERVER_NAME = "Aminata";
 
 function formatDate(date) {
@@ -89,7 +90,7 @@ export default function PrintReceiptModal({ table, onClose }) {
               <img src={restaurantLogo} alt="SAPPHIRE RESTAURANT Logo" className="mx-auto mb-2" style={{ width: "130px", height: "auto" }} />
               <h2 className="text-base font-bold tracking-wide">{RESTAURANT_NAME}</h2>
               <p className="text-[11px] text-gray-500">{RESTAURANT_ADDR}</p>
-              <p className="text-[11px] text-gray-500 mt-0.5">Tél: +221 77 000 00 00</p>
+              <p className="text-[11px] text-gray-500 mt-0.5">TÉL: {RESTAURANT_PHONE}</p>
             </div>
 
             <div className="border-t border-dashed border-gray-300 my-3" />

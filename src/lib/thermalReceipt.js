@@ -5,10 +5,11 @@
  */
 
 import { logoBase64 as restaurantLogo } from "@/assets/logoData";
+import { getCaissePrinter } from "@/lib/printerConfig";
 
 const RESTAURANT_NAME = "SAPPHIRE RESTAURANT";
-const RESTAURANT_ADDR = "Dakar, Sénégal";
-const RESTAURANT_PHONE = "+221 77 000 00 00";
+const RESTAURANT_ADDR = "BOURGUIBA EN FACE ÉCOLE POLICE";
+const RESTAURANT_PHONE = "+221 78 442 24 24 - 78 440 05 05";
 
 function pad(n) {
   return String(n).padStart(2, "0");
@@ -61,7 +62,7 @@ function wrapHtml(body) {
   return `<!DOCTYPE html><html><head><meta charset="utf-8"><style>${THERMAL_CSS}</style></head><body>${body}</body></html>`;
 }
 
-export function generateReceiptHtml({ table, staff, invoiceNumber, paymentMethod }) {
+export function generateReceiptHtml({ table, staff, invoiceNumber, paymentMethod, deliveryInfo }) {
   const now = new Date();
   const items = table?.currentTicket || [];
   const sousTotal = items.reduce((sum, i) => sum + i.qty * i.price, 0);
@@ -78,16 +79,24 @@ export function generateReceiptHtml({ table, staff, invoiceNumber, paymentMethod
     `;
   }).join("");
 
+  const deliveryRows = deliveryInfo
+    ? `
+      ${deliveryInfo.customer_phone ? `<div class="row"><span>Tél:</span><span class="bold">${deliveryInfo.customer_phone}</span></div>` : ""}
+      ${deliveryInfo.customer_address ? `<div class="row"><span>Adresse:</span><span class="bold">${deliveryInfo.customer_address}</span></div>` : ""}
+    `
+    : "";
+
   return wrapHtml(`
     <div class="center mb">
       <img src="${restaurantLogo}" alt="SAPPHIRE RESTAURANT Logo" style="width:130px;height:auto;display:block;margin:0 auto 4px;" />
       <div class="xl bold">${RESTAURANT_NAME}</div>
       <div class="sm">${RESTAURANT_ADDR}</div>
-      <div class="sm">${RESTAURANT_PHONE}</div>
+      <div class="sm">TÉL: ${RESTAURANT_PHONE}</div>
     </div>
     <div class="hr"></div>
     <div class="row"><span>Facture:</span><span class="bold">${invoiceNumber || "—"}</span></div>
     <div class="row"><span>Table:</span><span class="bold">${table?.name || "—"}</span></div>
+    ${deliveryRows}
     <div class="row"><span>Caissier:</span><span>${staff?.name || "—"}</span></div>
     <div class="row"><span>Date:</span><span>${formatDateTime(now)}</span></div>
     <div class="hr"></div>
@@ -199,8 +208,9 @@ export function generateZReportHtml({ date, transactions, cashierName }) {
  * Falls back to opening a print dialog in the browser.
  */
 export function printThermalReceipt(htmlContent) {
-  if (window.electronAPI && typeof window.electronAPI.printReceipt === "function") {
-    return window.electronAPI.printReceipt(htmlContent);
+  if (window.electronAPI && typeof window.electronAPI.printSilent === "function") {
+    const caissePrinter = getCaissePrinter();
+    return window.electronAPI.printSilent(htmlContent, caissePrinter || undefined);
   }
   // Browser fallback — open print window
   const printWin = window.open("", "_blank", "width=400,height=600");

@@ -3,14 +3,14 @@ const PRINTER_CONFIG_KEY = "kalpe_printer_config";
 export function getPrinterConfig() {
   try {
     const s = localStorage.getItem(PRINTER_CONFIG_KEY);
-    return s ? JSON.parse(s) : { kitchen: "", bar: "" };
+    return s ? JSON.parse(s) : { kitchen: "", bar: "", caisse: "" };
   } catch {
-    return { kitchen: "", bar: "" };
+    return { kitchen: "", bar: "", caisse: "" };
   }
 }
 
-export function setPrinterConfig(kitchen, bar) {
-  localStorage.setItem(PRINTER_CONFIG_KEY, JSON.stringify({ kitchen, bar }));
+export function setPrinterConfig(kitchen, bar, caisse) {
+  localStorage.setItem(PRINTER_CONFIG_KEY, JSON.stringify({ kitchen, bar, caisse: caisse || "" }));
 }
 
 export function getKitchenPrinter() {
@@ -19,4 +19,8 @@ export function getKitchenPrinter() {
 
 export function getBarPrinter() {
   return getPrinterConfig().bar || "";
+}
+
+export function getCaissePrinter() {
+  return getPrinterConfig().caisse || "";
 }

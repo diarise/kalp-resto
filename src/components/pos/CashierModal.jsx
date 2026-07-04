@@ -50,7 +50,7 @@ export default function CashierModal({ table, total, onClose, onValidate, delive
         await offlineTransaction.create(txData);
       } catch (e) {}
       // Auto-print thermal receipt after transaction is recorded
-      const html = generateReceiptHtml({ table, staff: currentStaff, invoiceNumber, paymentMethod: selected });
+      const html = generateReceiptHtml({ table, staff: currentStaff, invoiceNumber, paymentMethod: selected, deliveryInfo });
       printThermalReceipt(html);
     }
     setSubmitting(false);

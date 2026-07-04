@@ -113,6 +113,16 @@ export default function Dashboard() {
     } catch (e) {}
   }, [deliveryOrders]);
 
+  // Auto-archive: remove delivery orders that are both paid AND delivered
+  useEffect(() => {
+    setDeliveryOrders((prev) => {
+      const active = prev.filter(
+        (d) => !(d.payment_status === "paid" && d.delivery_status === "delivered")
+      );
+      return active.length !== prev.length ? active : prev;
+    });
+  }, [deliveryOrders]);
+
   const handleMenuChange = useCallback((updated) => {
     setMenuItems(updated);
   }, []);

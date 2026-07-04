@@ -28,7 +28,7 @@ export default function PrinterConfigModal({ onClose }) {
   }, []);
 
   const handleSave = () => {
-    setPrinterConfig(config.kitchen, config.bar);
+    setPrinterConfig(config.kitchen, config.bar, config.caisse);
     setSaved(true);
     setTimeout(() => onClose(), 700);
   };
@@ -108,13 +108,31 @@ export default function PrinterConfigModal({ onClose }) {
               </div>
 
               {/* Bar Printer */}
-              <div className="mb-6">
+              <div className="mb-5">
                 <label className="text-xs font-medium text-slate-400 uppercase tracking-wider mb-2 block">
                   Imprimante Bar
                 </label>
                 <select
                   value={config.bar}
                   onChange={(e) => { setConfig({ ...config, bar: e.target.value }); setSaved(false); }}
+                  className="w-full h-11 px-3 rounded-xl bg-slate-800 border border-slate-700 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+                >
+                  <option value="">— Non assignée —</option>
+                  {printers.map((p) => {
+                    const name = printerName(p);
+                    return <option key={name} value={name}>{name}</option>;
+                  })}
+                </select>
+              </div>
+
+              {/* Caisse / Receipt Printer */}
+              <div className="mb-6">
+                <label className="text-xs font-medium text-slate-400 uppercase tracking-wider mb-2 block">
+                  Imprimante Caisse (Reçus)
+                </label>
+                <select
+                  value={config.caisse || ""}
+                  onChange={(e) => { setConfig({ ...config, caisse: e.target.value }); setSaved(false); }}
                   className="w-full h-11 px-3 rounded-xl bg-slate-800 border border-slate-700 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent"
                 >
                   <option value="">— Non assignée —</option>
