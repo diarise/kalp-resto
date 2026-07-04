@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { offlineTransaction } from "@/lib/offlineDB";
 import { exportTransactionsToSari, downloadSariFile } from "@/lib/sariExport";
 import { getCurrentStaff } from "@/lib/staffSession";
-import { Search, Download, FileText, Receipt } from "lucide-react";
+import { generateDuplicateReceiptHtml, printThermalReceipt } from "@/lib/thermalReceipt";
+import { Search, Download, FileText, Receipt, Printer } from "lucide-react";
 
 export default function TransactionLedger() {
   const navigate = useNavigate();
@@ -52,10 +53,21 @@ export default function TransactionLedger() {
     downloadSariFile(content, `sari_export_${today}.txt`);
   };
 
+  const [reprintingId, setReprintingId] = useState(null);
+
   const formatPrice = (price) => (price || 0).toLocaleString("fr-FR") + " CFA";
   const formatTime = (ts) => {
     const d = new Date(ts);
     return d.toLocaleDateString("fr-FR") + " " + d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
+  };
+
+  const handleReprint = async (transaction) => {
+    setReprintingId(transaction.id);
+    try {
+      const html = generateDuplicateReceiptHtml(transaction);
+      await printThermalReceipt(html);
+    } catch (e) {}
+    setReprintingId(null);
   };
 
   return (
@@ -146,6 +158,7 @@ export default function TransactionLedger() {
                   <th className="text-left text-xs font-semibold text-slate-500 uppercase tracking-wider px-4 py-3">Table</th>
                   <th className="text-left text-xs font-semibold text-slate-500 uppercase tracking-wider px-4 py-3">Paiement</th>
                   <th className="text-right text-xs font-semibold text-slate-500 uppercase tracking-wider px-4 py-3">Montant</th>
+                  <th className="text-center text-xs font-semibold text-slate-500 uppercase tracking-wider px-4 py-3">Action</th>
                 </tr>
               </thead>
               <tbody>
@@ -157,6 +170,17 @@ export default function TransactionLedger() {
                     <td className="px-4 py-3 text-sm text-slate-400">{t.table_name || "—"}</td>
                     <td className="px-4 py-3 text-sm text-slate-400">{t.payment_method || "—"}</td>
                     <td className="px-4 py-3 text-sm font-semibold text-slate-100 text-right">{formatPrice(t.total_amount)}</td>
+                    <td className="px-4 py-3 text-center">
+                      <button
+                        onClick={() => handleReprint(t)}
+                        disabled={reprintingId === t.id}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-sky-400 bg-sky-500/10 hover:bg-sky-500/20 transition-all active:scale-95 disabled:opacity-40"
+                        title="Imprimer un duplicata"
+                      >
+                        <Printer className="w-3.5 h-3.5" />
+                        {reprintingId === t.id ? "..." : "Imprimer"}
+                      </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>

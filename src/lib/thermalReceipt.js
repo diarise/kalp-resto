@@ -212,13 +212,88 @@ export function printThermalReceipt(htmlContent) {
     const caissePrinter = getCaissePrinter();
     return window.electronAPI.printSilent(htmlContent, caissePrinter || undefined);
   }
-  // Browser fallback — open print window
-  const printWin = window.open("", "_blank", "width=400,height=600");
-  if (printWin) {
-    printWin.document.write(htmlContent);
-    printWin.document.close();
-    printWin.focus();
-    printWin.print();
+  // No Electron — silent printing unavailable; return failure (no browser dialog)
+  return Promise.resolve({ success: false, error: "Impression silencieuse non disponible (Electron requis)" });
+}
+
+/**
+ * Generates a DUPLICATA receipt from a historical transaction record.
+ * Reconstructs the itemized ticket and stamps it with **DUPLICATA** + original timestamp.
+ */
+export function generateDuplicateReceiptHtml(transaction) {
+  let items = transaction.items_snapshot;
+  if (typeof items === "string") {
+    try { items = JSON.parse(items); } catch { items = []; }
   }
-  return Promise.resolve({ success: false, fallback: true });
+  if (!Array.isArray(items)) items = [];
+
+  const table = { name: transaction.table_name || "—", currentTicket: items };
+  const isDelivery = transaction.order_type === "delivery";
+  const deliveryInfo = isDelivery
+    ? {
+        customer_name: transaction.customer_name,
+        customer_phone: transaction.customer_phone,
+        customer_address: transaction.customer_address,
+      }
+    : null;
+
+  const now = new Date();
+  const originalDate = new Date(transaction.timestamp);
+
+  const itemsHtml = items.map((item) => {
+    const mods = [item.piment, item.cuisson, item.boisson].filter(Boolean);
+    return `
+      <div class="item-line">
+        <span class="item-qty">${item.qty}x</span>
+        <span class="item-name">${item.name}</span>
+        <span class="item-price">${formatCFA(item.qty * item.price)}</span>
+      </div>
+      ${mods.length > 0 ? `<div class="item-mod">→ ${mods.join(", ")}</div>` : ""}
+    `;
+  }).join("");
+
+  const deliveryRows = deliveryInfo
+    ? `
+      ${deliveryInfo.customer_phone ? `<div class="row"><span>Tél:</span><span class="bold">${deliveryInfo.customer_phone}</span></div>` : ""}
+      ${deliveryInfo.customer_address ? `<div class="row"><span>Adresse:</span><span class="bold">${deliveryInfo.customer_address}</span></div>` : ""}
+    `
+    : "";
+
+  const sousTotal = items.reduce((sum, i) => sum + i.qty * i.price, 0);
+
+  return wrapHtml(`
+    <div class="center mb">
+      <div class="xl bold">** DUPLICATA **</div>
+      <div class="sm">Copie de ticket</div>
+    </div>
+    <div class="hr"></div>
+    <div class="center mb">
+      <img src="${restaurantLogo}" alt="SAPPHIRE RESTAURANT Logo" style="width:130px;height:auto;display:block;margin:0 auto 4px;" />
+      <div class="xl bold">${RESTAURANT_NAME}</div>
+      <div class="sm">${RESTAURANT_ADDR}</div>
+      <div class="sm">TÉL: ${RESTAURANT_PHONE}</div>
+    </div>
+    <div class="hr"></div>
+    <div class="row"><span>Facture:</span><span class="bold">${transaction.invoice_number || "—"}</span></div>
+    <div class="row"><span>Table:</span><span class="bold">${transaction.table_name || "—"}</span></div>
+    ${deliveryRows}
+    <div class="row"><span>Caissier:</span><span>${transaction.cashier_name || "—"}</span></div>
+    <div class="row"><span>Date originale:</span><span class="bold">${formatDateTime(originalDate)}</span></div>
+    <div class="hr"></div>
+    <div class="items-header">
+      <span class="item-qty">Qté</span>
+      <span class="item-name">Article</span>
+      <span class="item-price">Montant</span>
+    </div>
+    ${itemsHtml}
+    <div class="hr"></div>
+    <div class="total-row"><span>TOTAL</span><span>${formatCFA(sousTotal)}</span></div>
+    <div class="hr"></div>
+    <div class="row"><span>Paiement</span><span class="bold">${transaction.payment_method || "—"}</span></div>
+    <div class="hr"></div>
+    <div class="center sm mt">
+      <div>** DUPLICATA — ${formatDateTime(originalDate)} **</div>
+      <div>Merci de votre visite!</div>
+    </div>
+  `);
 }
