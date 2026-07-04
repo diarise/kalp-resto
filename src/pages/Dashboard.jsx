@@ -13,9 +13,11 @@ import MenuManagement from "@/components/pos/MenuManagement";
 import PrinterConfigModal from "@/components/pos/PrinterConfigModal";
 import TransactionLedger from "@/components/pos/TransactionLedger";
 import ZReport from "@/components/pos/ZReport";
+import DeliveryView from "@/components/pos/DeliveryView";
+import DeliverySidebar from "@/components/pos/DeliverySidebar";
 import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
-import { getCurrentStaff, clearStaff } from "@/lib/staffSession";
+import { getCurrentStaff, clearStaff, canAccess } from "@/lib/staffSession";
 import { generateInvoiceNumber } from "@/lib/sariExport";
 import { getKitchenPrinter, getBarPrinter } from "@/lib/printerConfig";
 import { generateKitchenPrepHtml, generateBarPrepHtml } from "@/lib/prepTicket";
@@ -67,6 +69,15 @@ export default function Dashboard() {
     } catch (e) {}
     return [];
   });
+  const [floorMode, setFloorMode] = useState("tables");
+  const [deliveryOrders, setDeliveryOrders] = useState(() => {
+    try {
+      const stored = localStorage.getItem("kalpe_delivery_orders");
+      if (stored) return JSON.parse(stored);
+    } catch (e) {}
+    return [];
+  });
+  const [activeDeliveryId, setActiveDeliveryId] = useState(null);
   const [menuItems, setMenuItems] = useState(() => loadMenuItems());
   const tablesRef = useRef(tables);
   tablesRef.current = tables;
@@ -96,6 +107,12 @@ export default function Dashboard() {
     } catch (e) {}
   }, [tables]);
 
+  useEffect(() => {
+    try {
+      localStorage.setItem("kalpe_delivery_orders", JSON.stringify(deliveryOrders));
+    } catch (e) {}
+  }, [deliveryOrders]);
+
   const handleMenuChange = useCallback((updated) => {
     setMenuItems(updated);
   }, []);
@@ -103,6 +120,11 @@ export default function Dashboard() {
   const activeTable = useMemo(
     () => tables.find((t) => t.id === activeTableId) || null,
     [tables, activeTableId]
+  );
+
+  const activeDelivery = useMemo(
+    () => deliveryOrders.find((d) => d.id === activeDeliveryId) || null,
+    [deliveryOrders, activeDeliveryId]
   );
 
   const handleSelectTable = useCallback((id) => {
@@ -261,9 +283,12 @@ export default function Dashboard() {
 
   const handleCloseKitchenModal = useCallback(() => {
     setShowKitchenModal(false);
-    // Deselect table so server returns to floor plan for next customer
-    setActiveTableId(null);
-  }, []);
+    if (floorMode === "delivery") {
+      setActiveDeliveryId(null);
+    } else {
+      setActiveTableId(null);
+    }
+  }, [floorMode]);
 
 
 
@@ -404,6 +429,167 @@ export default function Dashboard() {
     });
   }, []);
 
+  // ===== DELIVERY WORKFLOW =====
+  const handleEnterDelivery = useCallback(() => {
+    setFloorMode("delivery");
+    setActiveDeliveryId(null);
+  }, []);
+
+  const handleExitDelivery = useCallback(() => {
+    setFloorMode("tables");
+    setActiveDeliveryId(null);
+  }, []);
+
+  const handleNewDelivery = useCallback(() => {
+    const newDelivery = {
+      id: `del-${Date.now()}`,
+      order_type: "delivery",
+      customer_name: "",
+      customer_phone: "",
+      customer_address: "",
+      currentTicket: [],
+      delivery_status: "preparing",
+      payment_status: "pending",
+      timestamp: Date.now(),
+    };
+    setDeliveryOrders((prev) => [...prev, newDelivery]);
+    setActiveDeliveryId(newDelivery.id);
+  }, []);
+
+  const handleSelectDelivery = useCallback((id) => {
+    setActiveDeliveryId(id);
+  }, []);
+
+  const handleBackToDeliveryList = useCallback(() => {
+    setActiveDeliveryId(null);
+  }, []);
+
+  const handleAddDeliveryItem = useCallback(
+    (menuItem) => {
+      if (!activeDeliveryId) return;
+      setDeliveryOrders((prev) =>
+        prev.map((del) => {
+          if (del.id !== activeDeliveryId) return del;
+          const existing = del.currentTicket.find((i) => i.id === menuItem.id);
+          const updatedTicket = existing
+            ? del.currentTicket.map((i) => (i.id === menuItem.id ? { ...i, qty: i.qty + 1 } : i))
+            : [...del.currentTicket, { id: menuItem.id, name: menuItem.name, qty: 1, price: menuItem.price, category: menuItem.category }];
+          return { ...del, currentTicket: updatedTicket };
+        })
+      );
+    },
+    [activeDeliveryId]
+  );
+
+  const handleUpdateDeliveryQty = useCallback(
+    (itemId, newQty) => {
+      if (!activeDeliveryId) return;
+      setDeliveryOrders((prev) =>
+        prev.map((del) => {
+          if (del.id !== activeDeliveryId) return del;
+          return { ...del, currentTicket: del.currentTicket.map((i) => (i.id === itemId ? { ...i, qty: newQty } : i)) };
+        })
+      );
+    },
+    [activeDeliveryId]
+  );
+
+  const handleRemoveDeliveryItem = useCallback(
+    (itemId) => {
+      if (!activeDeliveryId) return;
+      setDeliveryOrders((prev) =>
+        prev.map((del) => {
+          if (del.id !== activeDeliveryId) return del;
+          return { ...del, currentTicket: del.currentTicket.filter((i) => i.id !== itemId) };
+        })
+      );
+    },
+    [activeDeliveryId]
+  );
+
+  const handleSetDeliveryModifier = useCallback(
+    (itemId, field, value) => {
+      if (!activeDeliveryId) return;
+      setDeliveryOrders((prev) =>
+        prev.map((del) => {
+          if (del.id !== activeDeliveryId) return del;
+          return { ...del, currentTicket: del.currentTicket.map((i) => (i.id === itemId ? { ...i, [field]: value || undefined } : i)) };
+        })
+      );
+    },
+    [activeDeliveryId]
+  );
+
+  const handleUpdateDeliveryCustomer = useCallback(
+    (field, value) => {
+      if (!activeDeliveryId) return;
+      setDeliveryOrders((prev) =>
+        prev.map((del) => (del.id === activeDeliveryId ? { ...del, [field]: value } : del))
+      );
+    },
+    [activeDeliveryId]
+  );
+
+  const handleSendDeliveryKitchen = useCallback(() => {
+    if (!activeDeliveryId) return;
+    const delivery = deliveryOrders.find((d) => d.id === activeDeliveryId);
+    if (!delivery) return;
+
+    const now = Date.now();
+    const customerLabel = delivery.customer_name || "Client";
+    const headerValue = `Livraison - ${customerLabel}`;
+
+    const barItems = delivery.currentTicket.filter((i) => i.category === "boissons" || i.category === "chichas");
+    const cuisineItems = delivery.currentTicket.filter((i) => i.category !== "boissons" && i.category !== "chichas");
+
+    if (cuisineItems.length > 0) {
+      setKitchenOrders((prev) => [...prev, { id: `k-${now}`, tableName: headerValue, timestamp: now, items: cuisineItems, status: "pending" }]);
+    }
+    if (barItems.length > 0) {
+      setBarOrders((prev) => [...prev, { id: `b-${now}`, tableName: headerValue, timestamp: now, items: barItems, status: "pending" }]);
+    }
+
+    setDeliveryOrders((prev) => prev.map((d) => (d.id === activeDeliveryId ? { ...d, delivery_status: "preparing" } : d)));
+
+    // Silent split-routing: print prep tickets with customer name as header
+    if (window.electronAPI && typeof window.electronAPI.printSilent === "function") {
+      const kitchenPrinter = getKitchenPrinter();
+      const barPrinter = getBarPrinter();
+      if (cuisineItems.length > 0 && kitchenPrinter) {
+        const html = generateKitchenPrepHtml({ table: { name: customerLabel }, staff, items: cuisineItems, headerLabel: "Client:" });
+        window.electronAPI.printSilent(html, kitchenPrinter);
+      }
+      if (barItems.length > 0 && barPrinter) {
+        const html = generateBarPrepHtml({ table: { name: customerLabel }, staff, items: barItems, headerLabel: "Client:" });
+        window.electronAPI.printSilent(html, barPrinter);
+      }
+    }
+
+    setShowKitchenModal(true);
+  }, [activeDeliveryId, deliveryOrders, staff]);
+
+  const handleDeliveryCashOut = useCallback(() => {
+    if (!activeDeliveryId) return;
+    setShowCashierModal(true);
+  }, [activeDeliveryId]);
+
+  const handleDeliveryValidate = useCallback(() => {
+    if (!activeDeliveryId) return;
+    setDeliveryOrders((prev) =>
+      prev.map((d) => (d.id === activeDeliveryId ? { ...d, payment_status: "paid" } : d))
+    );
+    setShowCashierModal(false);
+    setActiveDeliveryId(null);
+  }, [activeDeliveryId]);
+
+  const handleUpdateDeliveryStatus = useCallback((orderId, status) => {
+    setDeliveryOrders((prev) => prev.map((d) => (d.id === orderId ? { ...d, delivery_status: status } : d)));
+  }, []);
+
+  const handleCloseDelivery = useCallback((orderId) => {
+    setDeliveryOrders((prev) => prev.filter((d) => d.id !== orderId));
+  }, []);
+
   useEffect(() => {
     if (!staff) navigate("/terminal");
   }, [staff, navigate]);
@@ -427,7 +613,25 @@ export default function Dashboard() {
       ) : (
         <div className="flex-1 flex min-h-0 min-w-0">
           <div className="flex-1 min-w-0" style={{ flexBasis: "65%" }}>
-            {activeTable ? (
+            {floorMode === "delivery" ? (
+              activeDelivery ? (
+                <MenuGrid
+                  activeTable={{ name: `Livraison - ${activeDelivery.customer_name || "Nouvelle"}` }}
+                  onBack={handleBackToDeliveryList}
+                  onAddItem={handleAddDeliveryItem}
+                  menuItems={menuItems}
+                />
+              ) : (
+                <DeliveryView
+                  deliveries={deliveryOrders}
+                  onNew={handleNewDelivery}
+                  onSelect={handleSelectDelivery}
+                  onBack={handleExitDelivery}
+                  onUpdateStatus={handleUpdateDeliveryStatus}
+                  onCloseDelivery={handleCloseDelivery}
+                />
+              )
+            ) : activeTable ? (
               <MenuGrid
                 activeTable={activeTable}
                 onBack={handleBackToFloor}
@@ -440,40 +644,71 @@ export default function Dashboard() {
                 onSelectTable={handleSelectTable}
                 onUpdateTableStatus={handleUpdateTableStatus}
                 onMarkServed={handleMarkTableServed}
+                onEnterDelivery={handleEnterDelivery}
+                showDeliveryToggle={canAccess(staff.role, "delivery")}
               />
             )}
           </div>
 
           <div className="shrink-0 min-w-0" style={{ flexBasis: "35%", maxWidth: "35%" }}>
-            <TicketSidebar
-              activeTable={activeTable}
-              onUpdateQty={handleUpdateQty}
-              onRemoveItem={handleRemoveItem}
-              onSetModifier={handleSetModifier}
-              onSendKitchen={handleSendKitchen}
-              onCashOut={handleCashOut}
-              onPrintReceipt={handlePrintReceipt}
-              orderStatus={
-                activeTable
-                  ? (kitchenOrders.find(
-                      (o) => o.tableName === activeTable.name
-                    )?.status || null)
-                  : null
-              }
-            />
+            {floorMode === "delivery" && activeDelivery ? (
+              <DeliverySidebar
+                delivery={activeDelivery}
+                onUpdateCustomer={handleUpdateDeliveryCustomer}
+                onUpdateQty={handleUpdateDeliveryQty}
+                onRemoveItem={handleRemoveDeliveryItem}
+                onSetModifier={handleSetDeliveryModifier}
+                onSendKitchen={handleSendDeliveryKitchen}
+                onCashOut={handleDeliveryCashOut}
+              />
+            ) : (
+              <TicketSidebar
+                activeTable={activeTable}
+                onUpdateQty={handleUpdateQty}
+                onRemoveItem={handleRemoveItem}
+                onSetModifier={handleSetModifier}
+                onSendKitchen={handleSendKitchen}
+                onCashOut={handleCashOut}
+                onPrintReceipt={handlePrintReceipt}
+                orderStatus={
+                  activeTable
+                    ? (kitchenOrders.find(
+                        (o) => o.tableName === activeTable.name
+                      )?.status || null)
+                    : null
+                }
+              />
+            )}
           </div>
         </div>
       )}
 
       {showKitchenModal && (
-        <KitchenSuccessModal table={activeTable} onClose={handleCloseKitchenModal} />
+        <KitchenSuccessModal
+          table={floorMode === "delivery" && activeDelivery ? { name: `Livraison - ${activeDelivery.customer_name || "Client"}` } : activeTable}
+          onClose={handleCloseKitchenModal}
+        />
       )}
       {showCashierModal && (
         <CashierModal
-          table={activeTable}
-          total={activeTable?.currentTicket.reduce((sum, i) => sum + i.qty * i.price, 0) || 0}
+          table={floorMode === "delivery" && activeDelivery ? { name: activeDelivery.customer_name || "Livraison", currentTicket: activeDelivery.currentTicket } : activeTable}
+          total={
+            floorMode === "delivery" && activeDelivery
+              ? (activeDelivery.currentTicket || []).reduce((sum, i) => sum + i.qty * i.price, 0)
+              : (activeTable?.currentTicket.reduce((sum, i) => sum + i.qty * i.price, 0) || 0)
+          }
           onClose={handleCloseCashierModal}
-          onValidate={handleCashierValidate}
+          onValidate={floorMode === "delivery" ? handleDeliveryValidate : handleCashierValidate}
+          deliveryInfo={
+            floorMode === "delivery" && activeDelivery
+              ? {
+                  customer_name: activeDelivery.customer_name,
+                  customer_phone: activeDelivery.customer_phone,
+                  customer_address: activeDelivery.customer_address,
+                  delivery_status: activeDelivery.delivery_status,
+                }
+              : null
+          }
         />
       )}
       {showMenuConfig && (

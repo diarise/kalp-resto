@@ -13,7 +13,7 @@ const PAYMENT_METHODS = [
   { id: "carte", label: "Carte", icon: CreditCard, activeBg: "bg-blue-500", activeBorder: "border-blue-500", iconColor: "text-blue-600", hoverBg: "hover:border-blue-300" },
 ];
 
-export default function CashierModal({ table, total, onClose, onValidate }) {
+export default function CashierModal({ table, total, onClose, onValidate, deliveryInfo }) {
   const [selected, setSelected] = useState(null);
   const [submitting, setSubmitting] = useState(false);
 
@@ -28,7 +28,7 @@ export default function CashierModal({ table, total, onClose, onValidate }) {
     if (items.length > 0) {
       try {
         const activeShift = getActiveShift();
-        await offlineTransaction.create({
+        const txData = {
           invoice_number: invoiceNumber,
           timestamp: new Date().toISOString(),
           cashier_id: currentStaff?.id || "unknown",
@@ -36,9 +36,18 @@ export default function CashierModal({ table, total, onClose, onValidate }) {
           total_amount: total,
           items_snapshot: JSON.stringify(items),
           payment_method: selected,
-          table_name: table?.name || "Table",
+          table_name: deliveryInfo ? `Livraison - ${deliveryInfo.customer_name || "Client"}` : (table?.name || "Table"),
           shift_id: activeShift?.id || null,
-        });
+          order_type: deliveryInfo ? "delivery" : "dine_in",
+          payment_status: "paid",
+        };
+        if (deliveryInfo) {
+          txData.customer_name = deliveryInfo.customer_name || "";
+          txData.customer_phone = deliveryInfo.customer_phone || "";
+          txData.customer_address = deliveryInfo.customer_address || "";
+          txData.delivery_status = deliveryInfo.delivery_status || "preparing";
+        }
+        await offlineTransaction.create(txData);
       } catch (e) {}
       // Auto-print thermal receipt after transaction is recorded
       const html = generateReceiptHtml({ table, staff: currentStaff, invoiceNumber, paymentMethod: selected });
@@ -62,7 +71,7 @@ export default function CashierModal({ table, total, onClose, onValidate }) {
 
         <div className="flex flex-col">
           <h2 className="text-xl font-bold text-slate-100">Encaissement</h2>
-          <p className="text-sm text-slate-500 mb-5">{table?.name}</p>
+          <p className="text-sm text-slate-500 mb-5">{deliveryInfo ? `Livraison - ${deliveryInfo.customer_name || "Client"}` : table?.name}</p>
 
           {/* Total */}
           <div className="bg-slate-800 rounded-xl p-4 mb-5 flex items-center justify-between">

@@ -46,6 +46,45 @@
     "shift_id": {
       "type": "string",
       "title": "ID Shift"
+    },
+    "order_type": {
+      "type": "string",
+      "enum": [
+        "dine_in",
+        "delivery"
+      ],
+      "default": "dine_in",
+      "title": "Type de Commande"
+    },
+    "customer_name": {
+      "type": "string",
+      "title": "Nom Client"
+    },
+    "customer_phone": {
+      "type": "string",
+      "title": "T\u00e9l\u00e9phone Client"
+    },
+    "customer_address": {
+      "type": "string",
+      "title": "Adresse Client"
+    },
+    "delivery_status": {
+      "type": "string",
+      "enum": [
+        "preparing",
+        "ready",
+        "shipping",
+        "delivered"
+      ],
+      "title": "Statut Livraison"
+    },
+    "payment_status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "paid"
+      ],
+      "title": "Statut Paiement"
     }
   },
   "required": [

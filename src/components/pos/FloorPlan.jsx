@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react";
-import { Users, Clock, CheckCircle, Bookmark, Wrench } from "lucide-react";
+import { Users, Clock, CheckCircle, Bookmark, Wrench, Truck } from "lucide-react";
 import TableStatusMenu from "@/components/pos/TableStatusMenu";
 
 const ZONES = [
@@ -71,7 +71,7 @@ const STATUS_CONFIG = {
   },
 };
 
-export default function FloorPlan({ tables, onSelectTable, onUpdateTableStatus, onMarkServed }) {
+export default function FloorPlan({ tables, onSelectTable, onUpdateTableStatus, onMarkServed, onEnterDelivery, showDeliveryToggle }) {
   const [activeZone, setActiveZone] = useState("salle");
 
   const zoneTables = useMemo(
@@ -125,6 +125,15 @@ export default function FloorPlan({ tables, onSelectTable, onUpdateTableStatus, 
             </button>
           );
         })}
+        {showDeliveryToggle && (
+          <button
+            onClick={onEnterDelivery}
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-medium transition-all bg-sky-500/10 text-sky-400 hover:bg-sky-500/20 ml-1 border-l border-slate-800 pl-3"
+          >
+            <Truck className="w-3.5 h-3.5" />
+            <span>Livraison</span>
+          </button>
+        )}
       </div>
 
       <div className="flex flex-wrap gap-4 mb-4">

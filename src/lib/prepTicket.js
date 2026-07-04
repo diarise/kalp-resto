@@ -60,14 +60,14 @@ function buildItemsHtml(items) {
   }).join("");
 }
 
-export function generateKitchenPrepHtml({ table, staff, items }) {
+export function generateKitchenPrepHtml({ table, staff, items, headerLabel, headerValue }) {
   const now = new Date();
   return wrapHtml(`
     <div class="center mb">
       <div class="xl bold">*** CUISINE ***</div>
     </div>
     <div class="hr"></div>
-    <div class="row"><span>Table:</span><span class="bold">${table?.name || "—"}</span></div>
+    <div class="row"><span>${headerLabel || "Table:"}</span><span class="bold">${headerValue || table?.name || "—"}</span></div>
     <div class="row"><span>Serveur:</span><span class="bold">${staff?.name || "—"}</span></div>
     <div class="row"><span>Heure:</span><span>${formatDateTime(now)}</span></div>
     <div class="hr"></div>
@@ -77,14 +77,14 @@ export function generateKitchenPrepHtml({ table, staff, items }) {
   `);
 }
 
-export function generateBarPrepHtml({ table, staff, items }) {
+export function generateBarPrepHtml({ table, staff, items, headerLabel, headerValue }) {
   const now = new Date();
   return wrapHtml(`
     <div class="center mb">
       <div class="xl bold">*** BAR ***</div>
     </div>
     <div class="hr"></div>
-    <div class="row"><span>Table:</span><span class="bold">${table?.name || "—"}</span></div>
+    <div class="row"><span>${headerLabel || "Table:"}</span><span class="bold">${headerValue || table?.name || "—"}</span></div>
     <div class="row"><span>Serveur:</span><span class="bold">${staff?.name || "—"}</span></div>
     <div class="row"><span>Heure:</span><span>${formatDateTime(now)}</span></div>
     <div class="hr"></div>
