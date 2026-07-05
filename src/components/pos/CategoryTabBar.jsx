@@ -49,8 +49,17 @@ export default function CategoryTabBar({ categories, activeCategory, onSelect })
       {showLeft && (
         <button
           onClick={() => scrollBy(-1)}
-          className="absolute left-1 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-300 hover:bg-slate-700 hover:text-white transition-all active:scale-90 shadow-lg backdrop-blur-sm"
-          style={{ position: "absolute", left: "4px", zIndex: 10 }}
+          className="absolute top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-300 hover:bg-slate-700 hover:text-white transition-all active:scale-90 shadow-lg backdrop-blur-sm"
+          style={{
+            position: "absolute",
+            left: "4px",
+            zIndex: 10,
+            background: "rgb(30 41 59) !important",
+            border: "1px solid rgb(51 65 85) !important",
+            outline: "none !important",
+            boxShadow: "0 4px 6px -1px rgba(0,0,0,0.3) !important",
+            padding: "0 !important",
+          }}
           aria-label="Catégories précédentes"
         >
           <ChevronLeft className="w-4 h-4" />
@@ -91,8 +100,17 @@ export default function CategoryTabBar({ categories, activeCategory, onSelect })
       {showRight && (
         <button
           onClick={() => scrollBy(1)}
-          className="absolute right-1 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-300 hover:bg-slate-700 hover:text-white transition-all active:scale-90 shadow-lg backdrop-blur-sm"
-          style={{ position: "absolute", right: "4px", zIndex: 10 }}
+          className="absolute top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-300 hover:bg-slate-700 hover:text-white transition-all active:scale-90 shadow-lg backdrop-blur-sm"
+          style={{
+            position: "absolute",
+            right: "4px",
+            zIndex: 10,
+            background: "rgb(30 41 59) !important",
+            border: "1px solid rgb(51 65 85) !important",
+            outline: "none !important",
+            boxShadow: "0 4px 6px -1px rgba(0,0,0,0.3) !important",
+            padding: "0 !important",
+          }}
           aria-label="Catégories suivantes"
         >
           <ChevronRight className="w-4 h-4" />
