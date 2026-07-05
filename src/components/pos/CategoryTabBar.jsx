@@ -36,12 +36,21 @@ export default function CategoryTabBar({ categories, activeCategory, onSelect })
   };
 
   return (
-    <div className="relative w-full">
+    <div className="relative w-full flex items-center">
+      {/* Left gradient fade */}
+      {showLeft && (
+        <div
+          className="absolute left-0 top-0 bottom-2 z-[5] pointer-events-none w-12"
+          style={{ background: "linear-gradient(to right, #0f172a 30%, transparent)" }}
+        />
+      )}
+
       {/* Left arrow */}
       {showLeft && (
         <button
           onClick={() => scrollBy(-1)}
-          className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-300 hover:bg-slate-700 hover:text-white transition-all active:scale-90 shadow-lg"
+          className="absolute left-1 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-300 hover:bg-slate-700 hover:text-white transition-all active:scale-90 shadow-lg backdrop-blur-sm"
+          style={{ position: "absolute", left: "4px", zIndex: 10 }}
           aria-label="Catégories précédentes"
         >
           <ChevronLeft className="w-4 h-4" />
@@ -51,11 +60,13 @@ export default function CategoryTabBar({ categories, activeCategory, onSelect })
       {/* Scrollable container */}
       <div
         ref={scrollRef}
-        className="flex flex-nowrap overflow-x-auto whitespace-nowrap scrollbar-none w-full gap-1 border-b border-slate-800 pb-2 -mx-1 px-1"
+        className="flex flex-nowrap overflow-x-auto whitespace-nowrap scrollbar-none w-full gap-1 border-b border-slate-800 pb-2"
         style={{
           WebkitOverflowScrolling: "touch",
           scrollbarWidth: "none",
           msOverflowStyle: "none",
+          paddingLeft: "40px",
+          paddingRight: "40px",
         }}
       >
         {categories.map((cat) => {
@@ -80,11 +91,20 @@ export default function CategoryTabBar({ categories, activeCategory, onSelect })
       {showRight && (
         <button
           onClick={() => scrollBy(1)}
-          className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-300 hover:bg-slate-700 hover:text-white transition-all active:scale-90 shadow-lg"
+          className="absolute right-1 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-300 hover:bg-slate-700 hover:text-white transition-all active:scale-90 shadow-lg backdrop-blur-sm"
+          style={{ position: "absolute", right: "4px", zIndex: 10 }}
           aria-label="Catégories suivantes"
         >
           <ChevronRight className="w-4 h-4" />
         </button>
+      )}
+
+      {/* Right gradient fade */}
+      {showRight && (
+        <div
+          className="absolute right-0 top-0 bottom-2 z-[5] pointer-events-none w-12"
+          style={{ background: "linear-gradient(to left, #0f172a 30%, transparent)" }}
+        />
       )}
     </div>
   );
