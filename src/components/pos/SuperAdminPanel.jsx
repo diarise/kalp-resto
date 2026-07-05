@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ShieldAlert, Trash2, Database, AlertTriangle, CheckCircle, Printer, ChefHat, Wine, Receipt } from "lucide-react";
+import { ShieldAlert, Trash2, Database, AlertTriangle, CheckCircle, Printer, ChefHat, Wine, Receipt, ShieldCheck } from "lucide-react";
 import { offlineTransaction } from "@/lib/offlineDB";
 import { getPrinterConfig } from "@/lib/printerConfig";
 
@@ -11,21 +11,27 @@ export default function SuperAdminPanel({ onOpenPrinterConfig }) {
 
   const handleResetDatabase = async () => {
     const confirmed = window.confirm(
-      "Voulez-vous vraiment supprimer TOUTES les données de test ?\n\nCette action effacera définitivement :\n• Toutes les transactions encaissées\n• Tous les tickets de livraison\n• L'historique des commandes\n\nLe système sera réinitialisé à 0 CFA."
+      "Voulez-vous vraiment supprimer TOUTES les données de test ?\n\nCette action effacera définitivement :\n• Toutes les transactions encaissées\n• Tous les tickets de livraison\n• L'historique des commandes (cuisine / bar)\n• Les paniers et tables actives\n• Les sessions de shift archivées\n\nLe catalogue menu (produits, prix, images, catégories) sera STRICTEMENT préservé.\n\nLe système sera réinitialisé à 0 CFA."
     );
     if (!confirmed) return;
 
     setResetting(true);
     setResetResult(null);
     try {
+      // 1. Wipe all transaction records (local cache + cloud)
       await offlineTransaction.clearAll();
-      // Clear all local POS state
+
+      // 2. Clear operational POS state — orders, carts, delivery logs, shifts
+      //    MENU CATALOG (kalpe_menu_items) IS NEVER TOUCHED
       localStorage.removeItem("kalpe_tables");
       localStorage.removeItem("kalpe_kitchen_orders");
       localStorage.removeItem("kalpe_bar_orders");
       localStorage.removeItem("kalpe_delivery_orders");
+      localStorage.removeItem("kalpe_active_shift");
+      localStorage.removeItem("kalpe_shifts_archive");
+      localStorage.removeItem("kalpe_invoice_counter");
 
-      setResetResult({ success: true, message: "Base de données réinitialisée avec succès. Le système est prêt pour la production." });
+      setResetResult({ success: true, message: "Base de données réinitialisée avec succès. Le catalogue menu est intact. Le système est prêt pour la production (0 CFA)." });
     } catch (e) {
       setResetResult({ success: false, message: "Erreur lors de la réinitialisation: " + (e.message || "inconnue") });
     }
@@ -123,6 +129,13 @@ export default function SuperAdminPanel({ onOpenPrinterConfig }) {
                   et réinitialise les tables. Le système repasse à 0 CFA pour le lancement en production.
                 </p>
               </div>
+            </div>
+
+            <div className="flex items-start gap-2 p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20 mb-4">
+              <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+              <p className="text-xs font-medium text-emerald-300">
+                Catalogue menu protégé — produits, prix, images et catégories ne sont jamais supprimés.
+              </p>
             </div>
 
             <button

@@ -4,7 +4,8 @@ import { offlineTransaction } from "@/lib/offlineDB";
 import { generateZReportHtml, printThermalReceipt } from "@/lib/thermalReceipt";
 import { getCurrentStaff } from "@/lib/staffSession";
 import { getActiveShift, endShift } from "@/lib/shiftManager";
-import { Calendar, Printer, FileBarChart, TrendingUp, Receipt, ShoppingBag, Clock } from "lucide-react";
+import { exportTransactionsToSari, downloadSariFile } from "@/lib/sariExport";
+import { Calendar, Printer, FileBarChart, TrendingUp, Receipt, ShoppingBag, Clock, Download } from "lucide-react";
 
 export default function ZReport() {
   const navigate = useNavigate();
@@ -86,8 +87,11 @@ export default function ZReport() {
     setPrinting(false);
   };
 
+  const [sariExported, setSariExported] = useState(false);
+
   const handleCloseShift = async () => {
     setPrinting(true);
+    setSariExported(false);
     const shiftTx = transactions.filter((t) => t.shift_id === activeShift?.id);
     const totalRevenue = shiftTx.reduce((sum, t) => sum + (t.total_amount || 0), 0);
     const byMethod = {};
@@ -102,12 +106,24 @@ export default function ZReport() {
       transaction_count: shiftTx.length,
       by_method: byMethod,
     });
+
+    // Print closure Z-report
     const html = generateZReportHtml({
       date: reportDate,
       transactions: shiftTx,
       cashierName: activeShift?.cashier_name,
     });
     await printThermalReceipt(html);
+
+    // Auto-compile SARI ledger and trigger download
+    if (shiftTx.length > 0) {
+      const sariContent = exportTransactionsToSari(shiftTx);
+      const shiftDate = new Date().toISOString().slice(0, 10);
+      const cashierSlug = (activeShift?.cashier_name || "caisse").replace(/\s+/g, "_").toLowerCase();
+      downloadSariFile(sariContent, `sari_cloture_${shiftDate}_${cashierSlug}.txt`);
+      setSariExported(true);
+    }
+
     setActiveShift(null);
     setPrinting(false);
   };
@@ -177,6 +193,12 @@ export default function ZReport() {
               <FileBarChart className="w-4 h-4" />
               {printing ? "Clôture..." : "Clôturer le shift"}
             </button>
+            {sariExported && (
+              <div className="flex items-center gap-1.5 mt-2 text-xs font-medium text-emerald-400">
+                <Download className="w-3.5 h-3.5" />
+                Export SARI téléchargé
+              </div>
+            )}
           </div>
         )}
         {!activeShift && !loading && (
@@ -199,7 +221,7 @@ export default function ZReport() {
                 <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center mb-3">
                   <TrendingUp className="w-5 h-5 text-emerald-400" />
                 </div>
-                <p className="text-xs text-slate-500 font-medium uppercase tracking-wider mb-1">Total TTC</p>
+                <p className="text-xs text-slate-500 font-medium uppercase tracking-wider mb-1">Total</p>
                 <p className="text-xl font-extrabold text-emerald-400">{formatPrice(totalRevenue)}</p>
               </div>
               <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5">

@@ -183,7 +183,7 @@ export function generateZReportHtml({ date, transactions, cashierName }) {
     <div class="hr"></div>
     <div class="center bold lg">RÉCAPITULATIF</div>
     <div class="row mt"><span>Nombre de transactions</span><span class="bold">${txCount}</span></div>
-    <div class="total-row"><span>TOTAL TTC</span><span>${formatCFA(totalRevenue)}</span></div>
+    <div class="total-row"><span>TOTAL</span><span>${formatCFA(totalRevenue)}</span></div>
     <div class="hr"></div>
     <div class="center bold mt mb">PAR MODE DE PAIEMENT</div>
     ${methodRows || '<div class="center sm">Aucune transaction</div>'}
