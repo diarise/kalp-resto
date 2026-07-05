@@ -32,6 +32,7 @@ export default function CashierModal({ table, total, onClose, onValidate, delive
           invoice_number: invoiceNumber,
           timestamp: new Date().toISOString(),
           cashier_id: currentStaff?.id || "unknown",
+          payment_method_label: selected,
           cashier_name: currentStaff?.name || "Caissier",
           total_amount: total,
           items_snapshot: JSON.stringify(items),

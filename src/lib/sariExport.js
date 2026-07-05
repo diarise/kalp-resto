@@ -1,7 +1,7 @@
 /**
  * Sage SARI Export Utility
- * Format: [JournalCode];[InvoiceNum];[DDMMYY];[AccountNum];[Status];[ItemCode];[ItemName];[Qty:4 Decimals];[Price:6 Decimals]
- * Example: 6;FA000107;270626;41100046;PAYE;3027;BISSAP;1,0000;2000,000000
+ * Format: [JournalCode];[InvoiceNum];[DDMMYY];[HHMM];[AccountNum];[Status];[ItemCode];[ItemName];[Qty:4 Decimals];[Price:6 Decimals]
+ * Example: 6;FA000107;270626;1832;41100046;PAYE;3027;BISSAP;1,0000;2000,000000
  */
 
 const JOURNAL_CODE = "6";
@@ -22,19 +22,29 @@ function formatDateDDMMYY(timestamp) {
   return dd + mm + yy;
 }
 
+function formatTimeHHMM(timestamp) {
+  const d = new Date(timestamp);
+  const hh = String(d.getHours()).padStart(2, "0");
+  const mi = String(d.getMinutes()).padStart(2, "0");
+  return hh + mi;
+}
+
 export function formatSariLine(transaction, item) {
   const invoiceNum = transaction.invoice_number;
   const date = formatDateDDMMYY(transaction.timestamp);
+  const time = formatTimeHHMM(transaction.timestamp);
   const itemCode = item.id || item.code || "";
   const itemName = (item.name || "").toUpperCase();
   const qty = formatDecimal(item.qty, 4);
   const price = formatDecimal(item.price, 6);
-  return [JOURNAL_CODE, invoiceNum, date, ACCOUNT_NUM, STATUS, itemCode, itemName, qty, price].join(";");
+  return [JOURNAL_CODE, invoiceNum, date, time, ACCOUNT_NUM, STATUS, itemCode, itemName, qty, price].join(";");
 }
 
 export function exportTransactionsToSari(transactions) {
   const lines = [];
-  for (const t of transactions) {
+  // Sort chronologically by timestamp to ensure a precise sales sequence
+  const sorted = [...transactions].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+  for (const t of sorted) {
     let items = t.items_snapshot;
     if (typeof items === "string") {
       try {

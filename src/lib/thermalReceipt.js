@@ -11,6 +11,13 @@ const RESTAURANT_NAME = "SAPPHIRE RESTAURANT";
 const RESTAURANT_ADDR = "BOURGUIBA EN FACE ÉCOLE POLICE";
 const RESTAURANT_PHONE = "+221 78 442 24 24 - 78 440 05 05";
 
+const PAYMENT_LABELS = {
+  especes: "Espèces",
+  wave: "Wave",
+  orange_money: "Orange Money",
+  carte: "Carte",
+};
+
 function pad(n) {
   return String(n).padStart(2, "0");
 }
@@ -109,7 +116,7 @@ export function generateReceiptHtml({ table, staff, invoiceNumber, paymentMethod
     <div class="hr"></div>
     <div class="total-row"><span>TOTAL</span><span>${formatCFA(sousTotal)}</span></div>
     <div class="hr"></div>
-    <div class="row"><span>Paiement</span><span class="bold">${paymentMethod || "—"}</span></div>
+    <div class="row"><span>Mode de paiement</span><span class="bold">${PAYMENT_LABELS[paymentMethod] || paymentMethod || "—"}</span></div>
     <div class="hr"></div>
     <div class="center sm mt">
       <div>Merci de votre visite!</div>
@@ -289,7 +296,7 @@ export function generateDuplicateReceiptHtml(transaction) {
     <div class="hr"></div>
     <div class="total-row"><span>TOTAL</span><span>${formatCFA(sousTotal)}</span></div>
     <div class="hr"></div>
-    <div class="row"><span>Paiement</span><span class="bold">${transaction.payment_method || "—"}</span></div>
+    <div class="row"><span>Mode de paiement</span><span class="bold">${PAYMENT_LABELS[transaction.payment_method] || transaction.payment_method || "—"}</span></div>
     <div class="hr"></div>
     <div class="center sm mt">
       <div>** DUPLICATA — ${formatDateTime(originalDate)} **</div>

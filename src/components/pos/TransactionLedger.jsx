@@ -4,7 +4,14 @@ import { offlineTransaction } from "@/lib/offlineDB";
 import { exportTransactionsToSari, downloadSariFile } from "@/lib/sariExport";
 import { getCurrentStaff } from "@/lib/staffSession";
 import { generateDuplicateReceiptHtml, printThermalReceipt } from "@/lib/thermalReceipt";
-import { Search, Download, FileText, Receipt, Printer } from "lucide-react";
+import { Search, Download, FileText, Receipt, Printer, ChevronDown, ChevronUp, Eye } from "lucide-react";
+
+const PAYMENT_LABELS = {
+  especes: "Espèces",
+  wave: "Wave",
+  orange_money: "Orange Money",
+  carte: "Carte",
+};
 
 export default function TransactionLedger() {
   const navigate = useNavigate();
@@ -54,11 +61,28 @@ export default function TransactionLedger() {
   };
 
   const [reprintingId, setReprintingId] = useState(null);
+  const [expandedId, setExpandedId] = useState(null);
 
   const formatPrice = (price) => (price || 0).toLocaleString("fr-FR") + " CFA";
   const formatTime = (ts) => {
     const d = new Date(ts);
     return d.toLocaleDateString("fr-FR") + " " + d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
+  };
+  const formatTimePrecise = (ts) => {
+    const d = new Date(ts);
+    return d.toLocaleDateString("fr-FR") + " " + d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+  };
+
+  const getItems = (t) => {
+    let items = t.items_snapshot;
+    if (typeof items === "string") {
+      try { items = JSON.parse(items); } catch { items = []; }
+    }
+    return Array.isArray(items) ? items : [];
+  };
+
+  const toggleExpand = (id) => {
+    setExpandedId(expandedId === id ? null : id);
   };
 
   const handleReprint = async (transaction) => {
@@ -162,27 +186,83 @@ export default function TransactionLedger() {
                 </tr>
               </thead>
               <tbody>
-                {filtered.map((t) => (
-                  <tr key={t.id} className="border-b border-slate-800 last:border-0 hover:bg-slate-800/50 transition-colors">
-                    <td className="px-4 py-3 text-sm font-medium text-slate-200">{t.invoice_number}</td>
-                    <td className="px-4 py-3 text-sm text-slate-400">{formatTime(t.timestamp)}</td>
-                    <td className="px-4 py-3 text-sm text-slate-400">{t.cashier_name || "—"}</td>
-                    <td className="px-4 py-3 text-sm text-slate-400">{t.table_name || "—"}</td>
-                    <td className="px-4 py-3 text-sm text-slate-400">{t.payment_method || "—"}</td>
-                    <td className="px-4 py-3 text-sm font-semibold text-slate-100 text-right">{formatPrice(t.total_amount)}</td>
-                    <td className="px-4 py-3 text-center">
-                      <button
-                        onClick={() => handleReprint(t)}
-                        disabled={reprintingId === t.id}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-sky-400 bg-sky-500/10 hover:bg-sky-500/20 transition-all active:scale-95 disabled:opacity-40"
-                        title="Imprimer un duplicata"
-                      >
-                        <Printer className="w-3.5 h-3.5" />
-                        {reprintingId === t.id ? "..." : "Imprimer"}
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                {filtered.map((t) => {
+                  const isExpanded = expandedId === t.id;
+                  const items = getItems(t);
+                  return (
+                    <React.Fragment key={t.id}>
+                      <tr className="border-b border-slate-800 last:border-0 hover:bg-slate-800/50 transition-colors cursor-pointer" onClick={() => toggleExpand(t.id)}>
+                        <td className="px-4 py-3 text-sm font-medium text-slate-200">{t.invoice_number}</td>
+                        <td className="px-4 py-3 text-sm text-slate-400">{formatTime(t.timestamp)}</td>
+                        <td className="px-4 py-3 text-sm text-slate-400">{t.cashier_name || "—"}</td>
+                        <td className="px-4 py-3 text-sm text-slate-400">{t.table_name || "—"}</td>
+                        <td className="px-4 py-3 text-sm text-slate-400">{PAYMENT_LABELS[t.payment_method] || t.payment_method || "—"}</td>
+                        <td className="px-4 py-3 text-sm font-semibold text-slate-100 text-right">{formatPrice(t.total_amount)}</td>
+                        <td className="px-4 py-3 text-center">
+                          <div className="flex items-center justify-center gap-1">
+                            <button
+                              onClick={(e) => { e.stopPropagation(); toggleExpand(t.id); }}
+                              className="inline-flex items-center gap-1 px-2 py-1.5 rounded-lg text-xs font-medium text-slate-300 hover:bg-slate-700 transition-all"
+                              title="Voir détails"
+                            >
+                              {isExpanded ? <ChevronUp className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                            </button>
+                            <button
+                              onClick={(e) => { e.stopPropagation(); handleReprint(t); }}
+                              disabled={reprintingId === t.id}
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-sky-400 bg-sky-500/10 hover:bg-sky-500/20 transition-all active:scale-95 disabled:opacity-40"
+                              title="Imprimer un duplicata"
+                            >
+                              <Printer className="w-3.5 h-3.5" />
+                              {reprintingId === t.id ? "..." : "Imprimer"}
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                      {isExpanded && (
+                        <tr className="bg-slate-800/30">
+                          <td colSpan={7} className="px-6 py-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+                              <div>
+                                <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-0.5">Horodatage précis</p>
+                                <p className="text-sm text-slate-200 font-medium">{formatTimePrecise(t.timestamp)}</p>
+                              </div>
+                              <div>
+                                <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-0.5">Mode de paiement</p>
+                                <p className="text-sm text-slate-200 font-medium">{PAYMENT_LABELS[t.payment_method] || t.payment_method || "—"}</p>
+                              </div>
+                              <div>
+                                <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-0.5">Type</p>
+                                <p className="text-sm text-slate-200 font-medium">{t.order_type === "delivery" ? "Livraison" : "Sur place"}</p>
+                              </div>
+                            </div>
+                            <div className="border-t border-slate-700 pt-3">
+                              <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-2">Articles commandés ({items.length})</p>
+                              <div className="space-y-1.5">
+                                {items.length === 0 ? (
+                                  <p className="text-xs text-slate-500">Aucun article enregistré</p>
+                                ) : (
+                                  items.map((item, idx) => (
+                                    <div key={idx} className="flex items-center gap-3 text-sm">
+                                      <span className="text-slate-400 w-10">{item.qty}x</span>
+                                      <span className="text-slate-200 flex-1">{item.name}</span>
+                                      <span className="text-slate-500 text-xs">{formatPrice(item.price)} / unité</span>
+                                      <span className="text-slate-100 font-medium w-24 text-right">{formatPrice(item.qty * item.price)}</span>
+                                    </div>
+                                  ))
+                                )}
+                              </div>
+                              <div className="flex justify-between items-center mt-3 pt-3 border-t border-slate-700">
+                                <span className="text-sm font-bold text-slate-300">Total</span>
+                                <span className="text-sm font-bold text-emerald-400">{formatPrice(t.total_amount)}</span>
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                    </React.Fragment>
+                  );
+                })}
               </tbody>
             </table>
           </div>
