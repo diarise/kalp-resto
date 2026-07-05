@@ -187,21 +187,6 @@ export default function Dashboard() {
   const handleUpdateQty = useCallback(
     (itemId, newQty) => {
       if (!activeTableId) return;
-      const table = tables.find((t) => t.id === activeTableId);
-      if (!table) return;
-      const isSent = table.status !== "libre" && table.currentTicket.length > 0;
-      const item = table.currentTicket.find((i) => i.id === itemId);
-      if (isSent && item && newQty < item.qty) {
-        const diff = item.qty - newQty;
-        const isBar = item.category === "boissons" || item.category === "chichas";
-        if (window.electronAPI && typeof window.electronAPI.printSilent === "function") {
-          const printer = isBar ? getBarPrinter() : getKitchenPrinter();
-          if (printer) {
-            const html = generateModificationHtml({ table, staff, modifications: [{ name: item.name, qty: diff }] });
-            window.electronAPI.printSilent(html, printer);
-          }
-        }
-      }
       setTables((prev) =>
         prev.map((table) => {
           if (table.id !== activeTableId) return table;
@@ -214,26 +199,12 @@ export default function Dashboard() {
         })
       );
     },
-    [activeTableId, tables, staff]
+    [activeTableId]
   );
 
   const handleRemoveItem = useCallback(
     (itemId) => {
       if (!activeTableId) return;
-      const table = tables.find((t) => t.id === activeTableId);
-      if (!table) return;
-      const isSent = table.status !== "libre" && table.currentTicket.length > 0;
-      const item = table.currentTicket.find((i) => i.id === itemId);
-      if (isSent && item) {
-        const isBar = item.category === "boissons" || item.category === "chichas";
-        if (window.electronAPI && typeof window.electronAPI.printSilent === "function") {
-          const printer = isBar ? getBarPrinter() : getKitchenPrinter();
-          if (printer) {
-            const html = generateModificationHtml({ table, staff, modifications: [{ name: item.name, qty: item.qty }] });
-            window.electronAPI.printSilent(html, printer);
-          }
-        }
-      }
       setTables((prev) =>
         prev.map((table) => {
           if (table.id !== activeTableId) return table;
@@ -244,7 +215,7 @@ export default function Dashboard() {
         })
       );
     },
-    [activeTableId, tables, staff]
+    [activeTableId]
   );
 
   const handleCancelOrder = useCallback(() => {
@@ -275,6 +246,76 @@ export default function Dashboard() {
     setTables((prev) => prev.map((t) => t.id === activeTableId ? { ...t, status: "libre", currentTicket: [] } : t));
     setActiveTableId(null);
   }, [activeTableId, tables, staff]);
+
+  const handleValidateModification = useCallback(
+    (originalItems, currentItems) => {
+      if (!activeTableId) return;
+      const table = tables.find((t) => t.id === activeTableId);
+      if (!table) return;
+
+      // Compute deltas: items fully removed or quantities decreased
+      const modifications = [];
+      for (const orig of originalItems) {
+        const curr = currentItems.find((i) => i.id === orig.id);
+        if (!curr) {
+          modifications.push({ ...orig, delta: orig.qty });
+        } else if (curr.qty < orig.qty) {
+          modifications.push({ ...orig, delta: orig.qty - curr.qty });
+        }
+      }
+
+      if (modifications.length === 0) return;
+
+      const tableName = table.name;
+      const kitchenMods = modifications.filter((m) => m.category !== "boissons" && m.category !== "chichas");
+      const barMods = modifications.filter((m) => m.category === "boissons" || m.category === "chichas");
+
+      // Fire MODIFICATION slips to kitchen/bar printers
+      if (window.electronAPI && typeof window.electronAPI.printSilent === "function") {
+        const kitchenPrinter = getKitchenPrinter();
+        const barPrinter = getBarPrinter();
+        if (kitchenMods.length > 0 && kitchenPrinter) {
+          const html = generateModificationHtml({
+            table, staff,
+            modifications: kitchenMods.map((m) => ({ name: m.name, qty: m.delta })),
+          });
+          window.electronAPI.printSilent(html, kitchenPrinter);
+        }
+        if (barMods.length > 0 && barPrinter) {
+          const html = generateModificationHtml({
+            table, staff,
+            modifications: barMods.map((m) => ({ name: m.name, qty: m.delta })),
+          });
+          window.electronAPI.printSilent(html, barPrinter);
+        }
+      }
+
+      // Update active kitchen/bar order cards dynamically to reflect new quantities
+      setKitchenOrders((prev) => prev.map((o) => {
+        if (o.tableName !== tableName || o.cancelled) return o;
+        const updatedItems = o.items
+          .map((item) => {
+            const curr = currentItems.find((i) => i.id === item.id);
+            if (!curr) return null;
+            return { ...item, qty: curr.qty };
+          })
+          .filter(Boolean);
+        return { ...o, items: updatedItems };
+      }));
+      setBarOrders((prev) => prev.map((o) => {
+        if (o.tableName !== tableName || o.cancelled) return o;
+        const updatedItems = o.items
+          .map((item) => {
+            const curr = currentItems.find((i) => i.id === item.id);
+            if (!curr) return null;
+            return { ...item, qty: curr.qty };
+          })
+          .filter(Boolean);
+        return { ...o, items: updatedItems };
+      }));
+    },
+    [activeTableId, tables, staff]
+  );
 
   const handleSetModifier = useCallback(
     (itemId, field, value) => {
@@ -758,6 +799,7 @@ export default function Dashboard() {
                 onCashOut={handleCashOut}
                 onPrintReceipt={handlePrintReceipt}
                 onCancelOrder={handleCancelOrder}
+                onValidateModification={handleValidateModification}
                 orderSent={activeTable && activeTable.status !== "libre" && activeTable.currentTicket.length > 0}
                 orderStatus={
                   activeTable

@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { Minus, Plus, ShoppingBag, Trash2, Send, CreditCard, Printer, ChevronDown, Ban } from "lucide-react";
+import { Minus, Plus, ShoppingBag, Trash2, Send, CreditCard, Printer, ChevronDown, Ban, Pencil, Check, X } from "lucide-react";
 import PrintReceiptModal from "@/components/pos/PrintReceiptModal";
 import OrderStepper from "@/components/pos/OrderStepper";
 
@@ -12,6 +12,7 @@ export default function TicketSidebar({
   onCashOut,
   onPrintReceipt,
   onCancelOrder,
+  onValidateModification,
   orderSent,
   orderStatus,
 }) {
@@ -24,6 +25,26 @@ export default function TicketSidebar({
 
   const [expandedItemId, setExpandedItemId] = useState(null);
   const [showPrintModal, setShowPrintModal] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+  const [originalTicket, setOriginalTicket] = useState(null);
+
+  const handleEnterEdit = () => {
+    setOriginalTicket(activeTable.currentTicket.map((i) => ({ ...i })));
+    setEditMode(true);
+  };
+
+  const handleValidateModification = () => {
+    if (onValidateModification && originalTicket) {
+      onValidateModification(originalTicket, activeTable.currentTicket);
+    }
+    setEditMode(false);
+    setOriginalTicket(null);
+  };
+
+  const handleCancelEdit = () => {
+    setEditMode(false);
+    setOriginalTicket(null);
+  };
 
   const PIMENT_OPTIONS = ["Sans piment", "Peu pimenté", "Bien pimenté"];
   const CUISSON_OPTIONS = ["À point", "Bien cuit"];
@@ -105,6 +126,7 @@ export default function TicketSidebar({
                         onUpdateQty(item.id, item.qty - 1);
                       }
                     }}
+                    style={editMode ? { backgroundColor: "#c2410c" } : undefined}
                     className="w-7 h-7 rounded-lg bg-slate-800 flex items-center justify-center text-slate-400 hover:bg-slate-700 active:scale-90 transition-all"
                   >
                     {item.qty <= 1 ? <Trash2 className="w-3 h-3" /> : <Minus className="w-3 h-3" />}
@@ -204,14 +226,48 @@ export default function TicketSidebar({
               <span className="text-2xl font-extrabold text-white">{formatPrice(total)}</span>
             </div>
 
-            {orderSent && (
+            {/* Edit Mode Banner */}
+            {editMode && (
               <div className="px-5 pb-3">
+                <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-orange-500/10 border border-orange-500/30 mb-3">
+                  <Pencil className="w-4 h-4 text-orange-400 shrink-0" />
+                  <p className="text-xs font-medium text-orange-300">Mode Modification — ajustez les quantités, puis validez</p>
+                </div>
+                <div className="flex gap-3">
+                  <button
+                    onClick={handleCancelEdit}
+                    className="flex-1 h-12 rounded-xl font-semibold text-slate-300 flex items-center justify-center gap-2 transition-all active:scale-95 bg-slate-800 hover:bg-slate-700"
+                  >
+                    <X className="w-4 h-4" />
+                    Annuler
+                  </button>
+                  <button
+                    onClick={handleValidateModification}
+                    className="flex-1 h-12 rounded-xl font-semibold text-white flex items-center justify-center gap-2 transition-all active:scale-95 bg-emerald-600 hover:bg-emerald-500"
+                  >
+                    <Check className="w-4 h-4" />
+                    Valider
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Split Actions: Modify + Cancel */}
+            {orderSent && !editMode && (
+              <div className="px-5 pb-3 flex gap-3">
+                <button
+                  onClick={handleEnterEdit}
+                  className="flex-1 h-12 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all active:scale-95 border-2 border-orange-500 text-orange-400 hover:bg-orange-500/10"
+                >
+                  <Pencil className="w-4 h-4" />
+                  Modifier
+                </button>
                 <button
                   onClick={onCancelOrder}
-                  className="w-full h-12 rounded-xl font-semibold text-white flex items-center justify-center gap-2 transition-all active:scale-95 bg-rose-600 hover:bg-rose-500"
+                  className="flex-1 h-12 rounded-xl font-semibold text-white flex items-center justify-center gap-2 transition-all active:scale-95 bg-rose-600 hover:bg-rose-500"
                 >
                   <Ban className="w-4 h-4" />
-                  ANNULER LA COMMANDE
+                  Annuler
                 </button>
               </div>
             )}
