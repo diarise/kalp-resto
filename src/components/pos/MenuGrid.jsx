@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { ArrowLeft, Plus } from "lucide-react";
 import { MENU_CATEGORIES, MENU_ITEMS } from "@/lib/menuData";
+import CategoryTabBar from "@/components/pos/CategoryTabBar";
 
 const CATEGORY_PLACEHOLDERS = {
   plats: { bg: "bg-slate-800", emoji: "🍛" },
@@ -47,25 +48,12 @@ export default function MenuGrid({ activeTable, onBack, onAddItem, menuItems }) 
           </span>
         </div>
 
-        {/* Category Pills — premium horizontal tab strip */}
-        <div className="flex flex-nowrap overflow-x-auto whitespace-nowrap scrollbar-none w-full gap-1 border-b border-slate-800 pb-2 -mx-1 px-1">
-          {MENU_CATEGORIES.map((cat) => {
-            const isActive = activeCategory === cat.id;
-            return (
-              <button
-                key={cat.id}
-                onClick={() => setActiveCategory(cat.id)}
-                className={`shrink-0 px-4 py-2 rounded-full text-xs font-semibold uppercase tracking-wide transition-all duration-200 ${
-                  isActive
-                    ? "bg-white text-slate-900"
-                    : "text-slate-400 hover:text-slate-100 hover:bg-slate-800"
-                }`}
-              >
-                {cat.label}
-              </button>
-            );
-          })}
-        </div>
+        {/* Category Pills — scrollable carousel with arrow nav */}
+        <CategoryTabBar
+          categories={MENU_CATEGORIES}
+          activeCategory={activeCategory}
+          onSelect={setActiveCategory}
+        />
       </div>
 
       {/* Items Grid */}
