@@ -3,7 +3,7 @@ import { X, Banknote, Smartphone, CreditCard, CheckCircle } from "lucide-react";
 import { offlineTransaction } from "@/lib/offlineDB";
 import { getCurrentStaff } from "@/lib/staffSession";
 import { getActiveShift } from "@/lib/shiftManager";
-import { generateInvoiceNumber } from "@/lib/sariExport";
+import { generateInvoiceNumber, exportTransactionSari } from "@/lib/sariExport";
 import { generateReceiptHtml, printThermalReceipt } from "@/lib/thermalReceipt";
 
 const PAYMENT_METHODS = [
@@ -49,6 +49,8 @@ export default function CashierModal({ table, total, onClose, onValidate, delive
           txData.delivery_status = deliveryInfo.delivery_status || "preparing";
         }
         await offlineTransaction.create(txData);
+        // Auto-export SARI accounting file immediately after encaissement
+        exportTransactionSari(txData, currentStaff);
       } catch (e) {}
       // Auto-print thermal receipt after transaction is recorded
       const html = generateReceiptHtml({ table, staff: currentStaff, invoiceNumber, paymentMethod: selected, deliveryInfo });

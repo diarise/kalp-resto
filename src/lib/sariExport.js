@@ -6,7 +6,6 @@
 
 const JOURNAL_CODE = "6";
 const ACCOUNT_NUM = "41100046";
-const STATUS = "PAYE";
 
 function formatDecimal(value, decimals) {
   const num = Number(value || 0);
@@ -37,7 +36,8 @@ export function formatSariLine(transaction, item) {
   const itemName = (item.name || "").toUpperCase();
   const qty = formatDecimal(item.qty, 4);
   const price = formatDecimal(item.price, 6);
-  return [JOURNAL_CODE, invoiceNum, date, time, ACCOUNT_NUM, STATUS, itemCode, itemName, qty, price].join(";");
+  const paymentMode = transaction.payment_method || "PAYE";
+  return [JOURNAL_CODE, invoiceNum, date, time, ACCOUNT_NUM, paymentMode, itemCode, itemName, qty, price].join(";");
 }
 
 export function exportTransactionsToSari(transactions) {
@@ -77,7 +77,7 @@ export function downloadSariFile(content, filename) {
   }
 
   // Browser fallback
-  const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+  const blob = new Blob([content], { type: "text/csv;charset=utf-8" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
@@ -86,6 +86,39 @@ export function downloadSariFile(content, filename) {
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
+}
+
+/**
+ * Derives the shift label ("Matin" or "Soir") from the active staff role.
+ * Falls back to time-of-day if the role is not a cashier shift (e.g. admin/gerante).
+ */
+export function getShiftLabel(staff) {
+  const role = staff?.role;
+  if (role === "caisse_matin") return "Matin";
+  if (role === "caisse_soir") return "Soir";
+  const hour = new Date().getHours();
+  return hour < 12 ? "Matin" : "Soir";
+}
+
+/**
+ * Builds a SARI export filename including the shift label and invoice number.
+ * Example: SARI_Export_Matin_FA000005.csv
+ */
+export function generateSariFilename(invoiceNumber, staff) {
+  const shiftLabel = getShiftLabel(staff);
+  return `SARI_Export_${shiftLabel}_${invoiceNumber}.csv`;
+}
+
+/**
+ * Generates and downloads a SARI export for a single transaction immediately
+ * after encaissement (payment completion).
+ * Returns { content, filename } for caller reference.
+ */
+export function exportTransactionSari(transaction, staff) {
+  const content = exportTransactionsToSari([transaction]);
+  const filename = generateSariFilename(transaction.invoice_number, staff);
+  downloadSariFile(content, filename);
+  return { content, filename };
 }
 
 export function generateInvoiceNumber() {
