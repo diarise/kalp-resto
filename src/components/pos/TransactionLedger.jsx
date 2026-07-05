@@ -57,7 +57,7 @@ export default function TransactionLedger() {
     if (filtered.length === 0) return;
     const content = exportTransactionsToSari(filtered);
     const today = new Date().toISOString().slice(0, 10);
-    downloadSariFile(content, `sari_export_${today}.txt`);
+    downloadSariFile(content, `SARI_Export_${today}.csv`);
   };
 
   const [reprintingId, setReprintingId] = useState(null);
