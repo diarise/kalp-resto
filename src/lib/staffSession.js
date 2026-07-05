@@ -18,6 +18,7 @@ export function clearStaff() {
 }
 
 export const ROLE_LABELS = {
+  super_admin: "Super Admin",
   gerante: "Gérante",
   caisse_matin: "Caisse Matin",
   caisse_soir: "Caisse Soir",
@@ -25,6 +26,7 @@ export const ROLE_LABELS = {
 };
 
 export const ROLE_PERMISSIONS = {
+  super_admin: ["server", "kitchen", "bar", "report", "ledger", "menu_config", "z_report", "printer_config", "delivery", "tech_zone"],
   gerante: ["server", "kitchen", "bar", "report", "ledger", "menu_config", "z_report", "printer_config", "delivery"],
   caisse_matin: ["server", "kitchen", "bar", "ledger", "z_report", "delivery"],
   caisse_soir: ["server", "kitchen", "bar", "ledger", "z_report", "delivery"],

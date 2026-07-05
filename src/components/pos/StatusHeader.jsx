@@ -1,5 +1,5 @@
 import React from "react";
-import { UtensilsCrossed, ChefHat, Wine, LayoutGrid, BarChart3, Settings, LogOut, Receipt, FileBarChart, Printer } from "lucide-react";
+import { UtensilsCrossed, ChefHat, Wine, LayoutGrid, BarChart3, Settings, LogOut, Receipt, FileBarChart, Printer, ShieldAlert } from "lucide-react";
 import { ROLE_LABELS, canAccess } from "@/lib/staffSession";
 import { PRODUCT_BRAND, LICENSEE_NAME } from "@/lib/branding";
 
@@ -10,6 +10,7 @@ const ALL_VIEWS = [
   { id: "report", label: "Rapport", icon: BarChart3 },
   { id: "ledger", label: "Caisse", icon: Receipt },
   { id: "z_report", label: "Contrôle de caisse", icon: FileBarChart },
+  { id: "tech_zone", label: "Zone Technique", icon: ShieldAlert },
 ];
 
 export default function StatusHeader({ currentView, onViewChange, onOpenMenuConfig, onOpenPrinterConfig, staff, onLogout }) {

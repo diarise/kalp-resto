@@ -12,7 +12,8 @@
         "gerante",
         "caisse_matin",
         "caisse_soir",
-        "serveur"
+        "serveur",
+        "super_admin"
       ],
       "title": "R\u00f4le"
     },

@@ -15,6 +15,7 @@ import TransactionLedger from "@/components/pos/TransactionLedger";
 import ZReport from "@/components/pos/ZReport";
 import DeliveryView from "@/components/pos/DeliveryView";
 import DeliverySidebar from "@/components/pos/DeliverySidebar";
+import SuperAdminPanel from "@/components/pos/SuperAdminPanel";
 import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { getCurrentStaff, clearStaff, canAccess } from "@/lib/staffSession";
@@ -620,6 +621,8 @@ export default function Dashboard() {
         <TransactionLedger />
       ) : currentView === "z_report" ? (
         <ZReport />
+      ) : currentView === "tech_zone" ? (
+        <SuperAdminPanel onOpenPrinterConfig={() => setShowPrinterConfig(true)} />
       ) : (
         <div className="flex-1 flex min-h-0 min-w-0">
           <div className="flex-1 min-w-0" style={{ flexBasis: "65%" }}>

@@ -15,6 +15,7 @@ const TX_CACHE_KEY = "kalpe_offline_transactions";
  * This ensures PIN login works 100% offline on first launch.
  */
 const DEFAULT_STAFF = [
+  { id: "staff-super-admin", name: "Super Admin", role: "super_admin", pin: "9999", active: true },
   { id: "staff-gerante", name: "Safietou", role: "gerante", pin: "4556", active: true },
   { id: "staff-caisse-matin", name: "Caisse Matin", role: "caisse_matin", pin: "3210", active: true },
   { id: "staff-caisse-soir", name: "Caisse Soir", role: "caisse_soir", pin: "8990", active: true },
@@ -147,5 +148,18 @@ export const offlineTransaction = {
       if (limit) cached = cached.slice(0, limit);
       return cached;
     }
+  },
+
+  async clearAll() {
+    // Wipe local cache
+    writeCache(TX_CACHE_KEY, []);
+    // Best-effort cloud wipe: delete all transactions in batches
+    try {
+      const all = await base44.entities.Transaction.list("-timestamp", 500);
+      if (all && all.length > 0) {
+        await base44.entities.Transaction.deleteMany({});
+      }
+    } catch {}
+    return true;
   },
 };
