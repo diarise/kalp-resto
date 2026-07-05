@@ -92,12 +92,15 @@ ipcMain.handle('print-receipt', async (event, htmlContent) => {
   }
 });
 
-// IPC: get system installed hardware printers
-ipcMain.handle('get-printers', (event) => {
+// IPC: get system installed hardware printers (async — getPrinters() is deprecated)
+ipcMain.handle('get-printers', async (event) => {
   try {
     const win = BrowserWindow.fromWebContents(event.sender);
     if (!win) return [];
-    return win.webContents.getPrinters();
+    // getPrintersAsync() returns a Promise<PrinterInfo[]> — the sync getPrinters() is deprecated
+    // and returns an empty array in newer Electron versions
+    const printers = await win.webContents.getPrintersAsync();
+    return printers || [];
   } catch (error) {
     return [];
   }

