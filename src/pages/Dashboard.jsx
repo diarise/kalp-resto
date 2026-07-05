@@ -21,7 +21,7 @@ import { base44 } from "@/api/base44Client";
 import { getCurrentStaff, clearStaff, canAccess } from "@/lib/staffSession";
 import { generateInvoiceNumber } from "@/lib/sariExport";
 import { getKitchenPrinter, getBarPrinter } from "@/lib/printerConfig";
-import { generateKitchenPrepHtml, generateBarPrepHtml } from "@/lib/prepTicket";
+import { generateKitchenPrepHtml, generateBarPrepHtml, generateCancellationHtml, generateModificationHtml } from "@/lib/prepTicket";
 
 const STORAGE_KEY = "kalpe_menu_items";
 
@@ -124,6 +124,16 @@ export default function Dashboard() {
     });
   }, [deliveryOrders]);
 
+  // Auto-cleanup: remove cancelled kitchen/bar orders after 60 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const now = Date.now();
+      setKitchenOrders((prev) => prev.filter((o) => !o.cancelled || now - (o.cancelledAt || 0) < 60000));
+      setBarOrders((prev) => prev.filter((o) => !o.cancelled || now - (o.cancelledAt || 0) < 60000));
+    }, 10000);
+    return () => clearInterval(interval);
+  }, []);
+
   const handleMenuChange = useCallback((updated) => {
     setMenuItems(updated);
   }, []);
@@ -177,6 +187,21 @@ export default function Dashboard() {
   const handleUpdateQty = useCallback(
     (itemId, newQty) => {
       if (!activeTableId) return;
+      const table = tables.find((t) => t.id === activeTableId);
+      if (!table) return;
+      const isSent = table.status !== "libre" && table.currentTicket.length > 0;
+      const item = table.currentTicket.find((i) => i.id === itemId);
+      if (isSent && item && newQty < item.qty) {
+        const diff = item.qty - newQty;
+        const isBar = item.category === "boissons" || item.category === "chichas";
+        if (window.electronAPI && typeof window.electronAPI.printSilent === "function") {
+          const printer = isBar ? getBarPrinter() : getKitchenPrinter();
+          if (printer) {
+            const html = generateModificationHtml({ table, staff, modifications: [{ name: item.name, qty: diff }] });
+            window.electronAPI.printSilent(html, printer);
+          }
+        }
+      }
       setTables((prev) =>
         prev.map((table) => {
           if (table.id !== activeTableId) return table;
@@ -189,12 +214,26 @@ export default function Dashboard() {
         })
       );
     },
-    [activeTableId]
+    [activeTableId, tables, staff]
   );
 
   const handleRemoveItem = useCallback(
     (itemId) => {
       if (!activeTableId) return;
+      const table = tables.find((t) => t.id === activeTableId);
+      if (!table) return;
+      const isSent = table.status !== "libre" && table.currentTicket.length > 0;
+      const item = table.currentTicket.find((i) => i.id === itemId);
+      if (isSent && item) {
+        const isBar = item.category === "boissons" || item.category === "chichas";
+        if (window.electronAPI && typeof window.electronAPI.printSilent === "function") {
+          const printer = isBar ? getBarPrinter() : getKitchenPrinter();
+          if (printer) {
+            const html = generateModificationHtml({ table, staff, modifications: [{ name: item.name, qty: item.qty }] });
+            window.electronAPI.printSilent(html, printer);
+          }
+        }
+      }
       setTables((prev) =>
         prev.map((table) => {
           if (table.id !== activeTableId) return table;
@@ -205,8 +244,37 @@ export default function Dashboard() {
         })
       );
     },
-    [activeTableId]
+    [activeTableId, tables, staff]
   );
+
+  const handleCancelOrder = useCallback(() => {
+    if (!activeTableId) return;
+    const table = tables.find((t) => t.id === activeTableId);
+    if (!table) return;
+    const tableName = table.name;
+    const items = table.currentTicket;
+    const barItems = items.filter((i) => i.category === "boissons" || i.category === "chichas");
+    const cuisineItems = items.filter((i) => i.category !== "boissons" && i.category !== "chichas");
+    // Fire ANNULATION slip to kitchen/bar printers
+    if (window.electronAPI && typeof window.electronAPI.printSilent === "function") {
+      const kitchenPrinter = getKitchenPrinter();
+      const barPrinter = getBarPrinter();
+      if (cuisineItems.length > 0 && kitchenPrinter) {
+        const html = generateCancellationHtml({ table, staff, items: cuisineItems });
+        window.electronAPI.printSilent(html, kitchenPrinter);
+      }
+      if (barItems.length > 0 && barPrinter) {
+        const html = generateCancellationHtml({ table, staff, items: barItems });
+        window.electronAPI.printSilent(html, barPrinter);
+      }
+    }
+    // Mark kitchen/bar orders as cancelled for flash display on monitors
+    setKitchenOrders((prev) => prev.map((o) => o.tableName === tableName ? { ...o, cancelled: true, cancelledAt: Date.now() } : o));
+    setBarOrders((prev) => prev.map((o) => o.tableName === tableName ? { ...o, cancelled: true, cancelledAt: Date.now() } : o));
+    // Clear table back to free
+    setTables((prev) => prev.map((t) => t.id === activeTableId ? { ...t, status: "libre", currentTicket: [] } : t));
+    setActiveTableId(null);
+  }, [activeTableId, tables, staff]);
 
   const handleSetModifier = useCallback(
     (itemId, field, value) => {
@@ -350,6 +418,9 @@ export default function Dashboard() {
     setKitchenOrders((prev) => {
       const order = prev.find((o) => o.id === orderId);
       if (!order) return prev;
+      if (order.cancelled) {
+        return prev.filter((o) => o.id !== orderId);
+      }
       const tableName = order.tableName;
       const currentStatus = order.status || "pending";
       const nextStatus =
@@ -421,6 +492,9 @@ export default function Dashboard() {
     setBarOrders((prev) => {
       const order = prev.find((o) => o.id === orderId);
       if (!order) return prev;
+      if (order.cancelled) {
+        return prev.filter((o) => o.id !== orderId);
+      }
       const currentStatus = order.status || "pending";
       const nextStatus =
         currentStatus === "pending"
@@ -683,6 +757,8 @@ export default function Dashboard() {
                 onSendKitchen={handleSendKitchen}
                 onCashOut={handleCashOut}
                 onPrintReceipt={handlePrintReceipt}
+                onCancelOrder={handleCancelOrder}
+                orderSent={activeTable && activeTable.status !== "libre" && activeTable.currentTicket.length > 0}
                 orderStatus={
                   activeTable
                     ? (kitchenOrders.find(

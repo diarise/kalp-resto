@@ -93,3 +93,54 @@ export function generateBarPrepHtml({ table, staff, items, headerLabel, headerVa
     <div class="center sm mt">--- Ticket Préparation ---</div>
   `);
 }
+
+/**
+ * Cancellation slip — fired when a cashier cancels an already-sent order.
+ * Prominent "*** ANNULATION COMMANDE ***" header, lists all affected items.
+ */
+export function generateCancellationHtml({ table, staff, items, headerLabel, headerValue }) {
+  const now = new Date();
+  return wrapHtml(`
+    <div class="center mb">
+      <div class="xl bold">*** ANNULATION ***</div>
+      <div class="xl bold">COMMANDE</div>
+    </div>
+    <div class="hr"></div>
+    <div class="row"><span>${headerLabel || "Table:"}</span><span class="bold">${headerValue || table?.name || "—"}</span></div>
+    <div class="row"><span>Serveur:</span><span class="bold">${staff?.name || "—"}</span></div>
+    <div class="row"><span>Heure:</span><span>${formatDateTime(now)}</span></div>
+    <div class="hr"></div>
+    ${buildItemsHtml(items)}
+    <div class="hr"></div>
+    <div class="center sm mt">--- ANNULATION COMMANDE ---</div>
+  `);
+}
+
+/**
+ * Modification slip — fired when a cashier modifies an already-sent order
+ * (quantity decreased or item removed). Lists exactly what was subtracted.
+ * @param modifications - array of { name, qty } representing removed/subtracted items
+ */
+export function generateModificationHtml({ table, staff, modifications, headerLabel, headerValue }) {
+  const now = new Date();
+  const modItemsHtml = (modifications || []).map((m) => `
+    <div class="item-line">
+      <span class="item-qty">-${m.qty}x</span>
+      <span class="item-name">${m.name}</span>
+    </div>
+  `).join("");
+  return wrapHtml(`
+    <div class="center mb">
+      <div class="xl bold">*** MODIFICATION ***</div>
+      <div class="xl bold">COMMANDE</div>
+    </div>
+    <div class="hr"></div>
+    <div class="row"><span>${headerLabel || "Table:"}</span><span class="bold">${headerValue || table?.name || "—"}</span></div>
+    <div class="row"><span>Serveur:</span><span class="bold">${staff?.name || "—"}</span></div>
+    <div class="row"><span>Heure:</span><span>${formatDateTime(now)}</span></div>
+    <div class="hr"></div>
+    ${modItemsHtml}
+    <div class="hr"></div>
+    <div class="center sm mt">--- MODIFICATION COMMANDE ---</div>
+  `);
+}

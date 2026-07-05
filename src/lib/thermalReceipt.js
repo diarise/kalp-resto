@@ -1,11 +1,13 @@
 /**
  * 80mm Thermal Receipt Generator
  * Produces compact HTML formatted for 80mm thermal printers (~48 chars wide).
- * Used by both customer receipts and Z-Reports.
+ * Modern SaaS POS layout with monospace fonts, text-based dividers,
+ * zone/table/shift metadata header, and right-aligned price columns.
  */
 
 import { logoBase64 as restaurantLogo } from "@/assets/logoData";
 import { getCaissePrinter } from "@/lib/printerConfig";
+import { getShiftLabel } from "@/lib/sariExport";
 
 const RESTAURANT_NAME = "SAPPHIRE RESTAURANT";
 const RESTAURANT_ADDR = "BOURGUIBA EN FACE ÉCOLE POLICE";
@@ -17,6 +19,14 @@ const PAYMENT_LABELS = {
   orange_money: "Orange Money",
   carte: "Carte",
 };
+
+const ZONE_LABELS = {
+  salle: "SALLE",
+  terrasse: "TERRASSE",
+  etage: "ETAGE",
+};
+
+const DIVIDER = '<div class="divider">--------------------------------</div>';
 
 function pad(n) {
   return String(n).padStart(2, "0");
@@ -35,30 +45,31 @@ const THERMAL_CSS = `
   body {
     width: 80mm;
     font-family: 'Courier New', monospace;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: bold;
     color: #000;
-    line-height: 1.5;
+    line-height: 1.6;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
   .center { text-align: center; }
   .right { text-align: right; }
   .bold { font-weight: 900; }
-  .lg { font-size: 17px; }
-  .xl { font-size: 22px; }
-  .sm { font-size: 11px; font-weight: bold; }
-  .hr { border-top: 2px dashed #000; margin: 6px 0; }
+  .lg { font-size: 16px; }
+  .xl { font-size: 20px; }
+  .sm { font-size: 10px; font-weight: bold; }
+  .divider { text-align: center; margin: 4px 0; font-weight: bold; letter-spacing: -1px; overflow: hidden; white-space: nowrap; }
   .row { display: flex; justify-content: space-between; font-weight: bold; }
-  .items-header { display: flex; font-weight: 900; border-bottom: 2px solid #000; padding-bottom: 3px; margin-bottom: 3px; }
+  .meta-row { display: flex; justify-content: space-between; font-size: 11px; font-weight: bold; margin-bottom: 1px; }
+  .items-header { display: flex; font-weight: 900; border-bottom: 2px solid #000; padding-bottom: 2px; margin-bottom: 3px; }
   .item-line { display: flex; margin-bottom: 2px; font-weight: bold; }
-  .item-qty { width: 8mm; }
+  .item-qty { width: 10mm; }
   .item-name { flex: 1; }
-  .item-price { width: 22mm; text-align: right; }
-  .item-mod { font-size: 11px; padding-left: 8mm; font-style: italic; font-weight: bold; }
-  .total-row { display: flex; justify-content: space-between; font-weight: 900; font-size: 17px; margin-top: 4px; }
-  .mt { margin-top: 8px; }
-  .mb { margin-bottom: 8px; }
+  .item-price { width: 24mm; text-align: right; }
+  .item-mod { font-size: 10px; padding-left: 10mm; font-style: italic; font-weight: bold; }
+  .total-row { display: flex; justify-content: space-between; font-weight: 900; font-size: 16px; margin-top: 4px; }
+  .mt { margin-top: 6px; }
+  .mb { margin-bottom: 6px; }
   @media print {
     body { color: #000; }
     * { color: #000 !important; }
@@ -73,6 +84,9 @@ export function generateReceiptHtml({ table, staff, invoiceNumber, paymentMethod
   const now = new Date();
   const items = table?.currentTicket || [];
   const sousTotal = items.reduce((sum, i) => sum + i.qty * i.price, 0);
+  const shiftLabel = getShiftLabel(staff);
+  const zoneLabel = table?.zone ? (ZONE_LABELS[table.zone] || String(table.zone).toUpperCase()) : "—";
+  const tableCode = table?.subLabel || table?.name || "—";
 
   const itemsHtml = items.map((item) => {
     const mods = [item.piment, item.cuisson, item.boisson].filter(Boolean);
@@ -88,36 +102,39 @@ export function generateReceiptHtml({ table, staff, invoiceNumber, paymentMethod
 
   const deliveryRows = deliveryInfo
     ? `
-      ${deliveryInfo.customer_phone ? `<div class="row"><span>Tél:</span><span class="bold">${deliveryInfo.customer_phone}</span></div>` : ""}
-      ${deliveryInfo.customer_address ? `<div class="row"><span>Adresse:</span><span class="bold">${deliveryInfo.customer_address}</span></div>` : ""}
+      <div class="meta-row"><span>Client:</span><span class="bold">${deliveryInfo.customer_name || "—"}</span></div>
+      ${deliveryInfo.customer_phone ? `<div class="meta-row"><span>Tél:</span><span class="bold">${deliveryInfo.customer_phone}</span></div>` : ""}
+      ${deliveryInfo.customer_address ? `<div class="meta-row"><span>Adresse:</span><span class="bold">${deliveryInfo.customer_address}</span></div>` : ""}
     `
     : "";
 
   return wrapHtml(`
     <div class="center mb">
-      <img src="${restaurantLogo}" alt="SAPPHIRE RESTAURANT Logo" style="width:130px;height:auto;display:block;margin:0 auto 4px;" />
+      <img src="${restaurantLogo}" alt="SAPPHIRE RESTAURANT Logo" style="width:120px;height:auto;display:block;margin:0 auto 4px;" />
       <div class="xl bold">${RESTAURANT_NAME}</div>
       <div class="sm">${RESTAURANT_ADDR}</div>
       <div class="sm">TÉL: ${RESTAURANT_PHONE}</div>
     </div>
-    <div class="hr"></div>
-    <div class="row"><span>Facture:</span><span class="bold">${invoiceNumber || "—"}</span></div>
-    <div class="row"><span>Table:</span><span class="bold">${table?.name || "—"}</span></div>
+    ${DIVIDER}
+    <div class="meta-row"><span>Zone:</span><span class="bold">${zoneLabel}</span></div>
+    <div class="meta-row"><span>Table:</span><span class="bold">${tableCode}</span></div>
+    <div class="meta-row"><span>Shift:</span><span class="bold">${shiftLabel}</span></div>
+    <div class="meta-row"><span>Facture:</span><span class="bold">${invoiceNumber || "—"}</span></div>
     ${deliveryRows}
-    <div class="row"><span>Caissier:</span><span>${staff?.name || "—"}</span></div>
-    <div class="row"><span>Date:</span><span>${formatDateTime(now)}</span></div>
-    <div class="hr"></div>
+    <div class="meta-row"><span>Caissier:</span><span class="bold">${staff?.name || "—"}</span></div>
+    <div class="meta-row"><span>Date:</span><span>${formatDateTime(now)}</span></div>
+    ${DIVIDER}
     <div class="items-header">
       <span class="item-qty">Qté</span>
       <span class="item-name">Article</span>
       <span class="item-price">Montant</span>
     </div>
     ${itemsHtml}
-    <div class="hr"></div>
+    ${DIVIDER}
     <div class="total-row"><span>TOTAL</span><span>${formatCFA(sousTotal)}</span></div>
-    <div class="hr"></div>
+    ${DIVIDER}
     <div class="row"><span>Mode de paiement</span><span class="bold">${PAYMENT_LABELS[paymentMethod] || paymentMethod || "—"}</span></div>
-    <div class="hr"></div>
+    ${DIVIDER}
     <div class="center sm mt">
       <div>Merci de votre visite!</div>
       <div>À très bientôt 🇸🇳</div>
@@ -183,18 +200,18 @@ export function generateZReportHtml({ date, transactions, cashierName }) {
       <div class="lg bold">${RESTAURANT_NAME}</div>
       <div class="sm">${RESTAURANT_ADDR}</div>
     </div>
-    <div class="hr"></div>
-    <div class="row"><span>Date:</span><span class="bold">${dayLabel}</span></div>
-    <div class="row"><span>Caissier:</span><span>${cashierName || "—"}</span></div>
-    <div class="row"><span>Édité le:</span><span>${formatDateTime(new Date())}</span></div>
-    <div class="hr"></div>
+    ${DIVIDER}
+    <div class="meta-row"><span>Date:</span><span class="bold">${dayLabel}</span></div>
+    <div class="meta-row"><span>Caissier:</span><span>${cashierName || "—"}</span></div>
+    <div class="meta-row"><span>Édité le:</span><span>${formatDateTime(new Date())}</span></div>
+    ${DIVIDER}
     <div class="center bold lg">RÉCAPITULATIF</div>
     <div class="row mt"><span>Nombre de transactions</span><span class="bold">${txCount}</span></div>
     <div class="total-row"><span>TOTAL</span><span>${formatCFA(totalRevenue)}</span></div>
-    <div class="hr"></div>
+    ${DIVIDER}
     <div class="center bold mt mb">PAR MODE DE PAIEMENT</div>
     ${methodRows || '<div class="center sm">Aucune transaction</div>'}
-    <div class="hr"></div>
+    ${DIVIDER}
     <div class="center bold mt mb">TOP ARTICLES</div>
     <div class="items-header">
       <span class="item-qty">Qté</span>
@@ -202,7 +219,7 @@ export function generateZReportHtml({ date, transactions, cashierName }) {
       <span class="item-price">CA</span>
     </div>
     ${topItemsRows || '<div class="center sm">Aucun article</div>'}
-    <div class="hr"></div>
+    ${DIVIDER}
     <div class="center sm mt">
       <div>*** Fin du Rapport Z ***</div>
       <div>SAPPHIRE RESTAURANT POS</div>
@@ -234,7 +251,7 @@ export function generateDuplicateReceiptHtml(transaction) {
   }
   if (!Array.isArray(items)) items = [];
 
-  const table = { name: transaction.table_name || "—", currentTicket: items };
+  const table = { name: transaction.table_name || "—", subLabel: transaction.table_code || "", currentTicket: items };
   const isDelivery = transaction.order_type === "delivery";
   const deliveryInfo = isDelivery
     ? {
@@ -261,8 +278,9 @@ export function generateDuplicateReceiptHtml(transaction) {
 
   const deliveryRows = deliveryInfo
     ? `
-      ${deliveryInfo.customer_phone ? `<div class="row"><span>Tél:</span><span class="bold">${deliveryInfo.customer_phone}</span></div>` : ""}
-      ${deliveryInfo.customer_address ? `<div class="row"><span>Adresse:</span><span class="bold">${deliveryInfo.customer_address}</span></div>` : ""}
+      <div class="meta-row"><span>Client:</span><span class="bold">${deliveryInfo.customer_name || "—"}</span></div>
+      ${deliveryInfo.customer_phone ? `<div class="meta-row"><span>Tél:</span><span class="bold">${deliveryInfo.customer_phone}</span></div>` : ""}
+      ${deliveryInfo.customer_address ? `<div class="meta-row"><span>Adresse:</span><span class="bold">${deliveryInfo.customer_address}</span></div>` : ""}
     `
     : "";
 
@@ -273,31 +291,31 @@ export function generateDuplicateReceiptHtml(transaction) {
       <div class="xl bold">** DUPLICATA **</div>
       <div class="sm">Copie de ticket</div>
     </div>
-    <div class="hr"></div>
+    ${DIVIDER}
     <div class="center mb">
-      <img src="${restaurantLogo}" alt="SAPPHIRE RESTAURANT Logo" style="width:130px;height:auto;display:block;margin:0 auto 4px;" />
+      <img src="${restaurantLogo}" alt="SAPPHIRE RESTAURANT Logo" style="width:120px;height:auto;display:block;margin:0 auto 4px;" />
       <div class="xl bold">${RESTAURANT_NAME}</div>
       <div class="sm">${RESTAURANT_ADDR}</div>
       <div class="sm">TÉL: ${RESTAURANT_PHONE}</div>
     </div>
-    <div class="hr"></div>
-    <div class="row"><span>Facture:</span><span class="bold">${transaction.invoice_number || "—"}</span></div>
-    <div class="row"><span>Table:</span><span class="bold">${transaction.table_name || "—"}</span></div>
+    ${DIVIDER}
+    <div class="meta-row"><span>Table:</span><span class="bold">${table.subLabel || table.name}</span></div>
+    <div class="meta-row"><span>Facture:</span><span class="bold">${transaction.invoice_number || "—"}</span></div>
     ${deliveryRows}
-    <div class="row"><span>Caissier:</span><span>${transaction.cashier_name || "—"}</span></div>
-    <div class="row"><span>Date originale:</span><span class="bold">${formatDateTime(originalDate)}</span></div>
-    <div class="hr"></div>
+    <div class="meta-row"><span>Caissier:</span><span class="bold">${transaction.cashier_name || "—"}</span></div>
+    <div class="meta-row"><span>Date originale:</span><span class="bold">${formatDateTime(originalDate)}</span></div>
+    ${DIVIDER}
     <div class="items-header">
       <span class="item-qty">Qté</span>
       <span class="item-name">Article</span>
       <span class="item-price">Montant</span>
     </div>
     ${itemsHtml}
-    <div class="hr"></div>
+    ${DIVIDER}
     <div class="total-row"><span>TOTAL</span><span>${formatCFA(sousTotal)}</span></div>
-    <div class="hr"></div>
+    ${DIVIDER}
     <div class="row"><span>Mode de paiement</span><span class="bold">${PAYMENT_LABELS[transaction.payment_method] || transaction.payment_method || "—"}</span></div>
-    <div class="hr"></div>
+    ${DIVIDER}
     <div class="center sm mt">
       <div>** DUPLICATA — ${formatDateTime(originalDate)} **</div>
       <div>Merci de votre visite!</div>

@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { Minus, Plus, ShoppingBag, Trash2, Send, CreditCard, Printer, ChevronDown } from "lucide-react";
+import { Minus, Plus, ShoppingBag, Trash2, Send, CreditCard, Printer, ChevronDown, Ban } from "lucide-react";
 import PrintReceiptModal from "@/components/pos/PrintReceiptModal";
 import OrderStepper from "@/components/pos/OrderStepper";
 
@@ -11,6 +11,8 @@ export default function TicketSidebar({
   onSendKitchen,
   onCashOut,
   onPrintReceipt,
+  onCancelOrder,
+  orderSent,
   orderStatus,
 }) {
   const total = useMemo(() => {
@@ -202,6 +204,17 @@ export default function TicketSidebar({
               <span className="text-2xl font-extrabold text-white">{formatPrice(total)}</span>
             </div>
 
+            {orderSent && (
+              <div className="px-5 pb-3">
+                <button
+                  onClick={onCancelOrder}
+                  className="w-full h-12 rounded-xl font-semibold text-white flex items-center justify-center gap-2 transition-all active:scale-95 bg-rose-600 hover:bg-rose-500"
+                >
+                  <Ban className="w-4 h-4" />
+                  ANNULER LA COMMANDE
+                </button>
+              </div>
+            )}
             {/* ENVOYER — primary action */}
             <div className="px-5 pb-3">
               <button

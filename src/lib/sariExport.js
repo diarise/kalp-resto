@@ -1,16 +1,14 @@
 /**
  * Sage SARI Export Utility
- * Format: [JournalCode];[InvoiceNum];[DDMMYY];[HHMM];[AccountNum];[Status];[ItemCode];[ItemName];[Qty:4 Decimals];[Price:6 Decimals]
- * Example: 6;FA000107;270626;1832;41100046;PAYE;3027;BISSAP;1,0000;2000,000000
+ * Format: [typeDoc];[invoiceNumber];[dateSage];[codeCaisse];[methodLabel];[cleanName];[qtyFormatted];[priceFormatted]
+ * Example: 6;FA000013;050726;CS01;especes;C BON;2.000;6000.000000
  */
 
 const JOURNAL_CODE = "6";
-const ACCOUNT_NUM = "41100046";
 
 function formatDecimal(value, decimals) {
   const num = Number(value || 0);
-  const fixed = num.toFixed(decimals);
-  return fixed.replace(".", ",");
+  return num.toFixed(decimals);
 }
 
 function formatDateDDMMYY(timestamp) {
@@ -21,23 +19,16 @@ function formatDateDDMMYY(timestamp) {
   return dd + mm + yy;
 }
 
-function formatTimeHHMM(timestamp) {
-  const d = new Date(timestamp);
-  const hh = String(d.getHours()).padStart(2, "0");
-  const mi = String(d.getMinutes()).padStart(2, "0");
-  return hh + mi;
-}
-
 export function formatSariLine(transaction, item) {
+  const typeDoc = JOURNAL_CODE;
   const invoiceNum = transaction.invoice_number;
-  const date = formatDateDDMMYY(transaction.timestamp);
-  const time = formatTimeHHMM(transaction.timestamp);
-  const itemCode = item.id || item.code || "";
-  const itemName = (item.name || "").toUpperCase();
-  const qty = formatDecimal(item.qty, 4);
-  const price = formatDecimal(item.price, 6);
-  const paymentMode = transaction.payment_method || "PAYE";
-  return [JOURNAL_CODE, invoiceNum, date, time, ACCOUNT_NUM, paymentMode, itemCode, itemName, qty, price].join(";");
+  const dateSage = formatDateDDMMYY(transaction.timestamp);
+  const codeCaisse = transaction.table_code || "CS00";
+  const methodLabel = transaction.payment_method || "PAYE";
+  const cleanName = (item.name || "").toUpperCase();
+  const qtyFormatted = formatDecimal(item.qty, 3);
+  const priceFormatted = formatDecimal(item.price, 6);
+  return [typeDoc, invoiceNum, dateSage, codeCaisse, methodLabel, cleanName, qtyFormatted, priceFormatted].join(";");
 }
 
 export function exportTransactionsToSari(transactions) {

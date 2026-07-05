@@ -38,6 +38,7 @@ export default function CashierModal({ table, total, onClose, onValidate, delive
           items_snapshot: JSON.stringify(items),
           payment_method: selected,
           table_name: deliveryInfo ? `Livraison - ${deliveryInfo.customer_name || "Client"}` : (table?.name || "Table"),
+          table_code: table?.subLabel || "",
           shift_id: activeShift?.id || null,
           order_type: deliveryInfo ? "delivery" : "dine_in",
           payment_status: "paid",
