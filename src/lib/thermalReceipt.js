@@ -1,8 +1,8 @@
 /**
- * 80mm Thermal Receipt Generator
- * Produces compact HTML formatted for 80mm thermal printers (~48 chars wide).
- * Modern SaaS POS layout with monospace fonts, text-based dividers,
- * zone/table/shift metadata header, and right-aligned price columns.
+ * 58mm Thermal Receipt Generator (Built-in Cashier Printer)
+ * Optimized strictly for 58mm thermal paper — 32 characters max per line.
+ * Stacked item layout: Name on line 1, [Qty x Unit Price] → [Total] on line 2.
+ * Crisp system monospace fonts, uniform 32-hyphen dividers, 12px L/R margin buffer.
  */
 
 import { logoBase64 as restaurantLogo } from "@/assets/logoData";
@@ -10,8 +10,8 @@ import { getCaissePrinter } from "@/lib/printerConfig";
 import { getShiftLabel } from "@/lib/sariExport";
 
 const RESTAURANT_NAME = "SAPPHIRE RESTAURANT";
-const RESTAURANT_ADDR = "BOURGUIBA EN FACE ÉCOLE POLICE";
-const RESTAURANT_PHONE = "+221 78 442 24 24 - 78 440 05 05";
+const RESTAURANT_ADDR = "BOURGUIBA ENFACE ECOLE POLICE";
+const RESTAURANT_PHONE = "78 442 24 24 - 78 440 05 05";
 
 const PAYMENT_LABELS = {
   especes: "Espèces",
@@ -26,7 +26,10 @@ const ZONE_LABELS = {
   etage: "ETAGE",
 };
 
-const DIVIDER = '<div class="divider">--------------------------------</div>';
+// 58mm paper → 32 chars max per line
+const CHARS_PER_LINE = 32;
+const DIVIDER_CHARS = "-".repeat(CHARS_PER_LINE);
+const DIVIDER = `<div class="divider">${DIVIDER_CHARS}</div>`;
 
 function pad(n) {
   return String(n).padStart(2, "0");
@@ -40,44 +43,102 @@ function formatCFA(price) {
   return (price || 0).toLocaleString("fr-FR") + " CFA";
 }
 
+/**
+ * Wraps text to a max character width, returning an array of lines.
+ * Used to prevent product names from overflowing the 32-char boundary.
+ */
+function wrapText(text, maxChars) {
+  if (!text) return [""];
+  const words = String(text).split(/\s+/);
+  const lines = [];
+  let current = "";
+  for (const word of words) {
+    if ((current + " " + word).trim().length > maxChars) {
+      if (current) lines.push(current);
+      // Hard-break very long single words
+      if (word.length > maxChars) {
+        let chunk = word;
+        while (chunk.length > maxChars) {
+          lines.push(chunk.slice(0, maxChars));
+          chunk = chunk.slice(maxChars);
+        }
+        current = chunk;
+      } else {
+        current = word;
+      }
+    } else {
+      current = (current + " " + word).trim();
+    }
+  }
+  if (current) lines.push(current);
+  return lines.length ? lines : [""];
+}
+
 const THERMAL_CSS = `
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
-    width: 80mm;
-    font-family: 'Courier New', monospace;
-    font-size: 12px;
-    font-weight: bold;
+    width: 58mm;
+    padding: 0 12px;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 11px;
+    font-weight: 700;
     color: #000;
-    line-height: 1.6;
+    line-height: 1.45;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
   .center { text-align: center; }
   .right { text-align: right; }
-  .bold { font-weight: 900; }
-  .lg { font-size: 16px; }
-  .xl { font-size: 20px; }
-  .sm { font-size: 10px; font-weight: bold; }
-  .divider { text-align: center; margin: 4px 0; font-weight: bold; letter-spacing: -1px; overflow: hidden; white-space: nowrap; }
-  .row { display: flex; justify-content: space-between; font-weight: bold; }
-  .meta-row { display: flex; justify-content: space-between; font-size: 11px; font-weight: bold; margin-bottom: 1px; }
-  .items-header { display: flex; font-weight: 900; border-bottom: 2px solid #000; padding-bottom: 2px; margin-bottom: 3px; }
-  .item-line { display: flex; margin-bottom: 2px; font-weight: bold; }
-  .item-qty { width: 10mm; }
-  .item-name { flex: 1; }
-  .item-price { width: 24mm; text-align: right; }
-  .item-mod { font-size: 10px; padding-left: 10mm; font-style: italic; font-weight: bold; }
-  .total-row { display: flex; justify-content: space-between; font-weight: 900; font-size: 16px; margin-top: 4px; }
+  .bold { font-weight: 700; }
+  .lg { font-size: 14px; font-weight: 700; }
+  .xl { font-size: 17px; font-weight: 700; }
+  .sm { font-size: 9px; font-weight: 700; }
+  .divider {
+    text-align: center;
+    margin: 4px 0;
+    font-weight: 700;
+    white-space: pre;
+    overflow: hidden;
+    letter-spacing: 0;
+  }
+  .row { display: flex; justify-content: space-between; font-weight: 700; }
+  .meta-row { display: flex; justify-content: space-between; font-size: 10px; font-weight: 700; margin-bottom: 1px; }
+  .item-block { margin-bottom: 4px; }
+  .item-name { font-weight: 700; word-break: break-word; }
+  .item-sub { display: flex; justify-content: space-between; font-size: 10px; font-weight: 700; margin-top: 1px; }
+  .item-mod { font-size: 9px; font-weight: 700; margin-top: 1px; }
+  .total-row { display: flex; justify-content: space-between; font-weight: 700; font-size: 14px; margin-top: 4px; }
   .mt { margin-top: 6px; }
   .mb { margin-bottom: 6px; }
   @media print {
-    body { color: #000; }
+    body { color: #000; width: 58mm; padding: 0 12px; }
     * { color: #000 !important; }
   }
 `;
 
 function wrapHtml(body) {
   return `<!DOCTYPE html><html><head><meta charset="utf-8"><style>${THERMAL_CSS}</style></head><body>${body}</body></html>`;
+}
+
+/**
+ * Builds a stacked item block for 58mm paper:
+ *   Line 1: Product Name (wrapped if > 32 chars)
+ *   Line 2:   [Qty] x [Unit Price]  -------->  [Total Price]
+ */
+function buildItemBlock(item) {
+  const nameLines = wrapText(item.name, CHARS_PER_LINE);
+  const nameHtml = nameLines.map((l) => `<div class="item-name">${l}</div>`).join("");
+  const mods = [item.piment, item.cuisson, item.boisson].filter(Boolean);
+  return `
+    <div class="item-block">
+      ${nameHtml}
+      <div class="item-sub">
+        <span>${item.qty} x ${formatCFA(item.price)}</span>
+        <span>${formatCFA(item.qty * item.price)}</span>
+      </div>
+      ${mods.length > 0 ? `<div class="item-mod">→ ${mods.join(", ")}</div>` : ""}
+    </div>
+  `;
 }
 
 export function generateReceiptHtml({ table, staff, invoiceNumber, paymentMethod, deliveryInfo }) {
@@ -88,17 +149,7 @@ export function generateReceiptHtml({ table, staff, invoiceNumber, paymentMethod
   const zoneLabel = table?.zone ? (ZONE_LABELS[table.zone] || String(table.zone).toUpperCase()) : "—";
   const tableCode = table?.subLabel || table?.name || "—";
 
-  const itemsHtml = items.map((item) => {
-    const mods = [item.piment, item.cuisson, item.boisson].filter(Boolean);
-    return `
-      <div class="item-line">
-        <span class="item-qty">${item.qty}x</span>
-        <span class="item-name">${item.name}</span>
-        <span class="item-price">${formatCFA(item.qty * item.price)}</span>
-      </div>
-      ${mods.length > 0 ? `<div class="item-mod">→ ${mods.join(", ")}</div>` : ""}
-    `;
-  }).join("");
+  const itemsHtml = items.map(buildItemBlock).join("");
 
   const deliveryRows = deliveryInfo
     ? `
@@ -110,7 +161,7 @@ export function generateReceiptHtml({ table, staff, invoiceNumber, paymentMethod
 
   return wrapHtml(`
     <div class="center mb">
-      <img src="${restaurantLogo}" alt="SAPPHIRE RESTAURANT Logo" style="width:120px;height:auto;display:block;margin:0 auto 4px;" />
+      <img src="${restaurantLogo}" alt="Logo" style="width:100px;height:auto;display:block;margin:0 auto 4px;" />
       <div class="xl bold">${RESTAURANT_NAME}</div>
       <div class="sm">${RESTAURANT_ADDR}</div>
       <div class="sm">TÉL: ${RESTAURANT_PHONE}</div>
@@ -124,16 +175,11 @@ export function generateReceiptHtml({ table, staff, invoiceNumber, paymentMethod
     <div class="meta-row"><span>Caissier:</span><span class="bold">${staff?.name || "—"}</span></div>
     <div class="meta-row"><span>Date:</span><span>${formatDateTime(now)}</span></div>
     ${DIVIDER}
-    <div class="items-header">
-      <span class="item-qty">Qté</span>
-      <span class="item-name">Article</span>
-      <span class="item-price">Montant</span>
-    </div>
     ${itemsHtml}
     ${DIVIDER}
     <div class="total-row"><span>TOTAL</span><span>${formatCFA(sousTotal)}</span></div>
     ${DIVIDER}
-    <div class="row"><span>Mode de paiement</span><span class="bold">${PAYMENT_LABELS[paymentMethod] || paymentMethod || "—"}</span></div>
+    <div class="row"><span>Paiement</span><span class="bold">${PAYMENT_LABELS[paymentMethod] || paymentMethod || "—"}</span></div>
     ${DIVIDER}
     <div class="center sm mt">
       <div>Merci de votre visite!</div>
@@ -146,7 +192,6 @@ export function generateZReportHtml({ date, transactions, cashierName }) {
   const reportDate = date ? new Date(date) : new Date();
   const dayLabel = `${pad(reportDate.getDate())}/${pad(reportDate.getMonth() + 1)}/${reportDate.getFullYear()}`;
 
-  // Caller is responsible for filtering (by date or by shift) — use transactions as-is
   const dayTx = transactions;
 
   const totalRevenue = dayTx.reduce((sum, t) => sum + (t.total_amount || 0), 0);
@@ -160,7 +205,6 @@ export function generateZReportHtml({ date, transactions, cashierName }) {
     byMethod[m].total += t.total_amount || 0;
   }
 
-  // Aggregate items
   const itemMap = {};
   for (const t of dayTx) {
     let items = t.items_snapshot;
@@ -186,13 +230,14 @@ export function generateZReportHtml({ date, transactions, cashierName }) {
     </div>
   `).join("");
 
-  const topItemsRows = topItems.map(([name, data]) => `
-    <div class="item-line">
-      <span class="item-qty">${data.qty}x</span>
-      <span class="item-name">${name}</span>
-      <span class="item-price">${formatCFA(data.revenue)}</span>
-    </div>
-  `).join("");
+  const topItemsRows = topItems.map(([name, data]) => {
+    const block = buildItemBlock({ name, qty: data.qty, price: 0 });
+    // Override the sub-line to show revenue instead of unit price math
+    return block.replace(
+      /<div class="item-sub">[\s\S]*?<\/div>/,
+      `<div class="item-sub"><span>${data.qty} x vente</span><span>${formatCFA(data.revenue)}</span></div>`
+    );
+  }).join("");
 
   return wrapHtml(`
     <div class="center mb">
@@ -203,25 +248,20 @@ export function generateZReportHtml({ date, transactions, cashierName }) {
     ${DIVIDER}
     <div class="meta-row"><span>Date:</span><span class="bold">${dayLabel}</span></div>
     <div class="meta-row"><span>Caissier:</span><span>${cashierName || "—"}</span></div>
-    <div class="meta-row"><span>Édité le:</span><span>${formatDateTime(new Date())}</span></div>
+    <div class="meta-row"><span>Édité:</span><span>${formatDateTime(new Date())}</span></div>
     ${DIVIDER}
     <div class="center bold lg">RÉCAPITULATIF</div>
-    <div class="row mt"><span>Nombre de transactions</span><span class="bold">${txCount}</span></div>
+    <div class="row mt"><span>Transactions</span><span class="bold">${txCount}</span></div>
     <div class="total-row"><span>TOTAL</span><span>${formatCFA(totalRevenue)}</span></div>
     ${DIVIDER}
-    <div class="center bold mt mb">PAR MODE DE PAIEMENT</div>
+    <div class="center bold mt mb">PAR PAIEMENT</div>
     ${methodRows || '<div class="center sm">Aucune transaction</div>'}
     ${DIVIDER}
     <div class="center bold mt mb">TOP ARTICLES</div>
-    <div class="items-header">
-      <span class="item-qty">Qté</span>
-      <span class="item-name">Article</span>
-      <span class="item-price">CA</span>
-    </div>
     ${topItemsRows || '<div class="center sm">Aucun article</div>'}
     ${DIVIDER}
     <div class="center sm mt">
-      <div>*** Fin du Rapport Z ***</div>
+      <div>*** Fin Rapport Z ***</div>
       <div>SAPPHIRE RESTAURANT POS</div>
     </div>
   `);
@@ -236,7 +276,6 @@ export function printThermalReceipt(htmlContent) {
     const caissePrinter = getCaissePrinter();
     return window.electronAPI.printSilent(htmlContent, caissePrinter || undefined);
   }
-  // No Electron — silent printing unavailable; return failure (no browser dialog)
   return Promise.resolve({ success: false, error: "Impression silencieuse non disponible (Electron requis)" });
 }
 
@@ -264,17 +303,7 @@ export function generateDuplicateReceiptHtml(transaction) {
   const now = new Date();
   const originalDate = new Date(transaction.timestamp);
 
-  const itemsHtml = items.map((item) => {
-    const mods = [item.piment, item.cuisson, item.boisson].filter(Boolean);
-    return `
-      <div class="item-line">
-        <span class="item-qty">${item.qty}x</span>
-        <span class="item-name">${item.name}</span>
-        <span class="item-price">${formatCFA(item.qty * item.price)}</span>
-      </div>
-      ${mods.length > 0 ? `<div class="item-mod">→ ${mods.join(", ")}</div>` : ""}
-    `;
-  }).join("");
+  const itemsHtml = items.map(buildItemBlock).join("");
 
   const deliveryRows = deliveryInfo
     ? `
@@ -293,7 +322,7 @@ export function generateDuplicateReceiptHtml(transaction) {
     </div>
     ${DIVIDER}
     <div class="center mb">
-      <img src="${restaurantLogo}" alt="SAPPHIRE RESTAURANT Logo" style="width:120px;height:auto;display:block;margin:0 auto 4px;" />
+      <img src="${restaurantLogo}" alt="Logo" style="width:100px;height:auto;display:block;margin:0 auto 4px;" />
       <div class="xl bold">${RESTAURANT_NAME}</div>
       <div class="sm">${RESTAURANT_ADDR}</div>
       <div class="sm">TÉL: ${RESTAURANT_PHONE}</div>
@@ -303,18 +332,13 @@ export function generateDuplicateReceiptHtml(transaction) {
     <div class="meta-row"><span>Facture:</span><span class="bold">${transaction.invoice_number || "—"}</span></div>
     ${deliveryRows}
     <div class="meta-row"><span>Caissier:</span><span class="bold">${transaction.cashier_name || "—"}</span></div>
-    <div class="meta-row"><span>Date originale:</span><span class="bold">${formatDateTime(originalDate)}</span></div>
+    <div class="meta-row"><span>Date orig.:</span><span class="bold">${formatDateTime(originalDate)}</span></div>
     ${DIVIDER}
-    <div class="items-header">
-      <span class="item-qty">Qté</span>
-      <span class="item-name">Article</span>
-      <span class="item-price">Montant</span>
-    </div>
     ${itemsHtml}
     ${DIVIDER}
     <div class="total-row"><span>TOTAL</span><span>${formatCFA(sousTotal)}</span></div>
     ${DIVIDER}
-    <div class="row"><span>Mode de paiement</span><span class="bold">${PAYMENT_LABELS[transaction.payment_method] || transaction.payment_method || "—"}</span></div>
+    <div class="row"><span>Paiement</span><span class="bold">${PAYMENT_LABELS[transaction.payment_method] || transaction.payment_method || "—"}</span></div>
     ${DIVIDER}
     <div class="center sm mt">
       <div>** DUPLICATA — ${formatDateTime(originalDate)} **</div>
