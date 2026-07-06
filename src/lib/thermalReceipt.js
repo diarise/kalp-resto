@@ -77,8 +77,10 @@ function wrapText(text, maxChars) {
 const THERMAL_CSS = `
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
-    width: 58mm;
-    padding: 0 12px;
+    width: 58mm !important;
+    max-width: 200px;
+    padding: 0 8px !important;
+    margin: 0 !important;
     font-family: 'Courier New', Courier, monospace;
     font-size: 11px;
     font-weight: 700;
@@ -111,7 +113,7 @@ const THERMAL_CSS = `
   .mt { margin-top: 6px; }
   .mb { margin-bottom: 6px; }
   @media print {
-    body { color: #000; width: 58mm; padding: 0 12px; }
+    body { color: #000; width: 58mm !important; max-width: 200px; padding: 0 8px !important; margin: 0 !important; }
     * { color: #000 !important; }
   }
 `;

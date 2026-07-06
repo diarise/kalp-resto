@@ -54,8 +54,9 @@ const QTY_WIDTH = "28px"; // fixed slot for qty digit — never clipped by feed 
 const PREP_CSS = `
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
-    width: 80mm;
-    padding: 0 12px;
+    width: 80mm !important;
+    padding: 0 16px !important;
+    margin: 0 !important;
     font-family: 'Courier New', Courier, monospace;
     font-size: 13px;
     font-weight: 700;
@@ -107,7 +108,7 @@ const PREP_CSS = `
   .mt { margin-top: 8px; }
   .mb { margin-bottom: 8px; }
   @media print {
-    body { color: #000; width: 80mm; padding: 0 12px; }
+    body { color: #000; width: 80mm !important; padding: 0 16px !important; margin: 0 !important; }
     * { color: #000 !important; }
   }
 `;
