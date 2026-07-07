@@ -24,14 +24,31 @@ import { getKitchenPrinter, getBarPrinter } from "@/lib/printerConfig";
 import { generateKitchenPrepHtml, generateBarPrepHtml, generateCancellationHtml, generateModificationHtml } from "@/lib/prepTicket";
 
 const STORAGE_KEY = "kalpe_menu_items";
+const MENU_VERSION = "2026-07-07-v2";
+
+// Hard cache eviction: flush stale menu cache so the latest MENU_ITEMS from source always load
+(function evictStaleMenuCache() {
+  try {
+    const storedVersion = localStorage.getItem("kalpe_menu_version");
+    if (storedVersion !== MENU_VERSION) {
+      localStorage.removeItem(STORAGE_KEY);
+      localStorage.setItem("kalpe_menu_version", MENU_VERSION);
+    }
+  } catch (e) {}
+})();
 
 function loadMenuItems() {
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored) {
       const parsed = JSON.parse(stored);
-      // If cached menu is missing new categories (outdated), refresh from latest code
-      if (!parsed.some((i) => i.category === "chichas") || !parsed.some((i) => i.category === "poulet") || !parsed.some((i) => i.category === "sale")) {
+      // If cached menu is missing any current categories (outdated), refresh from latest code
+      if (
+        !parsed.some((i) => i.category === "chichas") ||
+        !parsed.some((i) => i.category === "poulet") ||
+        !parsed.some((i) => i.category === "sale") ||
+        !parsed.some((i) => i.category === "boissons_chaudes")
+      ) {
         return MENU_ITEMS;
       }
       return parsed;
