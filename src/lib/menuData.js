@@ -1,3 +1,7 @@
+// ==========================================
+// SYSTEM MENU CONFIGURATION — VER: 2026-07-07-v2
+// LAST UPDATED: COLD & HOT DRINK SEPARATION
+// ==========================================
 export const MENU_CATEGORIES = [
   { id: "plats", label: "Plats" },
   { id: "boissons", label: "Boissons Fraîches" },
