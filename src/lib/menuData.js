@@ -1,6 +1,6 @@
 export const MENU_CATEGORIES = [
   { id: "plats", label: "Plat du Jour" },
-  { id: "boissons", label: "Boisson" },
+  { id: "boissons", label: "Boissons Fraîches" },
   { id: "entrees", label: "Entrée" },
   { id: "grills", label: "Dibi et Grillade" },
   { id: "poulet", label: "Poulet" },
@@ -82,12 +82,24 @@ export const MENU_ITEMS = [
   // SUPPLEMENTS
   { id: "supp-1", name: "SUPPLEMENT", price: 1000, category: "supplements" },
 
-  // BOISSONS SÉNÉGALAISES
-  { id: "bois-1", name: "Bissap Classique", price: 2000, category: "boissons" },
-  { id: "bois-2", name: "Jus de Bouye", price: 2000, category: "boissons" },
-  { id: "bois-3", name: "Jus de Gingembre", price: 2000, category: "boissons" },
-  { id: "bois-4", name: "Jus de Ditakh", price: 2000, category: "boissons" },
-  { id: "bois-5", name: "Café Touba", price: 1000, category: "boissons" },
+  // ==================== 🥤 BOISSONS FRAÎCHES (Category: "boissons") ====================
+  { id: "bois-1", name: "BISSAP CLASSIQUE", price: 2000, category: "boissons" },
+  { id: "bois-2", name: "BISSAP GINGEMBRE MENTHE", price: 2500, category: "boissons" },
+  { id: "bois-3", name: "BOUYE CLASSIQUE", price: 2000, category: "boissons" },
+  { id: "bois-4", name: "BOUYE ANANAS", price: 2500, category: "boissons" },
+  { id: "bois-5", name: "BOUYE PASSION", price: 3000, category: "boissons" },
+  { id: "bois-6", name: "DITAKH", price: 2500, category: "boissons" },
+  { id: "bois-7", name: "COROSSOL", price: 3500, category: "boissons" },
+  { id: "bois-8", name: "COCA COLA", price: 1500, category: "boissons" },
+  { id: "bois-9", name: "COCA ZERO", price: 1500, category: "boissons" },
+  { id: "bois-10", name: "FANTA ORANGE", price: 1500, category: "boissons" },
+  { id: "bois-11", name: "SPRITE", price: 1500, category: "boissons" },
+  { id: "bois-12", name: "SCHWEPPES TONIC", price: 1500, category: "boissons" },
+  { id: "bois-13", name: "MALTINA", price: 1500, category: "boissons" },
+  { id: "bois-14", name: "EAU PETITE KIRENE", price: 1000, category: "boissons" },
+  { id: "bois-15", name: "EAU GRANDE KIRENE", price: 1500, category: "boissons" },
+  { id: "bois-16", name: "EAU GAZEUSE CASAMANCE", price: 1500, category: "boissons" },
+  { id: "bois-21", name: "EAU GAZEUSE / PERRIER", price: 2000, category: "boissons" },
 
   // ENTRÉES
   { id: "ent-1", name: "Salade Exotique Sucrée-Salée", price: 6000, category: "entrees" },
@@ -129,22 +141,7 @@ export const MENU_ITEMS = [
   { id: "ch-10", name: "Chicha Royale Ananas", price: 20000, category: "chichas" },
   { id: "ch-11", name: "Chicha Royale Melon", price: 20000, category: "chichas" },
 
-  // NOUVELLES BOISSONS
-  { id: "bois-6", name: "Virgin Mojito", price: 5000, category: "boissons" },
-  { id: "bois-7", name: "Virgin Pina Colada", price: 5000, category: "boissons" },
-  { id: "bois-8", name: "Cocktail Sapphire", price: 5000, category: "boissons" },
-  { id: "bois-9", name: "Limonade Artisanale", price: 5000, category: "boissons" },
-  { id: "bois-10", name: "Ice Tea Pêche / Framboise", price: 5000, category: "boissons" },
-  { id: "bois-11", name: "Coca-Cola / Zero", price: 1500, category: "boissons" },
-  { id: "bois-12", name: "Fanta Orange / Ananas", price: 1500, category: "boissons" },
-  { id: "bois-13", name: "Sprite / Schweppes", price: 1500, category: "boissons" },
-  { id: "bois-14", name: "Red Bull", price: 2500, category: "boissons" },
-  { id: "bois-15", name: "Jus Frais Pressé (Orange)", price: 3000, category: "boissons" },
-  { id: "bois-16", name: "Jus Frais Pressé (Citron)", price: 2500, category: "boissons" },
-  { id: "bois-20", name: "Eau Casamancaise", price: 1500, category: "boissons" },
-  { id: "bois-21", name: "Eau Gazeuse / Perrier", price: 2000, category: "boissons" },
-
-  // BOISSONS CHAUDES
+  // ==================== ☕ BOISSONS CHAUDES (Category: "boissons_chaudes") ====================
   { id: "bch-1", name: "Café au lait", price: 2500, category: "boissons_chaudes" },
   { id: "bch-2", name: "Chocolat chaud", price: 3000, category: "boissons_chaudes" },
   { id: "bch-3", name: "Cappuccino", price: 2500, category: "boissons_chaudes" },
