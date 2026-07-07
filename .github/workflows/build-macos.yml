@@ -1,4 +1,4 @@
-name: Build Windows Installer
+name: Build macOS Installer
 
 on:
   push:
@@ -9,7 +9,7 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: macos-latest
 
     steps:
       - name: Checkout code
@@ -27,15 +27,15 @@ jobs:
       - name: Build web assets (Vite)
         run: npm run build
 
-      - name: Package Windows installer (electron-builder)
-        run: npx electron-builder --win
+      - name: Package macOS installer (electron-builder)
+        run: npx electron-builder --mac
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload installer artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Kalpe-Resto-POS-Windows-Installer
-          path: release/*.exe
+          name: Kalpe-Resto-POS-Mac-Installer
+          path: release/*.dmg
           if-no-files-found: error
           retention-days: 30
