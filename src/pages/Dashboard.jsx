@@ -869,6 +869,11 @@ export default function Dashboard() {
       {showPrinterConfig && (
         <PrinterConfigModal onClose={() => setShowPrinterConfig(false)} />
       )}
+      <div className="shrink-0 text-center py-1.5 border-t border-slate-800/50">
+        <p className="text-[10px] text-slate-600 font-medium tracking-wide">
+          © 2026 Kalpé Resto. Developed by Daouda Dia
+        </p>
+      </div>
     </div>
   );
 }
