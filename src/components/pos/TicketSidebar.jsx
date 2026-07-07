@@ -99,7 +99,7 @@ export default function TicketSidebar({
 
         {activeTable && activeTable.currentTicket.map((item) => {
           const isExpanded = expandedItemId === item.id;
-          const isBoisson = item.category === "boissons";
+          const isBoisson = item.category === "boissons" || item.category === "boissons_chaudes";
           const modifierText = getItemModifiers(item);
 
           return (
