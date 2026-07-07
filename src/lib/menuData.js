@@ -1,6 +1,7 @@
 // ==========================================
 // SYSTEM MENU CONFIGURATION — VER: 2026-07-07-v2
 // LAST UPDATED: COLD & HOT DRINK SEPARATION
+// SYNC PING: 2026-07-07T23:59:00Z
 // ==========================================
 export const MENU_CATEGORIES = [
   { id: "plats", label: "Plats" },
