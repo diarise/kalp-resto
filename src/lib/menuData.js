@@ -12,6 +12,7 @@ export const MENU_CATEGORIES = [
   { id: "desserts", label: "Dessert" },
   { id: "chichas", label: "Chicha et Lounge" },
   { id: "sale", label: "Plats Salés" },
+  { id: "boissons_chaudes", label: "Boissons Chaudes" },
 ];
 
 export const MENU_ITEMS = [
@@ -145,6 +146,15 @@ export const MENU_ITEMS = [
   { id: "bois-19", name: "Expresso Premium", price: 2000, category: "boissons" },
   { id: "bois-20", name: "Eau Casamancaise", price: 1500, category: "boissons" },
   { id: "bois-21", name: "Eau Gazeuse / Perrier", price: 2000, category: "boissons" },
+
+  // BOISSONS CHAUDES
+  { id: "bch-1", name: "Café au lait", price: 2500, category: "boissons_chaudes" },
+  { id: "bch-2", name: "Chocolat chaud", price: 3000, category: "boissons_chaudes" },
+  { id: "bch-3", name: "Cappuccino", price: 2500, category: "boissons_chaudes" },
+  { id: "bch-4", name: "Infusion (Damman-frère)", price: 2000, category: "boissons_chaudes" },
+  { id: "bch-5", name: "Grog Sapphire", price: 3000, category: "boissons_chaudes" },
+  { id: "bch-6", name: "Nespresso", price: 2500, category: "boissons_chaudes" },
+  { id: "bch-7", name: "Expresso (Café Ely)", price: 2000, category: "boissons_chaudes" },
 ];
 
 export function getInitialTables() {

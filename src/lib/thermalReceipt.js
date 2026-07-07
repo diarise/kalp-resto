@@ -77,9 +77,10 @@ function wrapText(text, maxChars) {
 const THERMAL_CSS = `
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
-    width: 58mm !important;
+    width: 48mm !important; /* Narrower print zone to keep text safely inside the paper roll */
     max-width: 200px;
-    padding: 0 8px !important;
+    padding-left: 6mm !important; /* Explicitly pushes text out of the left clipping zone */
+    padding-right: 2mm !important;
     margin: 0 !important;
     font-family: 'Courier New', Courier, monospace;
     font-size: 11px;
@@ -113,7 +114,7 @@ const THERMAL_CSS = `
   .mt { margin-top: 6px; }
   .mb { margin-bottom: 6px; }
   @media print {
-    body { color: #000; width: 58mm !important; max-width: 200px; padding: 0 8px !important; margin: 0 !important; }
+    body { color: #000; width: 48mm !important; max-width: 200px; padding-left: 6mm !important; padding-right: 2mm !important; margin: 0 !important; }
     * { color: #000 !important; }
   }
 `;
