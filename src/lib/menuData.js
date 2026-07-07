@@ -141,9 +141,6 @@ export const MENU_ITEMS = [
   { id: "bois-14", name: "Red Bull", price: 2500, category: "boissons" },
   { id: "bois-15", name: "Jus Frais Pressé (Orange)", price: 3000, category: "boissons" },
   { id: "bois-16", name: "Jus Frais Pressé (Citron)", price: 2500, category: "boissons" },
-  { id: "bois-17", name: "Café au Lait / Cappuccino", price: 2500, category: "boissons" },
-  { id: "bois-18", name: "Chocolat Chaud", price: 3000, category: "boissons" },
-  { id: "bois-19", name: "Expresso Premium", price: 2000, category: "boissons" },
   { id: "bois-20", name: "Eau Casamancaise", price: 1500, category: "boissons" },
   { id: "bois-21", name: "Eau Gazeuse / Perrier", price: 2000, category: "boissons" },
 
