@@ -1,18 +1,11 @@
 export const MENU_CATEGORIES = [
-  { id: "plats", label: "Plat du Jour" },
+  { id: "plats", label: "Plats" },
   { id: "boissons", label: "Boissons Fraîches" },
+  { id: "boissons_chaudes", label: "Boissons Chaudes" },
   { id: "entrees", label: "Entrée" },
-  { id: "grills", label: "Dibi et Grillade" },
-  { id: "poulet", label: "Poulet" },
-  { id: "poisson", label: "Poisson" },
-  { id: "mer", label: "Fruits de Mer" },
-  { id: "pates", label: "Pâtes" },
-  { id: "accompagnement", label: "Accompagnement" },
-  { id: "supplements", label: "Supplément" },
   { id: "desserts", label: "Dessert" },
   { id: "chichas", label: "Chicha et Lounge" },
   { id: "sale", label: "Plats Salés" },
-  { id: "boissons_chaudes", label: "Boissons Chaudes" },
 ];
 
 export const MENU_ITEMS = [
@@ -101,6 +94,15 @@ export const MENU_ITEMS = [
   { id: "bois-16", name: "EAU GAZEUSE CASAMANCE", price: 1500, category: "boissons" },
   { id: "bois-21", name: "EAU GAZEUSE / PERRIER", price: 2000, category: "boissons" },
 
+  // ==================== ☕ BOISSONS CHAUDES (Category: "boissons_chaudes") ====================
+  { id: "bch-1", name: "Café au lait", price: 2500, category: "boissons_chaudes" },
+  { id: "bch-2", name: "Chocolat chaud", price: 3000, category: "boissons_chaudes" },
+  { id: "bch-3", name: "Cappuccino", price: 2500, category: "boissons_chaudes" },
+  { id: "bch-4", name: "Infusion (Damman-frère)", price: 2000, category: "boissons_chaudes" },
+  { id: "bch-5", name: "Grog Sapphire", price: 3000, category: "boissons_chaudes" },
+  { id: "bch-6", name: "Nespresso", price: 2500, category: "boissons_chaudes" },
+  { id: "bch-7", name: "Expresso (Café Ely)", price: 2000, category: "boissons_chaudes" },
+
   // ENTRÉES
   { id: "ent-1", name: "Salade Exotique Sucrée-Salée", price: 6000, category: "entrees" },
   { id: "ent-2", name: "Salade Végétarienne Froide", price: 6000, category: "entrees" },
@@ -140,15 +142,6 @@ export const MENU_ITEMS = [
   { id: "ch-9", name: "Chicha Mojito Exotique", price: 15000, category: "chichas" },
   { id: "ch-10", name: "Chicha Royale Ananas", price: 20000, category: "chichas" },
   { id: "ch-11", name: "Chicha Royale Melon", price: 20000, category: "chichas" },
-
-  // ==================== ☕ BOISSONS CHAUDES (Category: "boissons_chaudes") ====================
-  { id: "bch-1", name: "Café au lait", price: 2500, category: "boissons_chaudes" },
-  { id: "bch-2", name: "Chocolat chaud", price: 3000, category: "boissons_chaudes" },
-  { id: "bch-3", name: "Cappuccino", price: 2500, category: "boissons_chaudes" },
-  { id: "bch-4", name: "Infusion (Damman-frère)", price: 2000, category: "boissons_chaudes" },
-  { id: "bch-5", name: "Grog Sapphire", price: 3000, category: "boissons_chaudes" },
-  { id: "bch-6", name: "Nespresso", price: 2500, category: "boissons_chaudes" },
-  { id: "bch-7", name: "Expresso (Café Ely)", price: 2000, category: "boissons_chaudes" },
 ];
 
 export function getInitialTables() {
