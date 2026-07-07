@@ -4,6 +4,8 @@ import { Minus, Plus, ShoppingBag, Trash2, Send, CreditCard, ChevronDown, User, 
 const PIMENT_OPTIONS = ["Sans piment", "Peu pimenté", "Bien pimenté"];
 const CUISSON_OPTIONS = ["À point", "Bien cuit"];
 const BOISSON_OPTIONS = ["Glace", "Sans glace"];
+const SUCRE_OPTIONS = ["Avec Sucre", "Sans Sucre"];
+const LAIT_OPTIONS = ["Avec Lait", "Sans Lait"];
 
 export default function DeliverySidebar({
   delivery,
@@ -27,6 +29,8 @@ export default function DeliverySidebar({
     if (item.piment) parts.push(item.piment);
     if (item.cuisson) parts.push(item.cuisson);
     if (item.boisson) parts.push(item.boisson);
+    if (item.sucre) parts.push(item.sucre);
+    if (item.lait) parts.push(item.lait);
     return parts.join(", ");
   };
 
@@ -101,7 +105,9 @@ export default function DeliverySidebar({
 
         {ticket.map((item) => {
           const isExpanded = expandedItemId === item.id;
-          const isBoisson = item.category === "boissons" || item.category === "boissons_chaudes";
+          const isColdDrink = item.category === "boissons";
+          const isHotDrink = item.category === "boissons_chaudes";
+          const isBoisson = isColdDrink || isHotDrink;
           const modifierText = getItemModifiers(item);
 
           return (
@@ -143,7 +149,7 @@ export default function DeliverySidebar({
 
               {isExpanded && (
                 <div className="mt-2.5 pl-1 space-y-2">
-                  {isBoisson ? (
+                  {isColdDrink ? (
                     <div className="flex flex-wrap items-center gap-1.5">
                       <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 mr-1">Boisson:</span>
                       {BOISSON_OPTIONS.map((opt) => {
@@ -156,6 +162,33 @@ export default function DeliverySidebar({
                         );
                       })}
                     </div>
+                  ) : isHotDrink ? (
+                    <>
+                      <div className="flex flex-wrap items-center gap-1.5">
+                        <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 mr-1">Sucre:</span>
+                        {SUCRE_OPTIONS.map((opt) => {
+                          const isActive = item.sucre === opt;
+                          return (
+                            <button key={opt} onClick={() => onSetModifier(item.id, "sucre", isActive ? "" : opt)}
+                              className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-all active:scale-95 ${isActive ? "bg-slate-100 text-slate-900" : "bg-slate-800 text-slate-400 hover:bg-slate-700"}`}>
+                              {opt}
+                            </button>
+                          );
+                        })}
+                      </div>
+                      <div className="flex flex-wrap items-center gap-1.5">
+                        <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 mr-1">Lait:</span>
+                        {LAIT_OPTIONS.map((opt) => {
+                          const isActive = item.lait === opt;
+                          return (
+                            <button key={opt} onClick={() => onSetModifier(item.id, "lait", isActive ? "" : opt)}
+                              className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-all active:scale-95 ${isActive ? "bg-slate-100 text-slate-900" : "bg-slate-800 text-slate-400 hover:bg-slate-700"}`}>
+                              {opt}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </>
                   ) : (
                     <>
                       <div className="flex flex-wrap items-center gap-1.5">
