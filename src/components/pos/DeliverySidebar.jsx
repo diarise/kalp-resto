@@ -107,6 +107,7 @@ export default function DeliverySidebar({
           const isExpanded = expandedItemId === item.id;
           const isColdDrink = item.category === "boissons";
           const isHotDrink = item.category === "boissons_chaudes";
+          const isChicha = item.category === "chichas";
           const isBoisson = isColdDrink || isHotDrink;
           const modifierText = getItemModifiers(item);
 
@@ -147,7 +148,7 @@ export default function DeliverySidebar({
                 </span>
               </div>
 
-              {isExpanded && (
+              {isExpanded && !isChicha && (
                 <div className="mt-2.5 pl-1 space-y-2">
                   {isColdDrink ? (
                     <div className="flex flex-wrap items-center gap-1.5">
