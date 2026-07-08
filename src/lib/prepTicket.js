@@ -19,6 +19,19 @@ const CHARS_PER_LINE = 42;
 const DIVIDER_CHARS = "-".repeat(CHARS_PER_LINE);
 const DIVIDER = `<div class="divider">${DIVIDER_CHARS}</div>`;
 
+const ZONE_LABELS = {
+  salle: "SALLE",
+  terrasse: "TERRASSE",
+  etage: "ETAGE",
+};
+
+function getTableDisplayValue(table, headerValue) {
+  if (headerValue) return headerValue;
+  const zoneLabel = table?.zone ? (ZONE_LABELS[table.zone] || String(table.zone).toUpperCase()) : null;
+  const tableCode = table?.subLabel || table?.name;
+  return zoneLabel ? `${tableCode} — ${zoneLabel}` : tableCode;
+}
+
 /**
  * Wraps item names to 42 chars, leaving the quantity pinned at the left
  * on continuation lines (indented to align under the name column).
@@ -57,7 +70,7 @@ const PREP_CSS = `
     width: 80mm !important;
     padding: 0 16px !important;
     margin: 0 !important;
-    font-family: 'Courier New', Courier, monospace;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     font-size: 13px;
     font-weight: 700;
     color: #000;
@@ -100,10 +113,11 @@ const PREP_CSS = `
     font-weight: 700;
   }
   .item-mod {
-    font-size: 11px;
-    padding-left: ${QTY_WIDTH};
+    font-size: 12px;
+    padding-left: calc(${QTY_WIDTH} + 6px);
     font-weight: 700;
-    margin-bottom: 2px;
+    margin-top: 2px;
+    margin-bottom: 6px;
   }
   .mt { margin-top: 8px; }
   .mb { margin-bottom: 8px; }
@@ -140,7 +154,7 @@ function buildItemLine(qty, name) {
 
 function buildItemsHtml(items) {
   return items.map((item) => {
-    const mods = [item.piment, item.cuisson, item.boisson].filter(Boolean);
+    const mods = [item.piment, item.cuisson, item.boisson, item.sucre, item.lait].filter(Boolean);
     return `
       ${buildItemLine(item.qty, item.name)}
       ${mods.length > 0 ? `<div class="item-mod">→ ${mods.join(", ")}</div>` : ""}
@@ -159,7 +173,7 @@ export function generateKitchenPrepHtml({ table, staff, items, headerLabel, head
       <div class="xl bold">*** CUISINE ***</div>
     </div>
     ${DIVIDER}
-    ${buildMetaRow(headerLabel || "Table:", headerValue || table?.name)}
+    ${buildMetaRow(headerLabel || "Table:", getTableDisplayValue(table, headerValue))}
     ${buildMetaRow("Serveur:", staff?.name)}
     ${buildMetaRow("Heure:", formatDateTime(now))}
     ${DIVIDER}
@@ -176,7 +190,7 @@ export function generateBarPrepHtml({ table, staff, items, headerLabel, headerVa
       <div class="xl bold">*** BAR ***</div>
     </div>
     ${DIVIDER}
-    ${buildMetaRow(headerLabel || "Table:", headerValue || table?.name)}
+    ${buildMetaRow(headerLabel || "Table:", getTableDisplayValue(table, headerValue))}
     ${buildMetaRow("Serveur:", staff?.name)}
     ${buildMetaRow("Heure:", formatDateTime(now))}
     ${DIVIDER}
@@ -198,7 +212,7 @@ export function generateCancellationHtml({ table, staff, items, headerLabel, hea
       <div class="xl bold">COMMANDE</div>
     </div>
     ${DIVIDER}
-    ${buildMetaRow(headerLabel || "Table:", headerValue || table?.name)}
+    ${buildMetaRow(headerLabel || "Table:", getTableDisplayValue(table, headerValue))}
     ${buildMetaRow("Serveur:", staff?.name)}
     ${buildMetaRow("Heure:", formatDateTime(now))}
     ${DIVIDER}
@@ -222,7 +236,7 @@ export function generateModificationHtml({ table, staff, modifications, headerLa
       <div class="xl bold">COMMANDE</div>
     </div>
     ${DIVIDER}
-    ${buildMetaRow(headerLabel || "Table:", headerValue || table?.name)}
+    ${buildMetaRow(headerLabel || "Table:", getTableDisplayValue(table, headerValue))}
     ${buildMetaRow("Serveur:", staff?.name)}
     ${buildMetaRow("Heure:", formatDateTime(now))}
     ${DIVIDER}

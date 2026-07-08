@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { Minus, Plus, ShoppingBag, Trash2, Send, CreditCard, ChevronDown, User, Phone, MapPin } from "lucide-react";
+import VirtualKeyboard from "@/components/pos/VirtualKeyboard";
 
 const PIMENT_OPTIONS = ["Sans piment", "Peu pimenté", "Bien pimenté"];
 const CUISSON_OPTIONS = ["À point", "Bien cuit"];
@@ -23,6 +24,23 @@ export default function DeliverySidebar({
 
   const formatPrice = (price) => price.toLocaleString("fr-FR") + " CFA";
   const [expandedItemId, setExpandedItemId] = useState(null);
+  const [activeField, setActiveField] = useState(null);
+
+  const handleKeyboardKey = (key) => {
+    if (!activeField || !onUpdateCustomer) return;
+    const currentValue = delivery[activeField] || "";
+    onUpdateCustomer(activeField, currentValue + key);
+  };
+
+  const handleKeyboardBackspace = () => {
+    if (!activeField || !onUpdateCustomer) return;
+    const currentValue = delivery[activeField] || "";
+    onUpdateCustomer(activeField, currentValue.slice(0, -1));
+  };
+
+  const handleCloseKeyboard = () => setActiveField(null);
+
+  const keyboardMode = activeField === "customer_phone" ? "numeric" : "alpha";
 
   const getItemModifiers = (item) => {
     const parts = [];
@@ -62,9 +80,13 @@ export default function DeliverySidebar({
             <input
               type="text"
               value={delivery.customer_name || ""}
-              onChange={(e) => onUpdateCustomer("customer_name", e.target.value)}
+              onChange={() => {}}
+              onFocus={() => setActiveField("customer_name")}
               placeholder="Nom du client"
-              className="flex-1 h-9 rounded-lg bg-slate-950 border border-slate-800 px-3 text-sm text-white outline-none focus:border-slate-600 transition-colors"
+              readOnly
+              className={`flex-1 h-9 rounded-lg bg-slate-950 border px-3 text-sm text-white outline-none transition-colors ${
+                activeField === "customer_name" ? "border-sky-500" : "border-slate-800 focus:border-slate-600"
+              }`}
             />
           </div>
           <div className="flex items-center gap-2">
@@ -72,9 +94,13 @@ export default function DeliverySidebar({
             <input
               type="tel"
               value={delivery.customer_phone || ""}
-              onChange={(e) => onUpdateCustomer("customer_phone", e.target.value)}
+              onChange={() => {}}
+              onFocus={() => setActiveField("customer_phone")}
               placeholder="Téléphone"
-              className="flex-1 h-9 rounded-lg bg-slate-950 border border-slate-800 px-3 text-sm text-white outline-none focus:border-slate-600 transition-colors"
+              readOnly
+              className={`flex-1 h-9 rounded-lg bg-slate-950 border px-3 text-sm text-white outline-none transition-colors ${
+                activeField === "customer_phone" ? "border-sky-500" : "border-slate-800 focus:border-slate-600"
+              }`}
             />
           </div>
           <div className="flex items-center gap-2">
@@ -82,9 +108,13 @@ export default function DeliverySidebar({
             <input
               type="text"
               value={delivery.customer_address || ""}
-              onChange={(e) => onUpdateCustomer("customer_address", e.target.value)}
+              onChange={() => {}}
+              onFocus={() => setActiveField("customer_address")}
               placeholder="Adresse de livraison"
-              className="flex-1 h-9 rounded-lg bg-slate-950 border border-slate-800 px-3 text-sm text-white outline-none focus:border-slate-600 transition-colors"
+              readOnly
+              className={`flex-1 h-9 rounded-lg bg-slate-950 border px-3 text-sm text-white outline-none transition-colors ${
+                activeField === "customer_address" ? "border-sky-500" : "border-slate-800 focus:border-slate-600"
+              }`}
             />
           </div>
         </div>
@@ -224,6 +254,16 @@ export default function DeliverySidebar({
           );
         })}
       </div>
+
+      {/* Virtual Keyboard */}
+      {activeField && (
+        <VirtualKeyboard
+          mode={keyboardMode}
+          onKey={handleKeyboardKey}
+          onBackspace={handleKeyboardBackspace}
+          onClose={handleCloseKeyboard}
+        />
+      )}
 
       {/* Total + Actions */}
       <div className="shrink-0 border-t border-slate-800">

@@ -11,7 +11,8 @@ import { getShiftLabel } from "@/lib/sariExport";
 
 const RESTAURANT_NAME = "SAPPHIRE RESTAURANT";
 const RESTAURANT_ADDR = "BOURGUIBA ENFACE ECOLE POLICE";
-const RESTAURANT_PHONE = "78 442 24 24 - 78 440 05 05";
+const RESTAURANT_PHONE = "78 442 24 24";
+const RESTAURANT_PHONE_2 = "78 440 05 05";
 
 const PAYMENT_LABELS = {
   especes: "Espèces",
@@ -82,7 +83,7 @@ const THERMAL_CSS = `
     padding-left: 6mm !important; /* Explicitly pushes text out of the left clipping zone */
     padding-right: 2mm !important;
     margin: 0 !important;
-    font-family: 'Courier New', Courier, monospace;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     font-size: 11px;
     font-weight: 700;
     color: #000;
@@ -131,7 +132,6 @@ function wrapHtml(body) {
 function buildItemBlock(item) {
   const nameLines = wrapText(item.name, CHARS_PER_LINE);
   const nameHtml = nameLines.map((l) => `<div class="item-name">${l}</div>`).join("");
-  const mods = [item.piment, item.cuisson, item.boisson].filter(Boolean);
   return `
     <div class="item-block">
       ${nameHtml}
@@ -139,7 +139,6 @@ function buildItemBlock(item) {
         <span>${item.qty} x ${formatCFA(item.price)}</span>
         <span>${formatCFA(item.qty * item.price)}</span>
       </div>
-      ${mods.length > 0 ? `<div class="item-mod">→ ${mods.join(", ")}</div>` : ""}
     </div>
   `;
 }
@@ -168,11 +167,12 @@ export function generateReceiptHtml({ table, staff, invoiceNumber, paymentMethod
       <div class="xl bold">${RESTAURANT_NAME}</div>
       <div class="sm">${RESTAURANT_ADDR}</div>
       <div class="sm">TÉL: ${RESTAURANT_PHONE}</div>
+      <div class="sm">     ${RESTAURANT_PHONE_2}</div>
     </div>
     ${DIVIDER}
     <div class="meta-row"><span>Zone:</span><span class="bold">${zoneLabel}</span></div>
     <div class="meta-row"><span>Table:</span><span class="bold">${tableCode}</span></div>
-    <div class="meta-row"><span>Shift:</span><span class="bold">${shiftLabel}</span></div>
+    <div class="meta-row"><span>Service:</span><span class="bold">${shiftLabel}</span></div>
     <div class="meta-row"><span>Facture:</span><span class="bold">${invoiceNumber || "—"}</span></div>
     ${deliveryRows}
     <div class="meta-row"><span>Caissier:</span><span class="bold">${staff?.name || "—"}</span></div>
@@ -329,6 +329,7 @@ export function generateDuplicateReceiptHtml(transaction) {
       <div class="xl bold">${RESTAURANT_NAME}</div>
       <div class="sm">${RESTAURANT_ADDR}</div>
       <div class="sm">TÉL: ${RESTAURANT_PHONE}</div>
+      <div class="sm">     ${RESTAURANT_PHONE_2}</div>
     </div>
     ${DIVIDER}
     <div class="meta-row"><span>Table:</span><span class="bold">${table.subLabel || table.name}</span></div>

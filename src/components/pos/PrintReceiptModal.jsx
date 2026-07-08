@@ -6,7 +6,8 @@ import { logoBase64 as restaurantLogo } from "@/assets/logoData";
 
 const RESTAURANT_NAME = "SAPPHIRE RESTAURANT";
 const RESTAURANT_ADDR = "BOURGUIBA EN FACE ÉCOLE POLICE";
-const RESTAURANT_PHONE = "+221 78 442 24 24 - 78 440 05 05";
+const RESTAURANT_PHONE_1 = "+221 78 442 24 24";
+const RESTAURANT_PHONE_2 = "78 440 05 05";
 const SERVER_NAME = "Aminata";
 
 function formatDate(date) {
@@ -60,7 +61,7 @@ export default function PrintReceiptModal({ table, onClose }) {
           className="bg-white text-gray-800 shadow-2xl mx-auto"
           style={{
             maxWidth: "320px",
-            fontFamily: "'Courier New', monospace",
+            fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
             clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)",
             maskImage: "linear-gradient(to bottom, #000 92%, transparent 100%)",
             WebkitMaskImage: "linear-gradient(to bottom, #000 92%, transparent 100%)",
@@ -90,7 +91,8 @@ export default function PrintReceiptModal({ table, onClose }) {
               <img src={restaurantLogo} alt="SAPPHIRE RESTAURANT Logo" className="mx-auto mb-2" style={{ width: "130px", height: "auto" }} />
               <h2 className="text-base font-bold tracking-wide">{RESTAURANT_NAME}</h2>
               <p className="text-[11px] text-gray-500">{RESTAURANT_ADDR}</p>
-              <p className="text-[11px] text-gray-500 mt-0.5">TÉL: {RESTAURANT_PHONE}</p>
+              <p className="text-[11px] text-gray-500 mt-0.5">TÉL: {RESTAURANT_PHONE_1}</p>
+              <p className="text-[11px] text-gray-500">     {RESTAURANT_PHONE_2}</p>
             </div>
 
             <div className="border-t border-dashed border-gray-300 my-3" />
@@ -129,15 +131,6 @@ export default function PrintReceiptModal({ table, onClose }) {
                   <span className="col-span-2">{item.qty}x</span>
                   <div className="col-span-6">
                     <div>{item.name}</div>
-                    {(() => {
-                      const mods = [item.piment, item.cuisson, item.boisson].filter(Boolean);
-                      if (mods.length > 0) {
-                        return (
-                          <div className="italic text-gray-400 text-[10px]">→ {mods.join(", ")}</div>
-                        );
-                      }
-                      return null;
-                    })()}
                   </div>
                   <span className="col-span-4 text-right">
                     {formatCFA(item.qty * item.price)}
