@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 export default function LandingPage() {
   const whatsappNumber = "14242790150";
@@ -25,9 +26,9 @@ export default function LandingPage() {
           </div>
           
           <div className="flex items-center space-x-6">
-            <a href="#contact" className="text-sm font-medium text-slate-400 hover:text-white transition-colors hidden sm:block">
-              Support commercial
-            </a>
+            <Link to="/terminal" className="text-sm font-medium text-slate-400 hover:text-white transition-colors hidden sm:block">
+              Démo
+            </Link>
             <a 
               href={downloadUrl}
               className="bg-white hover:bg-slate-100 text-slate-950 text-sm font-bold px-5 py-2.5 rounded-xl transition-all shadow-md"
