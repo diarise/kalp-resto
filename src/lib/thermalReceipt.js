@@ -2,7 +2,7 @@
  * 58mm Thermal Receipt Generator (Built-in Cashier Printer)
  * Optimized strictly for 58mm thermal paper — 32 characters max per line.
  * Stacked item layout: Name on line 1, [Qty x Unit Price] → [Total] on line 2.
- * Crisp system monospace fonts, uniform 32-hyphen dividers, 12px L/R margin buffer.
+ * Crisp sans-serif fonts, uniform 32-hyphen dividers, 12px L/R margin buffer.
  */
 
 import { logoBase64 as restaurantLogo } from "@/assets/logoData";
@@ -110,7 +110,6 @@ const THERMAL_CSS = `
   .item-block { margin-bottom: 4px; }
   .item-name { font-weight: 700; word-break: break-word; }
   .item-sub { display: flex; justify-content: space-between; font-size: 10px; font-weight: 700; margin-top: 1px; }
-  .item-mod { font-size: 9px; font-weight: 700; margin-top: 1px; }
   .total-row { display: flex; justify-content: space-between; font-weight: 700; font-size: 14px; margin-top: 4px; }
   .mt { margin-top: 6px; }
   .mb { margin-bottom: 6px; }
@@ -128,6 +127,8 @@ function wrapHtml(body) {
  * Builds a stacked item block for 58mm paper:
  *   Line 1: Product Name (wrapped if > 32 chars)
  *   Line 2:   [Qty] x [Unit Price]  -------->  [Total Price]
+ * Modifier descriptions are intentionally hidden on the client receipt
+ * to keep the facture clean — only name, qty, and price are printed.
  */
 function buildItemBlock(item) {
   const nameLines = wrapText(item.name, CHARS_PER_LINE);
@@ -148,7 +149,6 @@ export function generateReceiptHtml({ table, staff, invoiceNumber, paymentMethod
   const items = table?.currentTicket || [];
   const sousTotal = items.reduce((sum, i) => sum + i.qty * i.price, 0);
   const shiftLabel = getShiftLabel(staff);
-  const zoneLabel = table?.zone ? (ZONE_LABELS[table.zone] || String(table.zone).toUpperCase()) : "—";
   const tableCode = table?.subLabel || table?.name || "—";
 
   const itemsHtml = items.map(buildItemBlock).join("");
@@ -164,17 +164,14 @@ export function generateReceiptHtml({ table, staff, invoiceNumber, paymentMethod
   return wrapHtml(`
     <div class="center mb">
       <img src="${restaurantLogo}" alt="Logo" style="width:100px;height:auto;display:block;margin:0 auto 4px;" />
-      <div class="xl bold">${RESTAURANT_NAME}</div>
       <div class="sm">${RESTAURANT_ADDR}</div>
       <div class="sm">TÉL: ${RESTAURANT_PHONE}</div>
       <div class="sm">     ${RESTAURANT_PHONE_2}</div>
     </div>
     ${DIVIDER}
-    <div class="meta-row"><span>Zone:</span><span class="bold">${zoneLabel}</span></div>
-    <div class="meta-row"><span>Table:</span><span class="bold">${tableCode}</span></div>
+    ${deliveryInfo ? deliveryRows : `<div class="meta-row"><span>Table:</span><span class="bold">${tableCode}</span></div>`}
     <div class="meta-row"><span>Service:</span><span class="bold">${shiftLabel}</span></div>
     <div class="meta-row"><span>Facture:</span><span class="bold">${invoiceNumber || "—"}</span></div>
-    ${deliveryRows}
     <div class="meta-row"><span>Caissier:</span><span class="bold">${staff?.name || "—"}</span></div>
     <div class="meta-row"><span>Date:</span><span>${formatDateTime(now)}</span></div>
     ${DIVIDER}
@@ -244,7 +241,7 @@ export function generateZReportHtml({ date, transactions, cashierName }) {
 
   return wrapHtml(`
     <div class="center mb">
-      <div class="xl bold">RAPPORT Z</div>
+      <div class="xl bold">Rapport de Clôture de Caisse</div>
       <div class="lg bold">${RESTAURANT_NAME}</div>
       <div class="sm">${RESTAURANT_ADDR}</div>
     </div>
@@ -259,6 +256,7 @@ export function generateZReportHtml({ date, transactions, cashierName }) {
     ${DIVIDER}
     <div class="center bold mt mb">PAR PAIEMENT</div>
     ${methodRows || '<div class="center sm">Aucune transaction</div>'}
+    <div class="row mt"><span>Écart de caisse:</span><span>_______________ CFA</span></div>
     ${DIVIDER}
     <div class="center bold mt mb">TOP ARTICLES</div>
     ${topItemsRows || '<div class="center sm">Aucun article</div>'}
@@ -435,15 +433,13 @@ export function generateDuplicateReceiptHtml(transaction) {
     ${DIVIDER}
     <div class="center mb">
       <img src="${restaurantLogo}" alt="Logo" style="width:100px;height:auto;display:block;margin:0 auto 4px;" />
-      <div class="xl bold">${RESTAURANT_NAME}</div>
       <div class="sm">${RESTAURANT_ADDR}</div>
       <div class="sm">TÉL: ${RESTAURANT_PHONE}</div>
       <div class="sm">     ${RESTAURANT_PHONE_2}</div>
     </div>
     ${DIVIDER}
-    <div class="meta-row"><span>Table:</span><span class="bold">${table.subLabel || table.name}</span></div>
+    ${deliveryInfo ? deliveryRows : `<div class="meta-row"><span>Table:</span><span class="bold">${table.subLabel || table.name}</span></div>`}
     <div class="meta-row"><span>Facture:</span><span class="bold">${transaction.invoice_number || "—"}</span></div>
-    ${deliveryRows}
     <div class="meta-row"><span>Caissier:</span><span class="bold">${transaction.cashier_name || "—"}</span></div>
     <div class="meta-row"><span>Date orig.:</span><span class="bold">${formatDateTime(originalDate)}</span></div>
     ${DIVIDER}
@@ -455,4 +451,7 @@ export function generateDuplicateReceiptHtml(transaction) {
     ${DIVIDER}
     <div class="center sm mt">
       <div>** DUPLICATA — ${formatDateTime(originalDate)} **</div>
-      <d
+      <div>Merci de votre visite!</div>
+    </div>
+  `);
+}
