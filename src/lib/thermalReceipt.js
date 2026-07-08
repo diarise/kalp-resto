@@ -455,7 +455,4 @@ export function generateDuplicateReceiptHtml(transaction) {
     ${DIVIDER}
     <div class="center sm mt">
       <div>** DUPLICATA — ${formatDateTime(originalDate)} **</div>
-      <div>Merci de votre visite!</div>
-    </div>
-  `);
-}
+      <d

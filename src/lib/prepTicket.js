@@ -33,6 +33,26 @@ function getTableDisplayValue(table, headerValue) {
 }
 
 /**
+ * Builds the destination header block at the top of prep tickets.
+ * - Dine-In (default): "Zone: SALLE | Table: 05"
+ * - Delivery: bold "TYPE: LIVRAISON" (headerValue overrides to customer name)
+ * - Takeout: bold "TYPE: À EMPORTER"
+ */
+function buildDestinationHeader(table, headerLabel, headerValue) {
+  // Delivery orders pass a headerValue (customer label) — render the TYPE banner
+  if (headerValue && headerLabel === "Client:") {
+    return `<div class="row"><span class="bold">TYPE:</span><span class="xl bold">LIVRAISON</span></div>`;
+  }
+  if (headerValue && headerLabel === "Type:") {
+    return `<div class="row"><span class="bold">TYPE:</span><span class="xl bold">${headerValue}</span></div>`;
+  }
+  // Dine-in: Zone + Table side-by-side
+  const zoneLabel = table?.zone ? (ZONE_LABELS[table.zone] || String(table.zone).toUpperCase()) : "—";
+  const tableCode = table?.subLabel || table?.name || "—";
+  return `<div class="row"><span class="bold">Zone: ${zoneLabel}</span><span class="bold">Table: ${tableCode}</span></div>`;
+}
+
+/**
  * Wraps item names to 42 chars, leaving the quantity pinned at the left
  * on continuation lines (indented to align under the name column).
  */
@@ -173,7 +193,7 @@ export function generateKitchenPrepHtml({ table, staff, items, headerLabel, head
       <div class="xl bold">*** CUISINE ***</div>
     </div>
     ${DIVIDER}
-    ${buildMetaRow(headerLabel || "Table:", getTableDisplayValue(table, headerValue))}
+    ${buildDestinationHeader(table, headerLabel, headerValue)}
     ${buildMetaRow("Serveur:", staff?.name)}
     ${buildMetaRow("Heure:", formatDateTime(now))}
     ${DIVIDER}
@@ -190,7 +210,7 @@ export function generateBarPrepHtml({ table, staff, items, headerLabel, headerVa
       <div class="xl bold">*** BAR ***</div>
     </div>
     ${DIVIDER}
-    ${buildMetaRow(headerLabel || "Table:", getTableDisplayValue(table, headerValue))}
+    ${buildDestinationHeader(table, headerLabel, headerValue)}
     ${buildMetaRow("Serveur:", staff?.name)}
     ${buildMetaRow("Heure:", formatDateTime(now))}
     ${DIVIDER}
@@ -212,7 +232,7 @@ export function generateCancellationHtml({ table, staff, items, headerLabel, hea
       <div class="xl bold">COMMANDE</div>
     </div>
     ${DIVIDER}
-    ${buildMetaRow(headerLabel || "Table:", getTableDisplayValue(table, headerValue))}
+    ${buildDestinationHeader(table, headerLabel, headerValue)}
     ${buildMetaRow("Serveur:", staff?.name)}
     ${buildMetaRow("Heure:", formatDateTime(now))}
     ${DIVIDER}
@@ -236,7 +256,7 @@ export function generateModificationHtml({ table, staff, modifications, headerLa
       <div class="xl bold">COMMANDE</div>
     </div>
     ${DIVIDER}
-    ${buildMetaRow(headerLabel || "Table:", getTableDisplayValue(table, headerValue))}
+    ${buildDestinationHeader(table, headerLabel, headerValue)}
     ${buildMetaRow("Serveur:", staff?.name)}
     ${buildMetaRow("Heure:", formatDateTime(now))}
     ${DIVIDER}
