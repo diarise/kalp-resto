@@ -30,7 +30,7 @@ export default function LandingPage() {
               Démo
             </Link>
             <a 
-              href={downloadUrl}
+              href="https://github.com/diarise/kalp-resto/releases/download/v1.0.0-beta/Sapphire-Restaurant-POS-Setup-1.0.0.2.exe"
               className="bg-white hover:bg-slate-100 text-slate-950 text-sm font-bold px-5 py-2.5 rounded-xl transition-all shadow-md"
             >
               Télécharger
