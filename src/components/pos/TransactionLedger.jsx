@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { offlineTransaction } from "@/lib/offlineDB";
-import { exportTransactionsToSari, downloadSariFile } from "@/lib/sariExport";
 import { getCurrentStaff } from "@/lib/staffSession";
 import { generateDuplicateReceiptHtml, printThermalReceipt } from "@/lib/thermalReceipt";
-import { Search, Download, FileText, Receipt, Printer, ChevronDown, ChevronUp, Eye } from "lucide-react";
+import { Search, FileText, Receipt, Printer, ChevronDown, ChevronUp, Eye } from "lucide-react";
 
 const PAYMENT_LABELS = {
   especes: "Espèces",
@@ -53,13 +52,6 @@ export default function TransactionLedger() {
 
   const totalSum = filtered.reduce((sum, t) => sum + (t.total_amount || 0), 0);
 
-  const handleExport = () => {
-    if (filtered.length === 0) return;
-    const content = exportTransactionsToSari(filtered);
-    const today = new Date().toISOString().slice(0, 10);
-    downloadSariFile(content, `SARI_Export_${today}.csv`);
-  };
-
   const [reprintingId, setReprintingId] = useState(null);
   const [expandedId, setExpandedId] = useState(null);
 
@@ -107,15 +99,6 @@ export default function TransactionLedger() {
             <p className="text-xs text-slate-500">{filtered.length} transaction{filtered.length > 1 ? "s" : ""} · Total: {formatPrice(totalSum)}</p>
           </div>
         </div>
-        <button
-          onClick={handleExport}
-          disabled={filtered.length === 0}
-          className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium text-white transition-all active:scale-95 disabled:opacity-40"
-          style={{ backgroundColor: "#0096D6" }}
-        >
-          <Download className="w-4 h-4" />
-          Export SARI
-        </button>
       </div>
 
       {/* Filters */}

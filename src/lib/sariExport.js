@@ -1,15 +1,10 @@
 /**
  * Sage SARI Export Utility
- * Format: [typeDoc];[invoiceNumber];[dateSage];[codeCaisse];[methodLabel];[cleanName];[qtyFormatted];[priceFormatted]
- * Example: 6;FA000013;050726;CS01;especes;C BON;2.000;6000.000000
+ * Format: [typeDoc];[invoiceNumber];[dateSage];[codeCaisse];[methodLabel];[articleCode];[cleanName];[qtyInt];[priceInt]
+ * Example: 6;FA000003;080726;CS01;especes;1007;THIEBOU YAAP;2;6000
  */
 
 const JOURNAL_CODE = "6";
-
-function formatDecimal(value, decimals) {
-  const num = Number(value || 0);
-  return num.toFixed(decimals);
-}
 
 function formatDateDDMMYY(timestamp) {
   const d = new Date(timestamp);
@@ -25,10 +20,11 @@ export function formatSariLine(transaction, item) {
   const dateSage = formatDateDDMMYY(transaction.timestamp);
   const codeCaisse = transaction.table_code || "CS00";
   const methodLabel = transaction.payment_method || "PAYE";
+  const articleCode = item.code || item.id || "";
   const cleanName = (item.name || "").toUpperCase();
-  const qtyFormatted = formatDecimal(item.qty, 3);
-  const priceFormatted = formatDecimal(item.price, 6);
-  return [typeDoc, invoiceNum, dateSage, codeCaisse, methodLabel, cleanName, qtyFormatted, priceFormatted].join(";");
+  const qtyInt = parseInt(Math.round(Number(item.qty || 0)), 10);
+  const priceInt = parseInt(Math.round(Number(item.price || 0)), 10);
+  return [typeDoc, invoiceNum, dateSage, codeCaisse, methodLabel, articleCode, cleanName, qtyInt, priceInt].join(";");
 }
 
 export function exportTransactionsToSari(transactions) {
