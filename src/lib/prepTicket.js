@@ -35,13 +35,14 @@ function getTableDisplayValue(table, headerValue) {
 /**
  * Builds the destination header block at the top of prep tickets.
  * - Dine-In (default): "Zone: SALLE | Table: 05"
- * - Delivery: bold "TYPE: LIVRAISON" (headerValue overrides to customer name)
+ * - Delivery (headerLabel === "Client:"): bypasses client name, shows "Zone: — | Table: LIVRAISON"
+ *   so kitchen/bar staff immediately see the order is for travel packaging.
  * - Takeout: bold "TYPE: À EMPORTER"
  */
 function buildDestinationHeader(table, headerLabel, headerValue) {
-  // Delivery orders pass a headerValue (customer label) — render the TYPE banner
-  if (headerValue && headerLabel === "Client:") {
-    return `<div class="row"><span class="bold">TYPE:</span><span class="xl bold">LIVRAISON</span></div>`;
+  // Delivery orders — bypass the customer name entirely, render explicit LIVRAISON label
+  if (headerLabel === "Client:") {
+    return `<div class="row"><span class="bold">Zone: —</span><span class="bold">Table: LIVRAISON</span></div>`;
   }
   if (headerValue && headerLabel === "Type:") {
     return `<div class="row"><span class="bold">TYPE:</span><span class="xl bold">${headerValue}</span></div>`;
