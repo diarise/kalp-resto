@@ -271,6 +271,115 @@ export function generateZReportHtml({ date, transactions, cashierName }) {
 }
 
 /**
+ * Shift Closure Z-Report — "Rapport de Clôture"
+ * Printed when the cashier closes their shift. Compact, professional layout.
+ * Fields: Header + Date/Time, Gross Total, Payment Breakdown, Operational
+ * Summary (items by category), Reconciliation (Total Attendu en Caisse).
+ */
+export function generateShiftClosureHtml({ transactions, cashierName, shiftInfo }) {
+  const now = new Date();
+
+  const totalRevenue = transactions.reduce((sum, t) => sum + (t.total_amount || 0), 0);
+  const txCount = transactions.length;
+
+  const byMethod = {};
+  for (const t of transactions) {
+    const m = t.payment_method || "autre";
+    if (!byMethod[m]) byMethod[m] = { count: 0, total: 0 };
+    byMethod[m].count++;
+    byMethod[m].total += t.total_amount || 0;
+  }
+
+  // Operational summary: count items sent to kitchen vs bar by category
+  const categoryCounts = {};
+  let kitchenItems = 0;
+  let barItems = 0;
+  for (const t of transactions) {
+    let items = t.items_snapshot;
+    if (typeof items === "string") {
+      try { items = JSON.parse(items); } catch { items = []; }
+    }
+    if (!Array.isArray(items)) continue;
+    for (const item of items) {
+      const cat = item.category || "autre";
+      const qty = item.qty || 0;
+      categoryCounts[cat] = (categoryCounts[cat] || 0) + qty;
+      if (cat === "boissons" || cat === "chichas" || cat === "boissons_chaudes") {
+        barItems += qty;
+      } else {
+        kitchenItems += qty;
+      }
+    }
+  }
+
+  const CATEGORY_LABELS = {
+    plats: "Plats",
+    grills: "Grillades",
+    poulet: "Poulet",
+    poisson: "Poisson",
+    accompagnement: "Accompagnements",
+    pates: "Pâtes",
+    mer: "Fruits de Mer",
+    supplements: "Suppléments",
+    boissons: "Boissons Fraîches",
+    boissons_chaudes: "Boissons Chaudes",
+    entrees: "Entrées",
+    desserts: "Desserts",
+    fast_food: "Fast Food",
+    chichas: "Chicha & Lounge",
+    sale: "Plats Salés",
+    autre: "Autre",
+  };
+
+  const methodRows = Object.entries(byMethod).map(([method, data]) => `
+    <div class="row">
+      <span>${PAYMENT_LABELS[method] || method} (${data.count})</span>
+      <span>${formatCFA(data.total)}</span>
+    </div>
+  `).join("");
+
+  const categoryRows = Object.entries(categoryCounts)
+    .sort((a, b) => b[1] - a[1])
+    .map(([cat, count]) => `
+      <div class="row">
+        <span>${CATEGORY_LABELS[cat] || cat}</span>
+        <span>${count} art.</span>
+      </div>
+    `).join("");
+
+  return wrapHtml(`
+    <div class="center mb">
+      <div class="xl bold">RAPPORT DE CLÔTURE</div>
+      <div class="lg bold">${RESTAURANT_NAME}</div>
+      <div class="sm">${RESTAURANT_ADDR}</div>
+    </div>
+    ${DIVIDER}
+    <div class="meta-row"><span>Caissier:</span><span class="bold">${cashierName || "—"}</span></div>
+    <div class="meta-row"><span>Date:</span><span class="bold">${formatDateTime(now)}</span></div>
+    ${shiftInfo ? `<div class="meta-row"><span>Service:</span><span class="bold">${shiftInfo.label || "—"}</span></div>` : ""}
+    ${DIVIDER}
+    <div class="center bold lg">RÉCAPITULATIF</div>
+    <div class="row mt"><span>Transactions</span><span class="bold">${txCount}</span></div>
+    <div class="total-row"><span>TOTAL BRUT</span><span>${formatCFA(totalRevenue)}</span></div>
+    ${DIVIDER}
+    <div class="center bold mt mb">PAR MODE DE PAIEMENT</div>
+    ${methodRows || '<div class="center sm">Aucune transaction</div>'}
+    ${DIVIDER}
+    <div class="center bold mt mb">OPÉRATIONNEL</div>
+    <div class="row"><span>Articles Cuisine</span><span class="bold">${kitchenItems}</span></div>
+    <div class="row"><span>Articles Bar</span><span class="bold">${barItems}</span></div>
+    ${categoryRows}
+    ${DIVIDER}
+    <div class="total-row"><span>TOTAL ATTENDU EN CAISSE</span><span>${formatCFA(totalRevenue)}</span></div>
+    ${DIVIDER}
+    <div class="center sm mt">
+      <div>*** Fin de Clôture ***</div>
+      <div>SAPPHIRE RESTAURANT POS</div>
+    </div>
+  `);
+}
+
+/**
  * Sends HTML to the thermal printer via Electron IPC.
  * Falls back to opening a print dialog in the browser.
  */
