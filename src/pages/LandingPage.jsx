@@ -1,259 +1,203 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import { Download, Wifi, Calculator, Printer, MonitorSmartphone, MessageCircle, Mail, ArrowRight, Terminal } from "lucide-react";
-
-const DOWNLOAD_URL =
-  "https://github.com/diarise/kalp-resto/releases/download/v1.0.0-beta/Sapphire-Restaurant-POS-Setup-1.0.0.2.exe";
-
-const WHATSAPP_URL = "https://wa.me/14242790150";
-const WHATSAPP_DISPLAY = "+1 424 279 0150";
-const EMAIL_DISPLAY = "diarise@gmail.com";
-
-const FEATURES = [
-  {
-    icon: Wifi,
-    color: "text-emerald-400",
-    glow: "bg-emerald-500/10 ring-emerald-500/20",
-    title: "Autonomie Totale",
-    desc: "Fonctionne à 100% hors-ligne sans coupure. Aucune dépendance internet pour encaisser, imprimer ou clôturer la caisse.",
-  },
-  {
-    icon: Calculator,
-    color: "text-sky-400",
-    glow: "bg-sky-500/10 ring-sky-500/20",
-    title: "Comptabilité Auto (SAGE)",
-    desc: "Exportation directe des écritures au format SAGE. Vos rapports financiers et écritures comptables prêts en un clic.",
-  },
-  {
-    icon: Printer,
-    color: "text-orange-400",
-    glow: "bg-orange-500/10 ring-orange-500/20",
-    title: "Imprimerie Smart (Cuisine / Bar / Rapports)",
-    desc: "Tickets de préparation cuisine et bar, reçus de caisse 58mm et rapports Z de clôture — impression thermique silencieuse native.",
-  },
-  {
-    icon: MonitorSmartphone,
-    color: "text-violet-400",
-    glow: "bg-violet-500/10 ring-violet-500/20",
-    title: "Interface Tactile",
-    desc: "Layout app-natif avec clavier virtuel personnalisé, navigation gestuelle et affichage optimisé pour écrans tactiles POS.",
-  },
-];
-
-const STATS = [
-  { value: "100%", label: "Hors-ligne" },
-  { value: "<1s", label: "Encaissement" },
-  { value: "80mm", label: "Thermique Natif" },
-  { value: "24/7", label: "Support Direct" },
-];
+import React from 'react';
 
 export default function LandingPage() {
-  return (
-    <div className="min-h-screen bg-[#0B0F19] text-slate-100 antialiased overflow-x-hidden">
-      {/* Background glow orbs */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute -top-40 -left-40 w-[500px] h-[500px] rounded-full bg-sky-600/20 blur-[120px]" />
-        <div className="absolute top-1/3 -right-40 w-[600px] h-[600px] rounded-full bg-violet-600/15 blur-[140px]" />
-        <div className="absolute bottom-0 left-1/4 w-[450px] h-[450px] rounded-full bg-emerald-600/15 blur-[130px]" />
-      </div>
+  const whatsappNumber = "14242790150";
+  const emailAddress = "diarise@gmail.com";
+  const downloadUrl = "https://github.com/diarise/kalp-resto/releases/download/v1.0.0-beta/Sapphire-Restaurant-POS-Setup-1.0.0.2.exe";
 
-      {/* NAVBAR */}
-      <nav className="sticky top-0 z-40 border-b border-white/5 backdrop-blur-xl bg-[#0B0F19]/80">
-        <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-sky-500 to-violet-600 flex items-center justify-center shadow-lg shadow-sky-500/20">
-              <Terminal className="w-5 h-5 text-white" />
+  return (
+    <div className="min-h-screen bg-[#060913] text-slate-100 font-sans relative overflow-hidden selection:bg-indigo-500 selection:text-white">
+      
+      {/* Premium Ambient Background Mesh Glows */}
+      <div className="absolute top-0 left-1/3 w-[600px] h-[600px] bg-indigo-600/10 rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-blue-500/5 rounded-full blur-[120px] pointer-events-none" />
+
+      {/* Global Navigation Bar */}
+      <nav className="border-b border-slate-800/50 backdrop-blur-md sticky top-0 z-50 bg-[#060913]/80">
+        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 bg-gradient-to-tr from-indigo-600 to-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-600/20">
+              <span className="text-white font-black text-xl tracking-tighter">K</span>
             </div>
-            <span className="font-bold tracking-tight text-lg">SAPPHIRE POS</span>
+            <span className="text-xl font-black tracking-tight text-white">
+              KALPÉ <span className="bg-gradient-to-r from-indigo-400 to-blue-400 bg-clip-text text-transparent">RESTO</span>
+            </span>
           </div>
-          <div className="flex items-center gap-3">
-            <Link
-              to="/terminal"
-              className="hidden sm:inline-flex px-4 py-2 rounded-lg text-slate-300 text-sm font-medium hover:text-white transition-colors"
+          
+          <div className="flex items-center space-x-6">
+            <a href="#contact" className="text-sm font-medium text-slate-400 hover:text-white transition-colors hidden sm:block">
+              Support commercial
+            </a>
+            <a 
+              href={downloadUrl}
+              className="bg-white hover:bg-slate-100 text-slate-950 text-sm font-bold px-5 py-2.5 rounded-xl transition-all shadow-md"
             >
-              Accéder au terminal
-            </Link>
-            <a
-              href={DOWNLOAD_URL}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white text-[#0B0F19] text-sm font-semibold hover:bg-slate-200 transition-all active:scale-95"
-            >
-              <Download className="w-4 h-4" />
               Télécharger
             </a>
           </div>
         </div>
       </nav>
 
-      {/* HERO */}
-      <section className="relative pt-28 pb-20 px-6">
-        <div className="max-w-4xl mx-auto text-center animate-fade-in">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs font-medium text-slate-300 mb-8">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            Version Production 1.0.0.2 — Déploiement Live
-          </div>
-
-          <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold tracking-tight leading-[1.1] mb-6">
-            La caisse qui pense
-            <br />
-            <span className="bg-gradient-to-r from-sky-400 via-violet-400 to-emerald-400 bg-clip-text text-transparent">
-              comme un restaurateur
-            </span>
-          </h1>
-
-          <p className="text-lg md:text-xl text-slate-400 leading-relaxed max-w-2xl mx-auto mb-10">
-            Système de point de vente intelligent, ultra-rapide et 100% autonome.
-            Encaissez, imprimez et clôturez votre caisse — même sans internet.
-          </p>
-
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <a
-              href={DOWNLOAD_URL}
-              className="group inline-flex items-center gap-2.5 px-8 py-4 rounded-xl bg-white text-[#0B0F19] text-base font-bold hover:bg-slate-200 transition-all active:scale-95 shadow-2xl shadow-white/10"
-            >
-              <Download className="w-5 h-5" />
-              Télécharger pour Windows
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </a>
-            <a
-              href={WHATSAPP_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2.5 px-8 py-4 rounded-xl bg-white/5 border border-white/10 text-white text-base font-semibold hover:bg-white/10 transition-all active:scale-95"
-            >
-              <MessageCircle className="w-5 h-5 text-emerald-400" />
-              Contacter le support
-            </a>
-          </div>
-
-          <p className="text-sm text-slate-500 mt-5">
-            Installation en un clic · Windows 10/11 · 100% hors-ligne
-          </p>
-
-          {/* Stats bar */}
-          <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-2xl mx-auto">
-            {STATS.map((s) => (
-              <div key={s.label} className="text-center">
-                <div className="text-2xl md:text-3xl font-extrabold bg-gradient-to-b from-white to-slate-400 bg-clip-text text-transparent">
-                  {s.value}
-                </div>
-                <div className="text-xs text-slate-500 mt-1 uppercase tracking-wider">{s.label}</div>
-              </div>
-            ))}
-          </div>
+      {/* High-Converting Hero Section */}
+      <header className="max-w-5xl mx-auto px-6 pt-28 pb-24 text-center relative z-10">
+        <div className="inline-flex items-center space-x-2 bg-indigo-500/10 border border-indigo-500/20 px-4 py-1.5 rounded-full mb-8 backdrop-blur-sm">
+          <span className="w-2 h-2 rounded-full bg-indigo-400 animate-pulse" />
+          <span className="text-xs font-bold tracking-wide text-indigo-300 uppercase">Écosystème 2026 prêt pour déploiement</span>
         </div>
-      </section>
-
-      {/* FEATURES */}
-      <section className="relative py-24 px-6">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
-              Une plateforme complète
-            </h2>
-            <p className="text-slate-400 max-w-xl mx-auto">
-              Tout ce dont votre restaurant a besoin, dans une seule application native.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            {FEATURES.map((f) => {
-              const Icon = f.icon;
-              return (
-                <div
-                  key={f.title}
-                  className="group relative bg-white/[0.03] rounded-2xl p-8 border border-white/5 hover:border-white/10 transition-all hover:bg-white/[0.05]"
-                >
-                  <div
-                    className={`w-14 h-14 rounded-xl ${f.glow} ring-1 flex items-center justify-center mb-5`}
-                  >
-                    <Icon className={`w-7 h-7 ${f.color}`} />
-                  </div>
-                  <h3 className="text-lg font-bold mb-2">{f.title}</h3>
-                  <p className="text-slate-400 text-sm leading-relaxed">{f.desc}</p>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* CTA BANNER */}
-      <section className="relative py-24 px-6">
-        <div className="max-w-4xl mx-auto">
-          <div className="relative rounded-3xl bg-gradient-to-br from-sky-600/20 via-violet-600/15 to-emerald-600/20 border border-white/10 p-10 md:p-16 text-center overflow-hidden">
-            <div className="absolute -top-20 -right-20 w-64 h-64 rounded-full bg-sky-500/20 blur-[80px]" />
-            <div className="absolute -bottom-20 -left-20 w-64 h-64 rounded-full bg-violet-500/20 blur-[80px]" />
-            <div className="relative">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4 tracking-tight">
-                Prêt à digitaliser votre restaurant ?
-              </h2>
-              <p className="text-slate-300 mb-8 max-w-lg mx-auto">
-                Téléchargez l'application maintenant et activez votre terminal de caisse en quelques minutes.
-              </p>
-              <a
-                href={DOWNLOAD_URL}
-                className="inline-flex items-center gap-2.5 px-8 py-4 rounded-xl bg-white text-[#0B0F19] text-base font-bold hover:bg-slate-200 transition-all active:scale-95 shadow-2xl shadow-black/30"
-              >
-                <Download className="w-5 h-5" />
-                Télécharger — v1.0.0.2
-              </a>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* CONTACT */}
-      <section className="relative py-20 px-6 border-t border-white/5">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-2xl md:text-3xl font-bold tracking-tight mb-3">
-              Parlons de votre projet
-            </h2>
-            <p className="text-slate-400">
-              Notre équipe support est disponible pour vous accompagner dans le déploiement.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto">
-            <a
-              href={WHATSAPP_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group flex items-center gap-4 bg-white/[0.03] rounded-2xl p-6 border border-white/5 hover:border-emerald-500/30 hover:bg-white/[0.05] transition-all"
-            >
-              <div className="w-12 h-12 rounded-xl bg-emerald-500/10 ring-1 ring-emerald-500/20 flex items-center justify-center shrink-0">
-                <MessageCircle className="w-6 h-6 text-emerald-400" />
-              </div>
-              <div className="min-w-0">
-                <p className="text-xs text-slate-500 uppercase tracking-wider mb-0.5">WhatsApp</p>
-                <p className="font-semibold text-white truncate">{WHATSAPP_DISPLAY}</p>
-              </div>
-              <ArrowRight className="w-4 h-4 text-slate-600 group-hover:text-emerald-400 group-hover:translate-x-1 transition-all ml-auto shrink-0" />
-            </a>
-
-            <a
-              href={`mailto:${EMAIL_DISPLAY}`}
-              className="group flex items-center gap-4 bg-white/[0.03] rounded-2xl p-6 border border-white/5 hover:border-sky-500/30 hover:bg-white/[0.05] transition-all"
-            >
-              <div className="w-12 h-12 rounded-xl bg-sky-500/10 ring-1 ring-sky-500/20 flex items-center justify-center shrink-0">
-                <Mail className="w-6 h-6 text-sky-400" />
-              </div>
-              <div className="min-w-0">
-                <p className="text-xs text-slate-500 uppercase tracking-wider mb-0.5">Email</p>
-                <p className="font-semibold text-white truncate">{EMAIL_DISPLAY}</p>
-              </div>
-              <ArrowRight className="w-4 h-4 text-slate-600 group-hover:text-sky-400 group-hover:translate-x-1 transition-all ml-auto shrink-0" />
-            </a>
-          </div>
-        </div>
-      </section>
-
-      {/* FOOTER */}
-      <footer className="relative py-8 px-6 border-t border-white/5 text-center">
-        <p className="text-sm text-slate-500">
-          © 2026 Sapphire Restaurant POS · Tous droits réservés
+        
+        <h1 className="text-5xl md:text-7xl font-black tracking-tight text-white mb-6 leading-[1.12]">
+          La caisse qui pense <br />
+          <span className="bg-gradient-to-r from-indigo-400 via-blue-400 to-emerald-400 bg-clip-text text-transparent">
+            comme un restaurateur
+          </span>
+        </h1>
+        
+        <p className="text-lg md:text-xl text-slate-400 max-w-3xl mx-auto mb-12 font-normal leading-relaxed">
+          Système de point de vente intelligent, ultra-rapide et 100% autonome. Encaissez, gérez vos livraisons et clôturez votre caisse en toute sérénité — même sans connexion internet.
         </p>
+        
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 max-w-md mx-auto">
+          <a 
+            href={downloadUrl}
+            className="w-full sm:w-auto bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white text-base font-bold px-8 py-4 rounded-xl transition-all duration-200 shadow-xl shadow-indigo-600/20 text-center group"
+          >
+            Télécharger pour Windows
+            <span className="inline-block ml-2 group-hover:translate-x-1 transition-transform">→</span>
+          </a>
+          <a 
+            href={`https://wa.me/${whatsappNumber}`}
+            target="_blank" 
+            rel="noreferrer"
+            className="w-full sm:w-auto bg-slate-900/80 hover:bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 text-base font-semibold px-8 py-4 rounded-xl transition-all duration-200 text-center"
+          >
+            Contacter le support
+          </a>
+        </div>
+        
+        {/* Quick Trust Stats Row */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto mt-20 pt-10 border-t border-slate-900/60">
+          <div>
+            <div className="text-2xl md:text-3xl font-extrabold text-white">100%</div>
+            <div className="text-xs font-semibold uppercase tracking-wider text-slate-500 mt-1">Hors-ligne fonctionnel</div>
+          </div>
+          <div>
+            <div className="text-2xl md:text-3xl font-extrabold text-white">&lt; 1s</div>
+            <div className="text-xs font-semibold uppercase tracking-wider text-slate-500 mt-1">Vitesse d'encaissement</div>
+          </div>
+          <div>
+            <div className="text-2xl md:text-3xl font-extrabold text-white">80mm</div>
+            <div className="text-xs font-semibold uppercase tracking-wider text-slate-500 mt-1">Impression Native</div>
+          </div>
+          <div>
+            <div className="text-2xl md:text-3xl font-extrabold text-white">24/7</div>
+            <div className="text-xs font-semibold uppercase tracking-wider text-slate-500 mt-1">Assistance directe</div>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Core Features Matrix Grid */}
+      <section className="max-w-7xl mx-auto px-6 py-12 relative z-10">
+        <div className="text-center mb-16">
+          <h2 className="text-3xl md:text-4xl font-bold text-white tracking-tight">Une plateforme complète</h2>
+          <p className="text-slate-500 mt-2">Tout ce dont votre restaurant a besoin, dans une seule application native ultra-légère.</p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+          
+          <div className="bg-slate-900/30 border border-slate-900 p-8 rounded-2xl hover:border-slate-800 transition-all">
+            <div className="w-10 h-10 bg-emerald-500/10 rounded-lg flex items-center justify-center mb-6 text-emerald-400">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5 5 0 00-4.591-2.82A1 1 0 0022 13V15z" /></svg>
+            </div>
+            <h3 className="text-xl font-bold text-white mb-2">Autonomie Totale</h3>
+            <p className="text-sm text-slate-400 leading-relaxed">Fonctionne à 100% sans coupure. Aucune dépendance internet requise pour encaisser, imprimer ou clôturer la caisse en fin de journée.</p>
+          </div>
+
+          <div className="bg-slate-900/30 border border-slate-900 p-8 rounded-2xl hover:border-slate-800 transition-all">
+            <div className="w-10 h-10 bg-blue-500/10 rounded-lg flex items-center justify-center mb-6 text-blue-400">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>
+            </div>
+            <h3 className="text-xl font-bold text-white mb-2">Comptabilité Auto (SAGE)</h3>
+            <p className="text-sm text-slate-400 leading-relaxed">Exportation directe de vos ventes au format comptable standard SAGE. Vos rapports financiers et écritures sont prêts en un seul clic.</p>
+          </div>
+
+          <div className="bg-slate-900/30 border border-slate-900 p-8 rounded-2xl hover:border-slate-800 transition-all">
+            <div className="w-10 h-10 bg-amber-500/10 rounded-lg flex items-center justify-center mb-6 text-amber-400">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-3a2 2 0 00-2-2H9a2 2 0 00-2 2v3a2 2 0 002 2zm5-14V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3h6z" /></svg>
+            </div>
+            <h3 className="text-xl font-bold text-white mb-2">Imprimerie Smart (Cuisine / Bar / Livraisons)</h3>
+            <p className="text-sm text-slate-400 leading-relaxed">Routage intelligent des tickets de préparation vers la cuisine ou le bar sans doublons. Gestion optimisée des reçus clients et rapports de caisse.</p>
+          </div>
+
+          <div className="bg-slate-900/30 border border-slate-900 p-8 rounded-2xl hover:border-slate-800 transition-all">
+            <div className="w-10 h-10 bg-purple-500/10 rounded-lg flex items-center justify-center mb-6 text-purple-400">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 18h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>
+            </div>
+            <h3 className="text-xl font-bold text-white mb-2">Interface Tactile</h3>
+            <p className="text-sm text-slate-400 leading-relaxed">Parfaitement adapté aux écrans tactiles professionnels. Navigation fluide, clavier de saisie virtuelle réactif intégré de manière native.</p>
+          </div>
+
+        </div>
+      </section>
+
+      {/* Bottom CTA Block */}
+      <section className="max-w-4xl mx-auto px-6 py-16 relative z-10">
+        <div className="bg-gradient-to-b from-indigo-950/20 to-slate-950/40 border border-indigo-500/10 rounded-3xl p-12 text-center relative overflow-hidden backdrop-blur-sm">
+          <h2 className="text-3xl font-extrabold text-white mb-4">Prêt à digitaliser votre restaurant ?</h2>
+          <p className="text-slate-400 max-w-xl mx-auto mb-8 text-sm leading-relaxed">
+            Téléchargez l'application maintenant et activez votre terminal de caisse autonome en quelques minutes.
+          </p>
+          <a 
+            href={downloadUrl}
+            className="inline-block bg-white hover:bg-slate-100 text-slate-950 text-base font-bold px-8 py-3.5 rounded-xl transition-all shadow-md"
+          >
+            Télécharger l'application
+          </a>
+        </div>
+      </section>
+
+      {/* Contact Section */}
+      <section id="contact" className="max-w-4xl mx-auto px-6 pb-24 text-center relative z-10">
+        <h2 className="text-2xl font-bold text-white mb-2">Parlons de votre projet</h2>
+        <p className="text-slate-500 text-sm mb-8">Notre équipe support est disponible pour vous accompagner dans le déploiement matériel et logiciel.</p>
+        
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-xl mx-auto">
+          <a 
+            href={`https://wa.me/${whatsappNumber}`}
+            target="_blank"
+            rel="noreferrer"
+            className="flex items-center justify-between bg-slate-900/50 hover:bg-slate-900 border border-slate-800 p-5 rounded-2xl text-left transition-all"
+          >
+            <div className="flex items-center space-x-4">
+              <div className="w-10 h-10 bg-emerald-500/10 text-emerald-400 rounded-xl flex items-center justify-center font-bold">WA</div>
+              <div>
+                <div className="text-xs text-slate-500 uppercase font-bold tracking-wider">WhatsApp</div>
+                <div className="text-sm font-semibold text-white mt-0.5">+1 424 279 0150</div>
+              </div>
+            </div>
+            <span className="text-slate-600 font-bold">→</span>
+          </a>
+
+          <a 
+            href={`mailto:${emailAddress}`}
+            className="flex items-center justify-between bg-slate-900/50 hover:bg-slate-900 border border-slate-800 p-5 rounded-2xl text-left transition-all"
+          >
+            <div className="flex items-center space-x-4">
+              <div className="w-10 h-10 bg-blue-500/10 text-blue-400 rounded-xl flex items-center justify-center font-bold">@</div>
+              <div>
+                <div className="text-xs text-slate-500 uppercase font-bold tracking-wider">Email Direct</div>
+                <div className="text-sm font-semibold text-white mt-0.5">{emailAddress}</div>
+              </div>
+            </div>
+            <span className="text-slate-600 font-bold">→</span>
+          </a>
+        </div>
+      </section>
+
+      {/* Footer Ecosystem Copyright */}
+      <footer className="border-t border-slate-950 bg-[#04060d] py-8 text-center text-xs text-slate-600 relative z-10">
+        <p>© 2026 Kalpé Resto • Tous droits réservés.</p>
       </footer>
+      
     </div>
   );
 }
