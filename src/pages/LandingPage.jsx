@@ -15,23 +15,28 @@ export default function LandingPage() {
 
       {/* Global Navigation Bar */}
       <nav className="border-b border-slate-800/50 backdrop-blur-md sticky top-0 z-50 bg-[#060913]/80">
-        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-gradient-to-tr from-indigo-600 to-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-600/20">
-              <span className="text-white font-black text-xl tracking-tighter">K</span>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between">
+          {/* Brand Identity Branding Header Block */}
+          <div className="flex items-center space-x-2 sm:space-x-3">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 bg-gradient-to-tr from-indigo-600 to-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-600/20 flex-shrink-0">
+              <span className="text-white font-black text-lg sm:text-xl tracking-tighter">K</span>
             </div>
-            <span className="text-xl font-black tracking-tight text-white">
+            <span className="text-base sm:text-xl font-black tracking-tight text-white whitespace-nowrap">
               KALPÉ <span className="bg-gradient-to-r from-indigo-400 to-blue-400 bg-clip-text text-transparent">RESTO</span>
             </span>
           </div>
           
-          <div className="flex items-center space-x-6">
-            <Link to="/terminal" className="text-sm font-medium text-slate-400 hover:text-white transition-colors hidden sm:block">
-              Démo
+          {/* Universal Responsive High-Converting CTA Container */}
+          <div className="flex items-center space-x-3 sm:space-x-4">
+            <Link 
+              to="/terminal" 
+              className="text-xs sm:text-sm font-bold text-indigo-400 hover:text-indigo-300 bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/30 px-3 py-2 sm:px-4 sm:py-2.5 rounded-xl transition-all tracking-wide shadow-sm"
+            >
+              Démo Live
             </Link>
             <a 
               href="https://github.com/diarise/kalp-resto/releases/download/v1.0.0-beta/Sapphire-Restaurant-POS-Setup-1.0.0.2.exe"
-              className="bg-white hover:bg-slate-100 text-slate-950 text-sm font-bold px-5 py-2.5 rounded-xl transition-all shadow-md"
+              className="bg-white hover:bg-slate-100 text-slate-950 text-xs sm:text-sm font-extrabold px-3 py-2 sm:px-5 sm:py-2.5 rounded-xl transition-all shadow-md tracking-tight flex-shrink-0"
             >
               Télécharger
             </a>
