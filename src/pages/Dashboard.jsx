@@ -869,7 +869,7 @@ export default function Dashboard() {
       {showPrinterConfig && (
         <PrinterConfigModal onClose={() => setShowPrinterConfig(false)} />
       )}
-      <footer className="w-full text-center py-3 text-xs text-slate-500 border-t border-slate-900 bg-[#060913]">
+      <footer className="w-full text-center py-2 text-[11px] text-slate-500 border-t border-slate-900 bg-[#060913]">
         <p>
           © 2026 <span className="font-semibold text-slate-400">Kalpé Resto</span> • Propulsé par{' '}
           <a 

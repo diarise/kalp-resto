@@ -6,7 +6,7 @@
 
 const JOURNAL_CODE = "6";
 
-function formatDateDDMMYY(timestamp) {
+function formatDate(timestamp) {
   const d = new Date(timestamp);
   const dd = String(d.getDate()).padStart(2, "0");
   const mm = String(d.getMonth() + 1).padStart(2, "0");
@@ -14,17 +14,25 @@ function formatDateDDMMYY(timestamp) {
   return dd + mm + yy;
 }
 
-export function formatSariLine(transaction, item) {
-  const typeDoc = JOURNAL_CODE;
-  const invoiceNum = transaction.invoice_number;
-  const dateSage = formatDateDDMMYY(transaction.timestamp);
-  const codeCaisse = transaction.table_code || "CS00";
-  const methodLabel = transaction.payment_method || "PAYE";
-  const articleCode = item.code || item.id || "";
-  const cleanName = (item.name || "").toUpperCase();
-  const qtyInt = parseInt(Math.round(Number(item.qty || 0)), 10);
-  const priceInt = parseInt(Math.round(Number(item.price || 0)), 10);
-  return [typeDoc, invoiceNum, dateSage, codeCaisse, methodLabel, articleCode, cleanName, qtyInt, priceInt].join(";");
+export function formatSariRow(transaction, item) {
+  // Extract proper string representation of payment mode (e.g., wave, orange_money, especes)
+  const paymentMode = (transaction.payment_method || "especes").toLowerCase();
+
+  // Explicitly grab the functional product/article identifier code key
+  const articleCode = item.code || item.sku || item.id || "0000";
+
+  const row = [
+    "6",                                    // Col 1: Record Type
+    transaction.invoice_number,             // Col 2: Invoice
+    formatDate(transaction.timestamp),      // Col 3: Date
+    transaction.table_name || "CS00",       // Col 4: Table Location Code
+    paymentMode,                            // Col 5: Dynamic Payment Method (Fixes hardcoding)
+    articleCode,                            // Col 6: Functional Article SKU Code (Fixes indexing)
+    item.name,                              // Col 7: Item Designation Text
+    Math.floor(item.qty || 1).toString(),   // Col 8: Pure Integer Quantity
+    Math.floor(item.price || 0).toString()  // Col 9: Pure Integer Unit Price
+  ];
+  return row.join(";");
 }
 
 export function exportTransactionsToSari(transactions) {
@@ -42,7 +50,7 @@ export function exportTransactionsToSari(transactions) {
     }
     if (!Array.isArray(items)) continue;
     for (const item of items) {
-      lines.push(formatSariLine(t, item));
+      lines.push(formatSariRow(t, item));
     }
   }
   return lines.join("\n");
