@@ -17,10 +17,19 @@ function formatDate(timestamp) {
 export function formatSariRow(transaction, item) {
   const paymentMode = (transaction.payment_method || "especes").toLowerCase();
 
-  // Resolve true numeric designation code index key (fixes placeholder 'plat-1' labels)
-  const rawId = (item.id || item.product_id || item.item_id || item.name || "1000").toString();
-  const digitMatch = rawId.match(/\d+/);
-  const articleCode = digitMatch ? digitMatch[0] : (rawId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0)).toString().slice(0, 4);
+  // 1. Check if the user defined a dedicated accounting code in Menu Management
+  // 2. Fall back to a deterministic unique numeric hash of the item's name if empty
+  let articleCode = item.sari_code || item.sku || item.code;
+
+  if (!articleCode) {
+    const stringToHash = (item.name || "ITEM").toString();
+    let hash = 0;
+    for (let i = 0; i < stringToHash.length; i++) {
+      hash = stringToHash.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    // Yields a consistent, unique 5-digit number per product name (e.g., 54821)
+    articleCode = Math.abs(hash % 90000 + 10000).toString();
+  }
 
   // Resolve short table code layout structure string (fixes literal 'Table 08' strings)
   const locationCode = transaction.table_code || transaction.table_id || (transaction.table_name ? transaction.table_name.replace('Table ', 'CS') : "CS00");

@@ -13,7 +13,7 @@ function readFileAsBase64(file) {
 
 export default function MenuManagement({ items, onChange, onClose }) {
   const [search, setSearch] = useState("");
-  const [newItem, setNewItem] = useState({ name: "", price: "", category: "plats", image: "" });
+  const [newItem, setNewItem] = useState({ name: "", price: "", category: "plats", image: "", sari_code: "" });
 
   const handleNewImageUpload = async (file) => {
     if (!file) return;
@@ -51,9 +51,10 @@ export default function MenuManagement({ items, onChange, onClose }) {
       price,
       category: newItem.category,
       image: newItem.image.trim() || undefined,
+      sari_code: newItem.sari_code.trim() || undefined,
     };
     onChange([...items, created]);
-    setNewItem({ name: "", price: "", category: "plats", image: "" });
+    setNewItem({ name: "", price: "", category: "plats", image: "", sari_code: "" });
   };
 
   const handleDelete = (id) => {
@@ -106,6 +107,13 @@ export default function MenuManagement({ items, onChange, onClose }) {
             </select>
             <input
               type="text"
+              placeholder="Code SARI (SAGE)"
+              value={newItem.sari_code}
+              onChange={(e) => setNewItem({ ...newItem, sari_code: e.target.value })}
+              className="w-36 h-10 px-3 rounded-lg bg-slate-800 border border-slate-700 text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+            />
+            <input
+              type="text"
               placeholder="Image URL (optionnel)"
               value={newItem.image && !newItem.image.startsWith("data:") ? newItem.image : ""}
               onChange={(e) => setNewItem({ ...newItem, image: e.target.value })}
@@ -153,6 +161,7 @@ export default function MenuManagement({ items, onChange, onClose }) {
                 <th className="px-6 py-3 font-semibold">Nom</th>
                 <th className="px-3 py-3 font-semibold w-32">Prix (FCFA)</th>
                 <th className="px-3 py-3 font-semibold w-44">Catégorie</th>
+                <th className="px-3 py-3 font-semibold w-32">Code SARI</th>
                 <th className="px-3 py-3 font-semibold">Image URL</th>
                 <th className="px-3 py-3 w-12"></th>
               </tr>
@@ -188,6 +197,15 @@ export default function MenuManagement({ items, onChange, onClose }) {
                           <option key={c.id} value={c.id}>{c.label}</option>
                         ))}
                       </select>
+                    </td>
+                    <td className="px-3 py-2">
+                      <input
+                        type="text"
+                        placeholder="Auto"
+                        value={item.sari_code || ""}
+                        onChange={(e) => updateField(item.id, "sari_code", e.target.value || undefined)}
+                        className="w-full h-9 px-2 rounded-lg border border-transparent hover:border-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm text-slate-300 bg-transparent placeholder:text-slate-600"
+                      />
                     </td>
                     <td className="px-3 py-2">
                       <div className="flex items-center gap-1">
@@ -226,7 +244,7 @@ export default function MenuManagement({ items, onChange, onClose }) {
               })}
               {filtered.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="text-center py-8 text-sm text-slate-500">
+                  <td colSpan={6} className="text-center py-8 text-sm text-slate-500">
                     Aucun article trouvé.
                   </td>
                 </tr>
