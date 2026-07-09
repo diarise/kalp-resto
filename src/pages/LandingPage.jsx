@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 export default function LandingPage() {
   const whatsappNumber = "14242790150";
   const emailAddress = "diarise@gmail.com";
-  const downloadUrl = "https://github.com/diarise/kalp-resto/releases/download/v1.0.0-beta/Sapphire-Restaurant-POS-Setup-1.0.0.2.exe";
+  const downloadUrl = "https://github.com/diarise/kalp-resto/releases/download/v1.0.0-beta/Sapphire-Restaurant-POS-Setup-1.0.0.3.exe";
 
   return (
     <div className="min-h-screen bg-[#060913] text-slate-100 font-sans relative overflow-hidden selection:bg-indigo-500 selection:text-white">
@@ -35,7 +35,7 @@ export default function LandingPage() {
               Démo Live
             </Link>
             <a 
-              href="https://github.com/diarise/kalp-resto/releases/download/v1.0.0-beta/Sapphire-Restaurant-POS-Setup-1.0.0.2.exe"
+              href={downloadUrl}
               className="bg-white hover:bg-slate-100 text-slate-950 text-xs sm:text-sm font-extrabold px-3 py-2 sm:px-5 sm:py-2.5 rounded-xl transition-all shadow-md tracking-tight flex-shrink-0"
             >
               Télécharger
