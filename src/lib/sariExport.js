@@ -6,6 +6,14 @@
 
 const JOURNAL_CODE = "6";
 
+function getMenuItemsCollection() {
+  try {
+    const stored = localStorage.getItem("kalpe_menu_items");
+    if (stored) return JSON.parse(stored);
+  } catch (e) {}
+  return [];
+}
+
 function formatDate(timestamp) {
   const d = new Date(timestamp);
   const dd = String(d.getDate()).padStart(2, "0");
@@ -18,8 +26,10 @@ export function formatSariRow(transaction, item) {
   const paymentMode = (transaction.payment_method || "especes").toLowerCase();
 
   // 1. Check if the user defined a dedicated accounting code in Menu Management
-  // 2. Fall back to a deterministic unique numeric hash of the item's name if empty
-  let articleCode = item.sari_code || item.sku || item.code;
+  // 2. Resolve from the live menu collection by name match (covers historical transactions)
+  // 3. Fall back to a deterministic unique numeric hash of the item's name if still empty
+  const globalMenuItem = getMenuItemsCollection().find((m) => m.name === item.name);
+  let articleCode = item.sari_code || (globalMenuItem ? globalMenuItem.sari_code : null) || item.sku || item.code;
 
   if (!articleCode) {
     const stringToHash = (item.name || "ITEM").toString();

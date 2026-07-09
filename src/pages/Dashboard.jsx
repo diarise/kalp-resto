@@ -192,6 +192,7 @@ export default function Dashboard() {
                   qty: 1,
                   price: menuItem.price,
                   category: menuItem.category,
+                  sari_code: menuItem.sari_code,
                 },
               ];
           return { ...table, currentTicket: updatedTicket };
@@ -616,7 +617,7 @@ export default function Dashboard() {
           const existing = del.currentTicket.find((i) => i.id === menuItem.id);
           const updatedTicket = existing
             ? del.currentTicket.map((i) => (i.id === menuItem.id ? { ...i, qty: i.qty + 1 } : i))
-            : [...del.currentTicket, { id: menuItem.id, name: menuItem.name, qty: 1, price: menuItem.price, category: menuItem.category }];
+            : [...del.currentTicket, { id: menuItem.id, name: menuItem.name, qty: 1, price: menuItem.price, category: menuItem.category, sari_code: menuItem.sari_code }];
           return { ...del, currentTicket: updatedTicket };
         })
       );
