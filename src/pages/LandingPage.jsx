@@ -1,10 +1,26 @@
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
+import AccessCodeModal, { isDownloadAuthorized } from '@/components/AccessCodeModal';
 
 export default function LandingPage() {
   const whatsappNumber = "14242790150";
   const emailAddress = "diarise@gmail.com";
   const downloadUrl = "https://github.com/diarise/kalp-resto/releases/download/v1.0.0-beta/Sapphire-Restaurant-POS-Setup-1.0.0.3.exe";
+  const [showAccessModal, setShowAccessModal] = useState(false);
+
+  const handleDownloadClick = useCallback((e) => {
+    e.preventDefault();
+    if (isDownloadAuthorized()) {
+      window.open(downloadUrl, "_blank");
+    } else {
+      setShowAccessModal(true);
+    }
+  }, [downloadUrl]);
+
+  const handleAccessSuccess = useCallback(() => {
+    setShowAccessModal(false);
+    window.open(downloadUrl, "_blank");
+  }, [downloadUrl]);
 
   return (
     <div className="min-h-screen bg-[#060913] text-slate-100 font-sans relative overflow-hidden selection:bg-indigo-500 selection:text-white">
@@ -34,12 +50,12 @@ export default function LandingPage() {
             >
               Démo Live
             </Link>
-            <a 
-              href={downloadUrl}
+            <button 
+              onClick={handleDownloadClick}
               className="bg-white hover:bg-slate-100 text-slate-950 text-xs sm:text-sm font-extrabold px-3 py-2 sm:px-5 sm:py-2.5 rounded-xl transition-all shadow-md tracking-tight flex-shrink-0"
             >
               Télécharger
-            </a>
+            </button>
           </div>
         </div>
       </nav>
@@ -63,13 +79,13 @@ export default function LandingPage() {
         </p>
         
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 max-w-md mx-auto">
-          <a 
-            href={downloadUrl}
+          <button 
+            onClick={handleDownloadClick}
             className="w-full sm:w-auto bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white text-base font-bold px-8 py-4 rounded-xl transition-all duration-200 shadow-xl shadow-indigo-600/20 text-center group"
           >
             Télécharger pour Windows
             <span className="inline-block ml-2 group-hover:translate-x-1 transition-transform">→</span>
-          </a>
+          </button>
           <a 
             href={`https://wa.me/${whatsappNumber}`}
             target="_blank" 
@@ -152,12 +168,12 @@ export default function LandingPage() {
           <p className="text-slate-400 max-w-xl mx-auto mb-8 text-sm leading-relaxed">
             Téléchargez l'application maintenant et activez votre terminal de caisse autonome en quelques minutes.
           </p>
-          <a 
-            href={downloadUrl}
+          <button 
+            onClick={handleDownloadClick}
             className="inline-block bg-white hover:bg-slate-100 text-slate-950 text-base font-bold px-8 py-3.5 rounded-xl transition-all shadow-md"
           >
             Télécharger l'application
-          </a>
+          </button>
         </div>
       </section>
 
@@ -198,6 +214,12 @@ export default function LandingPage() {
           </a>
         </div>
       </section>
+
+      <AccessCodeModal
+        open={showAccessModal}
+        onClose={() => setShowAccessModal(false)}
+        onSuccess={handleAccessSuccess}
+      />
 
       {/* Footer Ecosystem Copyright */}
       <footer className="border-t border-slate-950 bg-[#04060d] py-8 text-center text-xs text-slate-600 relative z-10">
