@@ -739,26 +739,6 @@ export default function Dashboard() {
 
   if (!staff) return null;
 
-  const handleExternalLink = (e) => {
-    e.preventDefault();
-    const targetUrl = "https://resto.kalpe.app";
-
-    // Explicitly check for native desktop user-agent architecture signature strings
-    const isElectron = navigator.userAgent.toLowerCase().indexOf(' electron/') > -1 || (window.process && window.process.type);
-
-    if (isElectron) {
-      if (window.electronAPI && typeof window.electronAPI.openExternal === 'function') {
-        window.electronAPI.openExternal(targetUrl);
-      } else {
-        console.warn("Electron native environment hook missing. Aborting window loop.");
-      }
-    } else {
-      // Standard web browser fallback path
-      const win = window.open(targetUrl, '_blank', 'noopener,noreferrer');
-      if (win) win.focus();
-    }
-  };
-
   return (
     <div className="h-screen flex flex-col overflow-hidden bg-slate-950">
       <StatusHeader currentView={currentView} onViewChange={setCurrentView} onOpenMenuConfig={() => setShowMenuConfig(true)} onOpenPrinterConfig={() => setShowPrinterConfig(true)} staff={staff} onLogout={handleLogout} />
@@ -891,13 +871,7 @@ export default function Dashboard() {
       )}
       <footer className="w-full text-center py-2 text-[11px] text-slate-500 border-t border-slate-900 bg-[#060913]">
         <p>
-          © 2026 <span className="font-semibold text-slate-400">Kalpé Resto</span> • Propulsé par{' '}
-          <button
-            onClick={handleExternalLink}
-            className="text-indigo-400 hover:text-indigo-300 font-bold transition-colors underline decoration-indigo-500/30 underline-offset-2 hover:decoration-indigo-400"
-          >
-            Daouda Dia
-          </button>
+          © 2026 <span className="font-semibold text-slate-400">Kalpé Resto</span> • Propulsé par <span className="font-bold text-indigo-400">Daouda Dia (resto.kalpe.app)</span>
         </p>
       </footer>
     </div>

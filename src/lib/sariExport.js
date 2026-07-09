@@ -18,7 +18,9 @@ export function formatSariRow(transaction, item) {
   const paymentMode = (transaction.payment_method || "especes").toLowerCase();
 
   // Resolve true numeric designation code index key (fixes placeholder 'plat-1' labels)
-  const articleCode = item.code || item.sku || item.reference || item.article_code || "1000";
+  const rawId = (item.id || item.product_id || item.item_id || item.name || "1000").toString();
+  const digitMatch = rawId.match(/\d+/);
+  const articleCode = digitMatch ? digitMatch[0] : (rawId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0)).toString().slice(0, 4);
 
   // Resolve short table code layout structure string (fixes literal 'Table 08' strings)
   const locationCode = transaction.table_code || transaction.table_id || (transaction.table_name ? transaction.table_name.replace('Table ', 'CS') : "CS00");
