@@ -3,15 +3,68 @@
 // LAST UPDATED: COLD & HOT DRINK SEPARATION
 // SYNC PING: 2026-07-07T23:59:00Z
 // ==========================================
-export const MENU_CATEGORIES = [
-  { id: "plats", label: "Plats" },
-  { id: "boissons", label: "Boissons Fraîches" },
-  { id: "boissons_chaudes", label: "Boissons Chaudes" },
-  { id: "entrees", label: "Entrée" },
-  { id: "desserts", label: "Dessert" },
-  { id: "chichas", label: "Chicha et Lounge" },
-  { id: "sale", label: "Plats Salés" },
+// Default seed categories — stored dynamically in localStorage (kalpe_categories).
+// Each category: { id, name (FR), position (number) } — position controls tab sort order.
+export const DEFAULT_CATEGORIES = [
+  { id: "plats", name: "Plats", position: 0 },
+  { id: "boissons", name: "Boissons Fraîches", position: 1 },
+  { id: "boissons_chaudes", name: "Boissons Chaudes", position: 2 },
+  { id: "entrees", name: "Entrée", position: 3 },
+  { id: "desserts", name: "Dessert", position: 4 },
+  { id: "chichas", name: "Chicha et Lounge", position: 5 },
+  { id: "sale", name: "Plats Salés", position: 6 },
 ];
+
+// Backward-compatible label form for any legacy consumer.
+export const MENU_CATEGORIES = DEFAULT_CATEGORIES.map(({ id, name }) => ({ id, label: name }));
+
+const CAT_STORAGE_KEY = "kalpe_categories";
+
+/** Load categories from localStorage, seeding defaults on first run. */
+export function loadCategories() {
+  try {
+    const stored = localStorage.getItem(CAT_STORAGE_KEY);
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    }
+  } catch (e) {}
+  return DEFAULT_CATEGORIES.map((c) => ({ ...c }));
+}
+
+/** Persist categories to localStorage. */
+export function saveCategories(categories) {
+  try {
+    localStorage.setItem(CAT_STORAGE_KEY, JSON.stringify(categories));
+  } catch (e) {}
+}
+
+/** Return categories sorted ascending by position (for tab display). */
+export function getSortedCategories(categories) {
+  return [...categories].sort((a, b) => (a.position ?? 0) - (b.position ?? 0));
+}
+
+/** Build a new category object assigned the next available position (end of list). */
+export function createCategory(name, categories) {
+  const maxPos = categories.reduce((m, c) => Math.max(m, c.position ?? 0), -1);
+  return { id: `cat-${Date.now()}`, name: name.trim(), position: maxPos + 1 };
+}
+
+/** Swap the position of the category at id with its neighbour (dir -1 = up, +1 = down). */
+export function moveCategory(categories, id, dir) {
+  const sorted = [...categories].sort((a, b) => (a.position ?? 0) - (b.position ?? 0));
+  const idx = sorted.findIndex((c) => c.id === id);
+  if (idx === -1) return categories;
+  const target = idx + dir;
+  if (target < 0 || target >= sorted.length) return categories;
+  const a = sorted[idx];
+  const b = sorted[target];
+  return categories.map((c) => {
+    if (c.id === a.id) return { ...c, position: b.position };
+    if (c.id === b.id) return { ...c, position: a.position };
+    return c;
+  });
+}
 
 export const MENU_ITEMS = [
   // PLATS DU JOUR

@@ -90,7 +90,7 @@ export default function CategoryTabBar({ categories, activeCategory, onSelect })
                   : "text-slate-400 hover:text-slate-100 hover:bg-slate-800"
               }`}
             >
-              {cat.label}
+              {cat.name || cat.label}
             </button>
           );
         })}

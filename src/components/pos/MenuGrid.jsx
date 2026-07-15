@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { ArrowLeft, Plus } from "lucide-react";
-import { MENU_CATEGORIES, MENU_ITEMS } from "@/lib/menuData";
+import { MENU_ITEMS } from "@/lib/menuData";
 import CategoryTabBar from "@/components/pos/CategoryTabBar";
 
 const CATEGORY_PLACEHOLDERS = {
@@ -21,8 +21,16 @@ const CATEGORY_PLACEHOLDERS = {
   boissons_chaudes: { bg: "bg-slate-800", emoji: "☕" },
 };
 
-export default function MenuGrid({ activeTable, onBack, onAddItem, menuItems }) {
-  const [activeCategory, setActiveCategory] = useState("plats");
+export default function MenuGrid({ activeTable, onBack, onAddItem, menuItems, categories }) {
+  const sortedCategories = [...(categories || [])].sort((a, b) => (a.position ?? 0) - (b.position ?? 0));
+  const [activeCategory, setActiveCategory] = useState(() => sortedCategories[0]?.id || "plats");
+
+  // If the active tab is removed/renamed in admin, fall back to the first tab.
+  useEffect(() => {
+    if (sortedCategories.length > 0 && !sortedCategories.some((c) => c.id === activeCategory)) {
+      setActiveCategory(sortedCategories[0].id);
+    }
+  }, [sortedCategories, activeCategory]);
 
   const items = menuItems || MENU_ITEMS;
   const filteredItems = items.filter((item) => item.category === activeCategory);
@@ -51,7 +59,7 @@ export default function MenuGrid({ activeTable, onBack, onAddItem, menuItems }) 
 
         {/* Category Pills — scrollable carousel with arrow nav */}
         <CategoryTabBar
-          categories={MENU_CATEGORIES}
+          categories={sortedCategories}
           activeCategory={activeCategory}
           onSelect={setActiveCategory}
         />

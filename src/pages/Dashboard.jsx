@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useMemo, useEffect, useRef } from "react";
-import { getInitialTables, MENU_ITEMS } from "@/lib/menuData";
+import { getInitialTables, MENU_ITEMS, loadCategories, saveCategories } from "@/lib/menuData";
 import StatusHeader from "@/components/pos/StatusHeader";
 import FloorPlan from "@/components/pos/FloorPlan";
 import MenuGrid from "@/components/pos/MenuGrid";
@@ -97,6 +97,7 @@ export default function Dashboard() {
   });
   const [activeDeliveryId, setActiveDeliveryId] = useState(null);
   const [menuItems, setMenuItems] = useState(() => loadMenuItems());
+  const [categories, setCategories] = useState(() => loadCategories());
   const tablesRef = useRef(tables);
   tablesRef.current = tables;
 
@@ -105,6 +106,10 @@ export default function Dashboard() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(menuItems));
     } catch (e) {}
   }, [menuItems]);
+
+  useEffect(() => {
+    saveCategories(categories);
+  }, [categories]);
 
   useEffect(() => {
     try {
@@ -153,6 +158,10 @@ export default function Dashboard() {
 
   const handleMenuChange = useCallback((updated) => {
     setMenuItems(updated);
+  }, []);
+
+  const handleCategoriesChange = useCallback((updated) => {
+    setCategories(updated);
   }, []);
 
   const activeTable = useMemo(
@@ -800,6 +809,7 @@ export default function Dashboard() {
                   onBack={handleBackToDeliveryList}
                   onAddItem={handleAddDeliveryItem}
                   menuItems={menuItems}
+                  categories={categories}
                 />
               ) : (
                 <DeliveryView
@@ -817,6 +827,7 @@ export default function Dashboard() {
                 onBack={handleBackToFloor}
                 onAddItem={handleAddItem}
                 menuItems={menuItems}
+                categories={categories}
               />
             ) : (
               <FloorPlan
@@ -897,7 +908,9 @@ export default function Dashboard() {
       {showMenuConfig && (
         <MenuManagement
           items={menuItems}
+          categories={categories}
           onChange={handleMenuChange}
+          onCategoriesChange={handleCategoriesChange}
           onClose={() => setShowMenuConfig(false)}
         />
       )}
