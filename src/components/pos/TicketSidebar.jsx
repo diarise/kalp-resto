@@ -22,6 +22,7 @@ export default function TicketSidebar({
   }, [activeTable]);
 
   const formatPrice = (price) => price.toLocaleString("fr-FR") + " CFA";
+  const hasPending = activeTable?.currentTicket?.some((i) => i.status !== "sent") ?? false;
 
   const [expandedItemId, setExpandedItemId] = useState(null);
   const [showPrintModal, setShowPrintModal] = useState(false);
@@ -115,6 +116,9 @@ export default function TicketSidebar({
                 <div className="flex-1 min-w-0 cursor-pointer" onClick={() => handleRowClick(item.id)}>
                   <div className="flex items-center gap-1">
                     <p className="text-sm font-medium text-slate-100 truncate">{item.name}</p>
+                    {item.status === "sent" && (
+                      <span className="text-[9px] font-bold uppercase tracking-wide text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded shrink-0">Envoyé</span>
+                    )}
                     <ChevronDown className={`w-3 h-3 text-slate-500 shrink-0 transition-transform ${isExpanded ? "rotate-180" : ""}`} />
                   </div>
                   {modifierText ? (
@@ -323,7 +327,7 @@ export default function TicketSidebar({
             <div className="px-5 pb-3">
               <button
                 onClick={onSendKitchen}
-                disabled={activeTable.currentTicket.length === 0}
+                disabled={!hasPending}
                 className="w-full h-14 rounded-xl font-semibold text-white flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed bg-orange-600 hover:bg-orange-500"
               >
                 <Send className="w-4 h-4" />

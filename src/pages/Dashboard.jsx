@@ -182,7 +182,9 @@ export default function Dashboard() {
           const existing = table.currentTicket.find((i) => i.id === menuItem.id);
           const updatedTicket = existing
             ? table.currentTicket.map((i) =>
-                i.id === menuItem.id ? { ...i, qty: i.qty + 1 } : i
+                i.id === menuItem.id
+                  ? { ...i, qty: i.qty + 1, status: i.status === "sent" ? "pending" : i.status }
+                  : i
               )
             : [
                 ...table.currentTicket,
@@ -193,6 +195,8 @@ export default function Dashboard() {
                   price: menuItem.price,
                   category: menuItem.category,
                   sari_code: menuItem.sari_code,
+                  status: "pending",
+                  sent_qty: 0,
                 },
               ];
           return { ...table, currentTicket: updatedTicket };
@@ -210,9 +214,17 @@ export default function Dashboard() {
           if (table.id !== activeTableId) return table;
           return {
             ...table,
-            currentTicket: table.currentTicket.map((i) =>
-              i.id === itemId ? { ...i, qty: newQty } : i
-            ),
+            currentTicket: table.currentTicket.map((i) => {
+              if (i.id !== itemId) return i;
+              const wasSent = i.status === "sent";
+              const clampedSent = Math.min(i.sent_qty || 0, newQty);
+              return {
+                ...i,
+                qty: newQty,
+                sent_qty: clampedSent,
+                status: newQty > (i.sent_qty || 0) && wasSent ? "pending" : i.status,
+              };
+            }),
           };
         })
       );
@@ -359,63 +371,60 @@ export default function Dashboard() {
     if (!table) return;
 
     const now = Date.now();
+    const nowIso = new Date(now).toISOString();
     const tableName = table.name;
 
-    // Split items by category — liquids & lounge route to Bar, all else to Cuisine
-    const barItems = table.currentTicket.filter(
-      (i) => i.category === "boissons" || i.category === "chichas"
+    // Order Rounds: isolate ONLY items with unsent (pending) quantity
+    const pendingItems = table.currentTicket.filter(
+      (i) => i.status !== "sent" && i.qty - (i.sent_qty || 0) > 0
     );
-    const cuisineItems = table.currentTicket.filter(
-      (i) => i.category !== "boissons" && i.category !== "chichas"
-    );
+    if (pendingItems.length === 0) return;
 
-    if (cuisineItems.length > 0) {
-      setKitchenOrders((prev) => [
-        ...prev,
-        {
-          id: `k-${now}`,
-          tableName,
-          timestamp: now,
-          items: cuisineItems,
-          status: "pending",
-        },
-      ]);
+    // Previously fired items — printed for chef recall (do NOT re-prepare)
+    const previouslySent = table.currentTicket.filter((i) => (i.sent_qty || 0) > 0);
+    const buildDelta = (i) => ({ ...i, qty: i.qty - (i.sent_qty || 0) });
+
+    const cuisinePending = pendingItems.filter((i) => i.category !== "boissons" && i.category !== "chichas");
+    const barPending = pendingItems.filter((i) => i.category === "boissons" || i.category === "chichas");
+    const cuisineRecall = previouslySent.filter((i) => i.category !== "boissons" && i.category !== "chichas");
+    const barRecall = previouslySent.filter((i) => i.category === "boissons" || i.category === "chichas");
+
+    if (cuisinePending.length > 0) {
+      setKitchenOrders((prev) => [...prev, { id: `k-${now}`, tableName, timestamp: now, items: cuisinePending.map(buildDelta), status: "pending" }]);
     }
-    if (barItems.length > 0) {
-      setBarOrders((prev) => [
-        ...prev,
-        {
-          id: `b-${now}`,
-          tableName,
-          timestamp: now,
-          items: barItems,
-          status: "pending",
-        },
-      ]);
+    if (barPending.length > 0) {
+      setBarOrders((prev) => [...prev, { id: `b-${now}`, tableName, timestamp: now, items: barPending.map(buildDelta), status: "pending" }]);
     }
 
-    setTables((prev) =>
-      prev.map((t) => {
-        if (t.id !== activeTableId) return t;
-        return { ...t, status: "occupee" };
-      })
-    );
-
-    // Silent split-routing: print prep tickets to assigned hardware printers
+    // Silent split-routing: print ONLY the new (pending) items to assigned hardware
     if (window.electronAPI && typeof window.electronAPI.printSilent === "function") {
       const kitchenPrinter = getKitchenPrinter();
       const barPrinter = getBarPrinter();
-      if (cuisineItems.length > 0 && kitchenPrinter) {
-        const html = generateKitchenPrepHtml({ table, staff, items: cuisineItems });
+      if (cuisinePending.length > 0 && kitchenPrinter) {
+        const html = generateKitchenPrepHtml({ table, staff, items: cuisinePending.map(buildDelta), previouslySent: cuisineRecall });
         window.electronAPI.printSilent(html, kitchenPrinter);
       }
-      if (barItems.length > 0 && barPrinter) {
-        const html = generateBarPrepHtml({ table, staff, items: barItems });
+      if (barPending.length > 0 && barPrinter) {
+        const html = generateBarPrepHtml({ table, staff, items: barPending.map(buildDelta), previouslySent: barRecall });
         window.electronAPI.printSilent(html, barPrinter);
       }
     }
 
-    // Keep ticket intact but deselect table so server returns to floor plan
+    // Mark the fired items as sent — status transitions pending → sent
+    const firedIds = new Set(pendingItems.map((i) => i.id));
+    setTables((prev) =>
+      prev.map((t) => {
+        if (t.id !== activeTableId) return t;
+        return {
+          ...t,
+          status: "occupee",
+          currentTicket: t.currentTicket.map((i) =>
+            firedIds.has(i.id) ? { ...i, status: "sent", sent_qty: i.qty, sent_at: nowIso } : i
+          ),
+        };
+      })
+    );
+
     setShowKitchenModal(true);
   }, [activeTableId, tables, staff]);
 
@@ -616,8 +625,8 @@ export default function Dashboard() {
           if (del.id !== activeDeliveryId) return del;
           const existing = del.currentTicket.find((i) => i.id === menuItem.id);
           const updatedTicket = existing
-            ? del.currentTicket.map((i) => (i.id === menuItem.id ? { ...i, qty: i.qty + 1 } : i))
-            : [...del.currentTicket, { id: menuItem.id, name: menuItem.name, qty: 1, price: menuItem.price, category: menuItem.category, sari_code: menuItem.sari_code }];
+            ? del.currentTicket.map((i) => (i.id === menuItem.id ? { ...i, qty: i.qty + 1, status: i.status === "sent" ? "pending" : i.status } : i))
+            : [...del.currentTicket, { id: menuItem.id, name: menuItem.name, qty: 1, price: menuItem.price, category: menuItem.category, sari_code: menuItem.sari_code, status: "pending", sent_qty: 0 }];
           return { ...del, currentTicket: updatedTicket };
         })
       );
@@ -631,7 +640,15 @@ export default function Dashboard() {
       setDeliveryOrders((prev) =>
         prev.map((del) => {
           if (del.id !== activeDeliveryId) return del;
-          return { ...del, currentTicket: del.currentTicket.map((i) => (i.id === itemId ? { ...i, qty: newQty } : i)) };
+          return {
+            ...del,
+            currentTicket: del.currentTicket.map((i) => {
+              if (i.id !== itemId) return i;
+              const wasSent = i.status === "sent";
+              const clampedSent = Math.min(i.sent_qty || 0, newQty);
+              return { ...i, qty: newQty, sent_qty: clampedSent, status: newQty > (i.sent_qty || 0) && wasSent ? "pending" : i.status };
+            }),
+          };
         })
       );
     },
@@ -680,31 +697,48 @@ export default function Dashboard() {
     if (!delivery) return;
 
     const now = Date.now();
+    const nowIso = new Date(now).toISOString();
     const customerLabel = delivery.customer_name || "Client";
     const headerValue = `Livraison - ${customerLabel}`;
 
-    const barItems = delivery.currentTicket.filter((i) => i.category === "boissons" || i.category === "chichas");
-    const cuisineItems = delivery.currentTicket.filter((i) => i.category !== "boissons" && i.category !== "chichas");
+    // Order Rounds: isolate ONLY items with unsent (pending) quantity
+    const pendingItems = delivery.currentTicket.filter((i) => i.status !== "sent" && i.qty - (i.sent_qty || 0) > 0);
+    if (pendingItems.length === 0) return;
 
-    if (cuisineItems.length > 0) {
-      setKitchenOrders((prev) => [...prev, { id: `k-${now}`, tableName: headerValue, timestamp: now, items: cuisineItems, status: "pending" }]);
+    const previouslySent = delivery.currentTicket.filter((i) => (i.sent_qty || 0) > 0);
+    const buildDelta = (i) => ({ ...i, qty: i.qty - (i.sent_qty || 0) });
+
+    const cuisinePending = pendingItems.filter((i) => i.category !== "boissons" && i.category !== "chichas");
+    const barPending = pendingItems.filter((i) => i.category === "boissons" || i.category === "chichas");
+    const cuisineRecall = previouslySent.filter((i) => i.category !== "boissons" && i.category !== "chichas");
+    const barRecall = previouslySent.filter((i) => i.category === "boissons" || i.category === "chichas");
+
+    if (cuisinePending.length > 0) {
+      setKitchenOrders((prev) => [...prev, { id: `k-${now}`, tableName: headerValue, timestamp: now, items: cuisinePending.map(buildDelta), status: "pending" }]);
     }
-    if (barItems.length > 0) {
-      setBarOrders((prev) => [...prev, { id: `b-${now}`, tableName: headerValue, timestamp: now, items: barItems, status: "pending" }]);
+    if (barPending.length > 0) {
+      setBarOrders((prev) => [...prev, { id: `b-${now}`, tableName: headerValue, timestamp: now, items: barPending.map(buildDelta), status: "pending" }]);
     }
 
-    setDeliveryOrders((prev) => prev.map((d) => (d.id === activeDeliveryId ? { ...d, delivery_status: "preparing" } : d)));
+    const firedIds = new Set(pendingItems.map((i) => i.id));
+    setDeliveryOrders((prev) => prev.map((d) => {
+      if (d.id !== activeDeliveryId) return d;
+      return {
+        ...d,
+        delivery_status: "preparing",
+        currentTicket: d.currentTicket.map((i) => (firedIds.has(i.id) ? { ...i, status: "sent", sent_qty: i.qty, sent_at: nowIso } : i)),
+      };
+    }));
 
-    // Silent split-routing: print prep tickets with customer name as header
     if (window.electronAPI && typeof window.electronAPI.printSilent === "function") {
       const kitchenPrinter = getKitchenPrinter();
       const barPrinter = getBarPrinter();
-      if (cuisineItems.length > 0 && kitchenPrinter) {
-        const html = generateKitchenPrepHtml({ table: { name: customerLabel }, staff, items: cuisineItems, headerLabel: "Client:" });
+      if (cuisinePending.length > 0 && kitchenPrinter) {
+        const html = generateKitchenPrepHtml({ table: { name: customerLabel }, staff, items: cuisinePending.map(buildDelta), previouslySent: cuisineRecall, headerLabel: "Client:" });
         window.electronAPI.printSilent(html, kitchenPrinter);
       }
-      if (barItems.length > 0 && barPrinter) {
-        const html = generateBarPrepHtml({ table: { name: customerLabel }, staff, items: barItems, headerLabel: "Client:" });
+      if (barPending.length > 0 && barPrinter) {
+        const html = generateBarPrepHtml({ table: { name: customerLabel }, staff, items: barPending.map(buildDelta), previouslySent: barRecall, headerLabel: "Client:" });
         window.electronAPI.printSilent(html, barPrinter);
       }
     }

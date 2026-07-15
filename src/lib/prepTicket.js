@@ -14,6 +14,10 @@ function formatDateTime(date) {
   return `${pad(date.getDate())}/${pad(date.getMonth() + 1)}/${date.getFullYear()} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
 }
 
+function formatTime(date) {
+  return `${pad(date.getHours())}h${pad(date.getMinutes())}`;
+}
+
 // 80mm EPSON TM-T20x → 42 chars max per line
 const CHARS_PER_LINE = 42;
 const DIVIDER_CHARS = "-".repeat(CHARS_PER_LINE);
@@ -173,50 +177,87 @@ function buildItemLine(qty, name) {
   `;
 }
 
-function buildItemsHtml(items) {
+function buildItemsHtml(items, { tagNew = false } = {}) {
   return items.map((item) => {
     const mods = [item.piment, item.cuisson, item.boisson, item.sucre, item.lait].filter(Boolean);
+    const displayName = tagNew ? `${item.name} (NOUVEAU)` : item.name;
     return `
-      ${buildItemLine(item.qty, item.name)}
+      ${buildItemLine(item.qty, displayName)}
       ${mods.length > 0 ? `<div class="item-mod">→ ${mods.join(", ")}</div>` : ""}
     `;
   }).join("");
+}
+
+/**
+ * Recall section — previously fired items, for chef situational awareness only.
+ * Strictly informational: "DÉJÀ EN SERVICE / NE PAS RE-PRÉPARER".
+ */
+function buildRecallHtml(previouslySent) {
+  if (!previouslySent || previouslySent.length === 0) return "";
+  const lines = previouslySent.map((item) => {
+    const sentAt = item.sent_at ? formatTime(new Date(item.sent_at)) : "—";
+    const recallQty = item.sent_qty || item.qty || 0;
+    return `<div class="item-line"><span class="item-qty">${recallQty}x</span><span class="item-name">${item.name} (Envoyé à ${sentAt})</span></div>`;
+  }).join("");
+  return `${DIVIDER}<div class="center bold sm">DÉJÀ EN SERVICE / NE PAS RE-PRÉPARER :</div>${lines}${DIVIDER}`;
 }
 
 function buildMetaRow(label, value) {
   return `<div class="row"><span>${label}</span><span class="bold">${value || "—"}</span></div>`;
 }
 
-export function generateKitchenPrepHtml({ table, staff, items, headerLabel, headerValue }) {
+export function generateKitchenPrepHtml({ table, staff, items, previouslySent, headerLabel, headerValue }) {
   const now = new Date();
+  const isAddOn = previouslySent && previouslySent.length > 0;
+  const tableCode = headerLabel === "Client:" ? "LIVRAISON" : (table?.subLabel || table?.name || "—");
+  const commandHeader = isAddOn
+    ? `<div class="center xl bold">⚠️⚠️⚠️ AJOUT / SUPPLÉMENT ⚠️⚠️⚠️</div>
+       <div class="row"><span class="bold">TABLE :</span><span class="bold">${tableCode}</span></div>
+       <div class="row"><span class="bold">HEURE ENVOI :</span><span class="bold">${formatTime(now)}</span></div>`
+    : `<div class="center xl bold">[ NOUVELLE COMMANDE ]</div>`;
+  const heureMeta = isAddOn ? "" : buildMetaRow("Heure:", formatDateTime(now));
   return wrapHtml(`
     <div class="center mb">
       <div class="xl bold">*** CUISINE ***</div>
     </div>
     ${DIVIDER}
+    ${commandHeader}
+    ${DIVIDER}
     ${buildDestinationHeader(table, headerLabel, headerValue)}
     ${buildMetaRow("Serveur:", staff?.name)}
-    ${buildMetaRow("Heure:", formatDateTime(now))}
+    ${heureMeta}
     ${DIVIDER}
-    ${buildItemsHtml(items)}
-    ${DIVIDER}
+    ${isAddOn ? `<div class="center bold sm mb">À PRÉPARER :</div>` : ""}
+    ${buildItemsHtml(items, { tagNew: isAddOn })}
+    ${buildRecallHtml(previouslySent)}
     <div class="center sm mt">--- Ticket Préparation ---</div>
   `);
 }
 
-export function generateBarPrepHtml({ table, staff, items, headerLabel, headerValue }) {
+export function generateBarPrepHtml({ table, staff, items, previouslySent, headerLabel, headerValue }) {
   const now = new Date();
+  const isAddOn = previouslySent && previouslySent.length > 0;
+  const tableCode = headerLabel === "Client:" ? "LIVRAISON" : (table?.subLabel || table?.name || "—");
+  const commandHeader = isAddOn
+    ? `<div class="center xl bold">⚠️⚠️⚠️ AJOUT / SUPPLÉMENT ⚠️⚠️⚠️</div>
+       <div class="row"><span class="bold">TABLE :</span><span class="bold">${tableCode}</span></div>
+       <div class="row"><span class="bold">HEURE ENVOI :</span><span class="bold">${formatTime(now)}</span></div>`
+    : `<div class="center xl bold">[ NOUVELLE COMMANDE ]</div>`;
+  const heureMeta = isAddOn ? "" : buildMetaRow("Heure:", formatDateTime(now));
   return wrapHtml(`
     <div class="center mb">
       <div class="xl bold">*** BAR ***</div>
     </div>
     ${DIVIDER}
+    ${commandHeader}
+    ${DIVIDER}
     ${buildDestinationHeader(table, headerLabel, headerValue)}
     ${buildMetaRow("Serveur:", staff?.name)}
-    ${buildMetaRow("Heure:", formatDateTime(now))}
+    ${heureMeta}
     ${DIVIDER}
-    ${buildItemsHtml(items)}
-    ${DIVIDER}
+    ${isAddOn ? `<div class="center bold sm mb">À PRÉPARER :</div>` : ""}
+    ${buildItemsHtml(items, { tagNew: isAddOn })}
+    ${buildRecallHtml(previouslySent)}
     <div class="center sm mt">--- Ticket Préparation ---</div>
   `);
 }
